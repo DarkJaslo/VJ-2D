@@ -17,31 +17,43 @@ class ShaderProgram
 {
 
 public:
-	ShaderProgram();
+	ShaderProgram() = default;
 
+	~ShaderProgram() { free(); }
+
+	// Initializes the shader program
 	void init();
-	void addShader(const Shader &shader);
-	void bindFragmentOutput(const string &outputName);
-	GLint bindVertexAttribute(const string &attribName, GLint size, GLsizei stride, GLvoid *firstPointer);
+
+	// Adds a shader to the program
+	void addShader(Shader const& shader) const;
+
+	void bindFragmentOutput(std::string const& output_name) const;
+	GLint bindVertexAttribute(std::string const& attrib_name, GLint size, GLsizei stride, GLvoid* first_pointer) const;
 	void link();
-	void free();
 
 	void use();
 
 	// Pass uniforms to the associated shaders
-	void setUniform2f(const string &uniformName, float v0, float v1);
-	void setUniform3f(const string &uniformName, float v0, float v1, float v2);
-	void setUniform4f(const string &uniformName, float v0, float v1, float v2, float v3);
-	void setUniformMatrix4f(const string &uniformName, glm::mat4 &mat);
+	void setUniform2f(std::string const& uniform_name, float v0, float v1);
+	void setUniform3f(std::string const& uniform_name, float v0, float v1, float v2);
+	void setUniform4f(std::string const& uniform_name, float v0, float v1, float v2, float v3);
+	void setUniformMatrix4f(std::string const& uniform_name, glm::mat4& mat);
 
-	bool isLinked();
-	const string &log() const;
+	bool isLinked() const;
+	std::string const& log() const;
 
 private:
-	GLuint programId;
-	bool linked;
-	string errorLog;
+	// Cleans up resources
+	void free();
 
+	// The ID of this shader program
+	GLuint m_program_id = 0;
+
+	// True iff the program is linked (and successfully)
+	bool m_linked = false;
+
+	// The error log string, if any
+	std::string m_error_log;
 };
 
 

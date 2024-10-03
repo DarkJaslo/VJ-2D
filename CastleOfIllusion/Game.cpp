@@ -2,55 +2,46 @@
 #include <GLFW/glfw3.h>
 #include "Game.h"
 
-
 void Game::init()
 {
-	bPlay = true;
+	instance().m_is_playing = true;
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-	scene.init();
+	instance().m_scene.init();
 }
 
-bool Game::update(int deltaTime)
+bool Game::update(int delta_time)
 {
-	scene.update(deltaTime);
+	instance().m_scene.update(delta_time);
 
-	return bPlay;
+	return instance().m_is_playing;
 }
 
 void Game::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	scene.render();
+	instance().m_scene.render();
 }
 
 void Game::keyPressed(int key)
 {
-	if(key == GLFW_KEY_ESCAPE) // Escape code
-		bPlay = false;
-	keys[key] = true;
+	if(key == GLFW_KEY_ESCAPE)
+		instance().m_is_playing = false;
+
+	instance().m_keys[key] = true;
 }
 
 void Game::keyReleased(int key)
 {
-	keys[key] = false;
+	instance().m_keys[key] = false;
 }
 
-void Game::mouseMove(int x, int y)
+void Game::mouseMove(int x, int y) { }
+
+void Game::mousePress(int button) { }
+
+void Game::mouseRelease(int button) { }
+
+bool Game::getKey(int key)
 {
+	return instance().m_keys[key];
 }
-
-void Game::mousePress(int button)
-{
-}
-
-void Game::mouseRelease(int button)
-{
-}
-
-bool Game::getKey(int key) const
-{
-	return keys[key];
-}
-
-
-

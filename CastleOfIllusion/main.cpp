@@ -2,29 +2,27 @@
 #include <GLFW/glfw3.h>
 #include "Game.h"
 
-
 #define TARGET_FRAMERATE 60.0f
-
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action == GLFW_PRESS)
-		Game::instance().keyPressed(key);
+		Game::keyPressed(key);
 	else if (action == GLFW_RELEASE)
-		Game::instance().keyReleased(key);
+		Game::keyReleased(key);
 }
 
 void cursor_position_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	Game::instance().mouseMove(int(xpos), int(ypos));
+	Game::mouseMove(int(xpos), int(ypos));
 }
 
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
 	if (action == GLFW_PRESS)
-		Game::instance().mousePress(button);
+		Game::mousePress(button);
 	else if (action == GLFW_RELEASE)
-		Game::instance().mouseRelease(button);
+		Game::mouseRelease(button);
 }
 
 #include <iostream>
@@ -32,15 +30,14 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 int main(void)
 {
 	GLFWwindow* window;
-	double timePerFrame = 1.f / TARGET_FRAMERATE, timePreviousFrame, currentTime;
+	double time_per_frame = 1.f / TARGET_FRAMERATE, time_prev_frame, current_time;
 
-	std::cout << "hola2" << std::endl;
-
+	std::cout << "Initializing library" << std::endl;
 	/* Initialize the library */
 	if (!glfwInit())
 		return -1;
 
-	std::cout << "hola" << std::endl;
+	std::cout << "Initialized library" << std::endl;
 
 	/* Create a windowed mode window and its OpenGL context */
 	window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
@@ -65,20 +62,21 @@ int main(void)
 	glewInit();
 
 	/* Init step of the game loop */
-	Game::instance().init();
-	timePreviousFrame = glfwGetTime();
+	Game::init();
+	time_prev_frame = glfwGetTime();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
-		currentTime = glfwGetTime();
-		if (currentTime - timePreviousFrame >= timePerFrame)
+		current_time = glfwGetTime();
+		if (current_time - time_prev_frame >= time_per_frame)
 		{
 			/* Update & render steps of the game loop */
-			if(!Game::instance().update(int(1000.0f * (currentTime - timePreviousFrame))))
+			if(!Game::update(int(1000.0f * (current_time - time_prev_frame))))
 				glfwSetWindowShouldClose(window, GLFW_TRUE);
-			Game::instance().render();
-			timePreviousFrame = currentTime;
+
+			Game::render();
+			time_prev_frame = current_time;
 
 			/* Swap front and back buffers */
 			glfwSwapBuffers(window);
@@ -91,4 +89,3 @@ int main(void)
 	glfwTerminate();
 	return 0;
 }
-

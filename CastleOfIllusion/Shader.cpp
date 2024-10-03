@@ -1,84 +1,77 @@
 #include <fstream>
 #include "Shader.h"
 
-
 using namespace std;
-
-
-Shader::Shader()
-{
-	shaderId = 0;
-	compiled = false;
-}
-
 
 void Shader::initFromSource(const ShaderType type, const string &source)
 {
-	const char *sourcePtr = source.c_str();
+	const char* source_ptr = source.c_str();
 	GLint status;
 	char buffer[512];
 
 	switch(type)
 	{
 	case VERTEX_SHADER:
-		shaderId = glCreateShader(GL_VERTEX_SHADER);
+		m_shader_id = glCreateShader(GL_VERTEX_SHADER);
 		break;
 	case FRAGMENT_SHADER:
-		shaderId = glCreateShader(GL_FRAGMENT_SHADER);
+		m_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
 		break;
 	}
-	if(shaderId == 0)
+
+	if(m_shader_id == 0)
 		return;
-	glShaderSource(shaderId, 1, &sourcePtr, NULL);
-	glCompileShader(shaderId);
-	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &status);
-	compiled = (status == GL_TRUE);
-	glGetShaderInfoLog(shaderId, 512, NULL, buffer);
-	errorLog.assign(buffer);
+
+	glShaderSource(m_shader_id, 1, &source_ptr, NULL);
+	glCompileShader(m_shader_id);
+	glGetShaderiv(m_shader_id, GL_COMPILE_STATUS, &status);
+
+	m_compiled = (status == GL_TRUE);
+	glGetShaderInfoLog(m_shader_id, 512, NULL, buffer);
+	m_error_log.assign(buffer);
 }
 
 bool Shader::initFromFile(const ShaderType type, const string &filename)
 {
-	string shaderSource;
+	string shader_source;
 
-	if(!loadShaderSource(filename, shaderSource))
+	if(!loadShaderSource(filename, shader_source))
 		return false;
-	initFromSource(type, shaderSource);
+	initFromSource(type, shader_source);
 
 	return true;
 }
 
 void Shader::free()
 {
-	glDeleteShader(shaderId);
-	shaderId = 0;
-	compiled = false;
+	glDeleteShader(m_shader_id);
+	m_shader_id = 0;
+	m_compiled = false;
 }
 
 GLuint Shader::getId() const
 {
-	return shaderId;
+	return m_shader_id;
 }
 
 bool Shader::isCompiled() const
 {
-	return compiled;
+	return m_compiled;
 }
 
 const string &Shader::log() const
 {
-	return errorLog;
+	return m_error_log;
 }
 
-bool Shader::loadShaderSource(const string &filename, string &shaderSource)
+bool Shader::loadShaderSource(const string &filename, string &shader_source)
 {
 	ifstream fin;
-
 	fin.open(filename.c_str());
 	if(!fin.is_open())
 		return false;
-	shaderSource.assign(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
 
+	shader_source.assign(istreambuf_iterator<char>(fin), istreambuf_iterator<char>());
 	return true;
 }
 

@@ -14,20 +14,39 @@ class Player
 {
 
 public:
-	void init(const glm::ivec2 &tileMapPos, ShaderProgram &shaderProgram);
-	void update(int deltaTime);
-	void render();
+	explicit Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec2 const& tilemap_pos, 
+		            std::shared_ptr<ShaderProgram> shader_program);
 	
-	void setTileMap(TileMap *tileMap);
-	void setPosition(const glm::vec2 &pos);
+	// Updates the player
+	void update(int delta_time);
+	
+	// Renders the player
+	void render();
+
+	// Sets the player's position
+	void setPosition(glm::vec2 const& pos);
 	
 private:
-	bool bJumping;
-	glm::ivec2 tileMapDispl, posPlayer;
-	int jumpAngle, startY;
-	Texture spritesheet;
-	Sprite *sprite;
-	TileMap *map;
+	// True iff the player is jumping
+	bool m_is_jumping = false;
+	
+	glm::ivec2 m_tilemap_displ; 
+
+	// The player's position
+	glm::ivec2 m_pos;
+
+	int m_jump_angle; 
+
+	int m_start_y;
+
+	// The spritesheet
+	std::shared_ptr<Texture> m_spritesheet;
+	
+	// A pointer to the sprite
+	std::shared_ptr<Sprite> m_sprite;
+
+	// A pointer to the tilemap
+	std::shared_ptr<TileMap> m_tilemap;
 
 };
 

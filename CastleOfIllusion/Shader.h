@@ -7,14 +7,11 @@
 #include <GL/gl.h>
 
 
-using namespace std;
-
-
 enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
 
 // This class is able to load to OpenGL a vertex or fragment shader and compile it.
-// It can do so from a file or from a string so that shader code can be
+// It can do so from a file or from a std::string so that shader code can be
 // procedurally modified if needed.
 
 
@@ -22,24 +19,51 @@ class Shader
 {
 
 public:
-	Shader();
+	Shader() = default;
+
+	// Not allowing moving and copying because it doesn't make sense for this case
+	Shader(Shader const& other) = delete;
+	Shader(Shader&& other) = delete;
+	Shader& operator=(Shader const& other) = delete;
+	Shader& operator=(Shader&& other) = delete;
+
+
+	~Shader() { free(); }
 
 	// These methods should be called with an active OpenGL context
-	void initFromSource(const ShaderType type, const string &source);
-	bool initFromFile(const ShaderType type, const string &filename);
+
+	// Initializes the shader with the source code
+	// Should be called with an active OpenGL context
+	void initFromSource(ShaderType const type, std::string const& source);
+
+	// Initializes the shader from a file
+	// Should be called with an active OpenGL context
+	bool initFromFile(ShaderType const type, std::string const& filename);
+
+	// Returns the OpenGL ID of this shader
+	GLuint getId() const;
+
+	// Returns true iff the shader is correctly compiled
+	bool isCompiled() const;
+
+	// Returns the error log string, if any
+	std::string const& log() const;
+
+private:
+	bool loadShaderSource(const std::string &filename, std::string &shaderSource);
+
+private:
+	// Cleans up resources
 	void free();
 
-	GLuint getId() const;
-	bool isCompiled() const;
-	const string &log() const;
+	// The OpenGL ID for this shader
+	GLuint m_shader_id = 0;
 
-private:
-	bool loadShaderSource(const string &filename, string &shaderSource);
+	// True iff the shader has compiled (and correctly)
+	bool m_compiled = false;
 
-private:
-	GLuint shaderId;
-	bool compiled;
-	string errorLog;
+	// The error log if an error has happened
+	std::string m_error_log;
 
 };
 

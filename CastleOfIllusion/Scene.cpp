@@ -14,80 +14,70 @@
 
 Scene::Scene()
 {
-	map = NULL;
-	player = NULL;
+	m_tilemap.reset();
+	m_player.reset();
+	m_tex_program.reset(new ShaderProgram());
 }
-
-Scene::~Scene()
-{
-	if(map != NULL)
-		delete map;
-	if(player != NULL)
-		delete player;
-}
-
 
 void Scene::init()
 {
 	initShaders();
-	map = TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), texProgram);
-	player = new Player();
-	player->init(glm::ivec2(SCREEN_X, SCREEN_Y), texProgram);
-	player->setPosition(glm::vec2(INIT_PLAYER_X_TILES * map->getTileSize(), INIT_PLAYER_Y_TILES * map->getTileSize()));
-	player->setTileMap(map);
-	projection = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
-	currentTime = 0.0f;
+	m_tilemap.reset(TileMap::createTileMap("levels/level01.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+
+	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
+		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
+
+	m_projection_matrix = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
+	m_current_time = 0.0f;
 }
 
-void Scene::update(int deltaTime)
+void Scene::update(int delta_time)
 {
-	currentTime += deltaTime;
-	player->update(deltaTime);
+	m_current_time += delta_time;
+	m_player->update(delta_time);
 }
 
 void Scene::render()
 {
 	glm::mat4 modelview;
 
-	texProgram.use();
-	texProgram.setUniformMatrix4f("projection", projection);
-	texProgram.setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
+	m_tex_program->use();
+	m_tex_program->setUniformMatrix4f("projection", m_projection_matrix);
+	m_tex_program->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
-	texProgram.setUniformMatrix4f("modelview", modelview);
-	texProgram.setUniform2f("texCoordDispl", 0.f, 0.f);
-	map->render();
-	player->render();
+	m_tex_program->setUniformMatrix4f("modelview", modelview);
+	m_tex_program->setUniform2f("texCoordDispl", 0.f, 0.f);
+	m_tilemap->render();
+	m_player->render();
 }
 
 void Scene::initShaders()
 {
-	Shader vShader, fShader;
+	Shader vertex_shader, fragment_shader;
 
-	vShader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
-	if(!vShader.isCompiled())
+	vertex_shader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
+	if(!vertex_shader.isCompiled())
 	{
-		cout << "Vertex Shader Error" << endl;
-		cout << "" << vShader.log() << endl << endl;
+		cerr << "" << vertex_shader.log() << endl << endl;
+		throw std::runtime_error("Vertex Shader compilation error!");
 	}
-	fShader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
-	if(!fShader.isCompiled())
+
+	fragment_shader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
+	if(!fragment_shader.isCompiled())
 	{
-		cout << "Fragment Shader Error" << endl;
-		cout << "" << fShader.log() << endl << endl;
+		cerr << "" << fragment_shader.log() << endl << endl;
+		throw std::runtime_error("Fragment Shader compilation error!");
 	}
-	texProgram.init();
-	texProgram.addShader(vShader);
-	texProgram.addShader(fShader);
-	texProgram.link();
-	if(!texProgram.isLinked())
+
+	m_tex_program->init();
+	m_tex_program->addShader(vertex_shader);
+	m_tex_program->addShader(fragment_shader);
+	m_tex_program->link();
+	if(!m_tex_program->isLinked())
 	{
-		cout << "Shader Linking Error" << endl;
-		cout << "" << texProgram.log() << endl << endl;
+		cerr << "" << m_tex_program->log() << endl << endl;
+		throw std::runtime_error("Shader linking error!");
 	}
-	texProgram.bindFragmentOutput("outColor");
-	vShader.free();
-	fShader.free();
+
+	m_tex_program->bindFragmentOutput("outColor");
 }
-
-
-

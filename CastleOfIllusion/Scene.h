@@ -17,7 +17,6 @@ class Scene
 
 public:
 	Scene();
-	~Scene();
 
 	void init();
 	void update(int deltaTime);
@@ -27,11 +26,11 @@ private:
 	void initShaders();
 
 private:
-	TileMap *map;
-	Player *player;
-	ShaderProgram texProgram;
-	float currentTime;
-	glm::mat4 projection;
+	std::shared_ptr<TileMap> m_tilemap;
+	std::shared_ptr<Player> m_player;
+	std::shared_ptr<ShaderProgram> m_tex_program;
+	float m_current_time;
+	glm::mat4 m_projection_matrix;
 
 };
 

@@ -6,9 +6,6 @@
 #include <GL/glew.h>
 
 
-using namespace std;
-
-
 enum PixelFormat {TEXTURE_PIXEL_FORMAT_RGB, TEXTURE_PIXEL_FORMAT_RGBA};
 
 
@@ -22,7 +19,7 @@ class Texture
 public:
 	Texture();
 
-	bool loadFromFile(const string &filename, PixelFormat format);
+	bool loadFromFile(std::string const& filename, PixelFormat format);
 	void loadFromGlyphBuffer(unsigned char *buffer, int width, int height);
 
 	void createEmptyTexture(int width, int height);
@@ -36,13 +33,31 @@ public:
 	
 	void use() const;
 	
-	int width() const { return widthTex; }
-	int height() const { return heightTex; }
+	int width() const { return m_width; }
+	int height() const { return m_height; }
 
 private:
-	int widthTex, heightTex;
-	GLuint texId;
-	GLint wrapS, wrapT, minFilter, magFilter;
+
+	// The texture's width, in pixels
+	// Has to be signed for library reasons
+	int m_width;
+
+	// The texture's height, in pixels
+	// Has to be signed for library reasons
+	int m_height;
+	
+	// The texture's OpenGL ID
+	GLuint m_id;
+
+	// The wrap type
+	GLint m_wrap_s;
+	GLint m_wrap_t;
+
+	// The minification filter
+	GLint m_minification_filter;
+
+	// The magnification filter
+	GLint m_magnification_filter;
 
 };
 

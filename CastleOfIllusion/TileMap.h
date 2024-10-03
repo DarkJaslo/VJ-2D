@@ -16,19 +16,17 @@
 class TileMap
 {
 
-private:
-	TileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
-
 public:
 	// Tile maps can only be created inside an OpenGL context
-	static TileMap *createTileMap(const string &levelFile, const glm::vec2 &minCoords, ShaderProgram &program);
+	static TileMap *createTileMap(std::string const& level_file, glm::vec2 const& min_coords, ShaderProgram &program);
 
 	~TileMap();
 
+	// Renders the tilemap
 	void render() const;
-	void free();
 	
-	int getTileSize() const { return tileSize; }
+	// Returns the size of one tile
+	int getTileSize() const { return m_tile_size; }
 
 	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
 	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
@@ -36,19 +34,52 @@ public:
 	bool collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
 	
 private:
-	bool loadLevel(const string &levelFile);
-	void prepareArrays(const glm::vec2 &minCoords, ShaderProgram &program);
+	// Private constructor for the factory pattern
+	TileMap(std::string const& level_file, glm::vec2 const& min_coords, ShaderProgram& program);
+
+	void free();
+
+	// Loads a level
+	bool loadLevel(std::string const& level_file);
+	void prepareArrays(glm::vec2 const& min_coords, ShaderProgram &program);
 
 private:
-	GLuint vao;
-	GLuint vbo;
-	GLint posLocation, texCoordLocation;
-	int nTiles;
-	glm::ivec2 position, mapSize, tilesheetSize;
-	int tileSize, blockSize;
-	Texture tilesheet;
-	glm::vec2 tileTexSize;
-	int *map;
+	// The tilemap's VAO
+	GLuint m_vao;
+
+	// The tilemap's VBO
+	GLuint m_vbo;
+
+	// The pos location in the shader
+	GLint m_pos_location; 
+
+	// The texture coord location in the shader
+	GLint m_texcoord_location;
+
+	// The number of tiles
+	int m_num_tiles;
+
+	glm::ivec2 m_position;
+
+	glm::ivec2 m_map_size;
+	
+	// The size of the tilesheet
+	glm::ivec2 m_tilesheet_size;
+	
+	// The size of each tile
+	int m_tile_size;
+
+	// The size of each block
+	int m_block_size;
+
+	// The tilesheet
+	Texture m_tilesheet;
+
+	// The size of the texture of the tiles
+	glm::vec2 m_tile_tex_size;
+
+	// The map
+	int* m_map;
 
 };
 
