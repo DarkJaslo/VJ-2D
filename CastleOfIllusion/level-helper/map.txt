@@ -1,4 +1,5 @@
-asterisco barco casa casa casa casa barco
-asterisco barco barco
-barco asterisco
-casa
+asterisco n barco casa casa casa casa barco
+asterisco barco barco n n n n n
+barco asterisco n n n n n n
+casa n n n n n n n
+n n n n n n n casa

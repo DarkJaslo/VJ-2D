@@ -1,8 +1,17 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <map>
 
+// The translation file has this format:
+
+// word_for_nothing
+// word_a translation_a
+// word_b translation_b
+// word_c translation_c
+// word_d translation_d
+// ...
 void createTranslation(std::fstream& translation_file, std::map<std::string, std::string>& translation)
 {
     std::string origin;
@@ -10,32 +19,49 @@ void createTranslation(std::fstream& translation_file, std::map<std::string, std
 
     translation[" "] = " ";
 
+    // The first word in the translation file is the identifier of "nothing"
+    translation_file >> origin;
+    translation[origin] = " ";
+
     while (translation_file >> origin && translation_file >> mapped)
     {
         if (translation.contains(origin))
         {
             std::cerr << "A translation for " << origin << " was provided more than once!";
-            throw std::runtime_error();
+            throw std::runtime_error("Error");
         }
 
         translation[origin] = mapped;
     }
+
+    std::cerr << "Translation (printed to cerr): " << std::endl;
+    for (auto const& [k, v] : translation)
+    {
+        std::cerr << "\t" << k << " -> " << v << std::endl;
+    }
+    std::cerr << std::endl;
 }
 
-void translateFile(std::fstream& map, std::map<std::string, std::string> const& translation, std::ostream& output)
+// The map file has a format like the following, separating identifiers with spaces:
+
+// word_a word_b word_c word_for_nothing
+// word_for_nothing word_for_nothing word_for_nothing
+// thing_a word_for_nothing word_a thing_b
+void translateFile(std::fstream& map, std::map<std::string, std::string>& translation, std::ostream& output)
 {
     std::string line;
 
-    while(map.getline(line))
+    while(getline(map, line))
     {
-        std::stringstream split_line(line);
+        std::istringstream split_line(line);
         std::string word;
+
         while (split_line >> word)
         {
             if (!translation.contains(word))
             {
                 std::cerr << "No translation for " << word << std::endl;
-                throw std::runtime_error();
+                throw std::runtime_error("Error");
             }
             output << translation[word];
         }
@@ -71,8 +97,8 @@ int main(int argc, char** argv)
     std::map<std::string, std::string> translation_map;
     createTranslation(translation_file, translation_map);
 
-    std::ostream output;
-    translateFile(translation_file, translation_map, output);
+    std::ostream& output = std::cout;
+    translateFile(map_file, translation_map, std::cout);
 
-    std::cout << output << std::endl;
+    std::cout << std::endl;
 }
