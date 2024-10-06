@@ -30,7 +30,7 @@ public:
 	// Renders the sprite
 	void render() const;
 
-	// Sets the number of frames of the animation
+	// Sets the number of animations of the sprite
 	void setNumberAnimations(int num_animations);
 
 	// Sets the speed of the animation

@@ -8,14 +8,14 @@
 using namespace std;
 
 
-TileMap *TileMap::createTileMap(std::string const& level_file, glm::vec2 const& min_coords, ShaderProgram &program)
+TileMap *TileMap::createTileMap(std::string const& level_file, glm::vec2 const& min_coords, ShaderProgram& program)
 {
 	TileMap *m_map = new TileMap(level_file, min_coords, program);
 	return m_map;
 }
 
 
-TileMap::TileMap(std::string const& level_file, glm::vec2 const& min_coords, ShaderProgram &program)
+TileMap::TileMap(std::string const& level_file, glm::vec2 const& min_coords, ShaderProgram& program)
 {
 	loadLevel(level_file);
 	prepareArrays(min_coords, program);
@@ -46,7 +46,7 @@ void TileMap::free()
 	glDeleteBuffers(1, &m_vbo);
 }
 
-bool TileMap::loadLevel(const string &level_file)
+bool TileMap::loadLevel(std::string const& level_file)
 {
 	ifstream fin;
 	string line, tilesheet_file;
@@ -99,7 +99,7 @@ bool TileMap::loadLevel(const string &level_file)
 	return true;
 }
 
-void TileMap::prepareArrays(const glm::vec2 &min_coords, ShaderProgram &program)
+void TileMap::prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program)
 {
 	int tile;
 	glm::vec2 pos_tile, texcoord_tile[2], half_texel;
@@ -152,7 +152,7 @@ void TileMap::prepareArrays(const glm::vec2 &min_coords, ShaderProgram &program)
 // Method collisionMoveDown also corrects Y coordinate if the box is
 // already intersecting a tile below.
 
-bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const
+bool TileMap::collisionMoveLeft(glm::ivec2 const& pos, glm::ivec2 const& size) const
 {
 	int x, y0, y1;
 	
@@ -168,7 +168,7 @@ bool TileMap::collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) c
 	return false;
 }
 
-bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const
+bool TileMap::collisionMoveRight(glm::ivec2 const& pos, glm::ivec2 const& size) const
 {
 	int x, y0, y1;
 	
@@ -184,7 +184,7 @@ bool TileMap::collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) 
 	return false;
 }
 
-bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const
+bool TileMap::collisionMoveDown(glm::ivec2 const& pos, glm::ivec2 const& size, int *posY) const
 {
 	int x0, x1, y;
 	
@@ -206,7 +206,7 @@ bool TileMap::collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, i
 	return false;
 }
 
-bool TileMap::collisionMoveUp(const glm::ivec2& pos, const glm::ivec2& size, int* posY) const
+bool TileMap::collisionMoveUp(glm::ivec2 const& pos, glm::ivec2 const& size, int* posY) const
 {
 	int x0, x1, y;
 
@@ -228,32 +228,3 @@ bool TileMap::collisionMoveUp(const glm::ivec2& pos, const glm::ivec2& size, int
 
 	return false;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

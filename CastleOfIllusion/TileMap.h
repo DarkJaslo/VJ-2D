@@ -28,10 +28,10 @@ public:
 	// Returns the size of one tile
 	int getTileSize() const { return m_tile_size; }
 
-	bool collisionMoveLeft(const glm::ivec2 &pos, const glm::ivec2 &size) const;
-	bool collisionMoveRight(const glm::ivec2 &pos, const glm::ivec2 &size) const;
-	bool collisionMoveDown(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
-	bool collisionMoveUp(const glm::ivec2 &pos, const glm::ivec2 &size, int *posY) const;
+	bool collisionMoveLeft(glm::ivec2 const& pos, glm::ivec2 const& size) const;
+	bool collisionMoveRight(glm::ivec2 const& pos, glm::ivec2 const& size) const;
+	bool collisionMoveDown(glm::ivec2 const& pos, glm::ivec2 const& size, int *posY) const;
+	bool collisionMoveUp(glm::ivec2 const& pos, glm::ivec2 const& size, int *posY) const;
 	
 private:
 	// Private constructor for the factory pattern
@@ -41,7 +41,7 @@ private:
 
 	// Loads a level
 	bool loadLevel(std::string const& level_file);
-	void prepareArrays(glm::vec2 const& min_coords, ShaderProgram &program);
+	void prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program);
 
 private:
 	// The tilemap's VAO

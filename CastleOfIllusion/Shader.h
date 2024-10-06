@@ -11,7 +11,7 @@ enum ShaderType { VERTEX_SHADER, FRAGMENT_SHADER };
 
 
 // This class is able to load to OpenGL a vertex or fragment shader and compile it.
-// It can do so from a file or from a std::string so that shader code can be
+// It can do so from a file or from a string so that shader code can be
 // procedurally modified if needed.
 
 
