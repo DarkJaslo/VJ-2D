@@ -1,0 +1,3 @@
+asterisco a
+barco b
+casa c

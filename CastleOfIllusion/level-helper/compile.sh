@@ -1,0 +1,1 @@
+g++ -O2 level_helper.cpp -o level_helper
