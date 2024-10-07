@@ -30,16 +30,16 @@ public:
 
 protected:
     // The spritesheet
-	std::shared_ptr<Texture> m_spritesheet;
+    std::shared_ptr<Texture> m_spritesheet;
 	
-	// A pointer to the sprite
-	std::shared_ptr<Sprite> m_sprite;
+    // A pointer to the sprite
+    std::shared_ptr<Sprite> m_sprite;
 
-	// A pointer to the tilemap
-	std::shared_ptr<TileMap> m_tilemap;
+    // A pointer to the tilemap
+    std::shared_ptr<TileMap> m_tilemap;
 
     // The position
-	glm::ivec2 m_pos;
+    glm::ivec2 m_pos;
 };
 
 #endif // _ENTITY_INCLUDE
