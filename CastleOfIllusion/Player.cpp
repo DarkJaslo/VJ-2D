@@ -5,22 +5,19 @@
 #include "Player.h"
 #include "Game.h"
 
-
 #define JUMP_ANGLE_STEP 4
 #define JUMP_HEIGHT 96
 #define FALL_STEP 4
-
 
 enum PlayerAnims
 {
 	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT
 };
 
-
 Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec2 const& tilemap_pos,
 	           std::shared_ptr<ShaderProgram> shader_program)
-	: m_tilemap(tilemap) 
 { 
+	m_tilemap = tilemap;
 	m_spritesheet.reset(new Texture());
 	m_is_jumping = false;
 	m_spritesheet->loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
@@ -51,26 +48,26 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_sprite->setPosition(glm::vec2(float(m_tilemap_displ.x + m_pos.x), float(m_tilemap_displ.y + m_pos.y)));
 }
 
-void Player::update(int deltaTime)
+void Player::update(int delta_time)
 {
-	m_sprite->update(deltaTime);
-	if(Game::getKey(GLFW_KEY_LEFT))
+	m_sprite->update(delta_time);
+	if (Game::getKey(GLFW_KEY_LEFT))
 	{
-		if(m_sprite->animation() != MOVE_LEFT)
+		if (m_sprite->animation() != MOVE_LEFT)
 			m_sprite->changeAnimation(MOVE_LEFT);
 		m_pos.x -= 2;
-		if(m_tilemap->collisionMoveLeft(m_pos, glm::ivec2(32, 32)))
+		if (m_tilemap->collisionMoveLeft(m_pos, glm::ivec2(32, 32)))
 		{
 			m_pos.x += 2;
 			m_sprite->changeAnimation(STAND_LEFT);
 		}
 	}
-	else if(Game::getKey(GLFW_KEY_RIGHT))
+	else if (Game::getKey(GLFW_KEY_RIGHT))
 	{
-		if(m_sprite->animation() != MOVE_RIGHT)
+		if (m_sprite->animation() != MOVE_RIGHT)
 			m_sprite->changeAnimation(MOVE_RIGHT);
 		m_pos.x += 2;
-		if(m_tilemap->collisionMoveRight(m_pos, glm::ivec2(32, 32)))
+		if (m_tilemap->collisionMoveRight(m_pos, glm::ivec2(32, 32)))
 		{
 			m_pos.x -= 2;
 			m_sprite->changeAnimation(STAND_RIGHT);
@@ -78,16 +75,16 @@ void Player::update(int deltaTime)
 	}
 	else
 	{
-		if(m_sprite->animation() == MOVE_LEFT)
+		if (m_sprite->animation() == MOVE_LEFT)
 			m_sprite->changeAnimation(STAND_LEFT);
-		else if(m_sprite->animation() == MOVE_RIGHT)
+		else if (m_sprite->animation() == MOVE_RIGHT)
 			m_sprite->changeAnimation(STAND_RIGHT);
 	}
 	
-	if(m_is_jumping)
+	if (m_is_jumping)
 	{
 		m_jump_angle += JUMP_ANGLE_STEP;
-		if(m_jump_angle == 180)
+		if (m_jump_angle == 180)
 		{
 			m_is_jumping = false;
 			m_pos.y = m_start_y;
@@ -96,7 +93,7 @@ void Player::update(int deltaTime)
 		{
 			m_pos.y = int(m_start_y - 96 * sin(3.14159f * m_jump_angle / 180.f));
 			// mirar aqui si hay colisiones arriba?
-			if(m_jump_angle > 90)
+			if (m_jump_angle > 90)
 				m_is_jumping = !m_tilemap->collisionMoveDown(m_pos, glm::ivec2(32, 32), &m_pos.y);
 			else
 			{
@@ -107,9 +104,9 @@ void Player::update(int deltaTime)
 	else
 	{
 		m_pos.y += FALL_STEP;
-		if(m_tilemap->collisionMoveDown(m_pos, glm::ivec2(32, 32), &m_pos.y))
+		if (m_tilemap->collisionMoveDown(m_pos, glm::ivec2(32, 32), &m_pos.y))
 		{
-			if(Game::getKey(GLFW_KEY_UP))
+			if (Game::getKey(GLFW_KEY_UP))
 			{
 				m_is_jumping = true;
 				m_jump_angle = 0;
@@ -118,16 +115,5 @@ void Player::update(int deltaTime)
 		}
 	}
 	
-	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
-}
-
-void Player::render()
-{
-	m_sprite->render();
-}
-
-void Player::setPosition(const glm::vec2 &pos)
-{
-	m_pos = pos;
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
