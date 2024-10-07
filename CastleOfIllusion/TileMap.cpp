@@ -51,7 +51,8 @@ bool TileMap::loadLevel(std::string const& level_file)
 	ifstream fin;
 	string line, tilesheet_file;
 	stringstream sstream;
-	char tile;
+	char tile_row;
+	char tile_column;
 	
 	fin.open(level_file.c_str());
 	if(!fin.is_open())
@@ -83,15 +84,27 @@ bool TileMap::loadLevel(std::string const& level_file)
 	{
 		for(int i=0; i<m_map_size.x; i++)
 		{
-			fin.get(tile);
-			if(tile == ' ')
-				m_map[j*m_map_size.x+i] = 0;
+			fin.get(tile_row);
+			if (tile_row != '.') {
+				fin.get(tile_column);
+				if (tile_column == '.')
+					return false;
+				else
+				{
+					int row = tile_row - int('a');
+					int column = tile_column - int('a');
+					m_map[j * m_map_size.x + i] = row* m_tilesheet_size.x+column;
+				}
+			}
 			else
-				m_map[j*m_map_size.x+i] = tile - int('0');
+			{
+				fin.get(tile_row);
+				m_map[j * m_map_size.x + i] = -1;
+			}
 		}
-		fin.get(tile);
+		fin.get(tile_row);
 #ifndef _WIN32
-		fin.get(tile);
+		fin.get(tile_row);
 #endif
 	}
 	fin.close();
@@ -112,12 +125,13 @@ void TileMap::prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program)
 		for(int i=0; i<m_map_size.x; i++)
 		{
 			tile = m_map[j * m_map_size.x + i];
-			if(tile != 0)
+			if(tile != -1)
 			{
 				// Non-empty tile
 				m_num_tiles++;
 				pos_tile = glm::vec2(min_coords.x + i * m_tile_size, min_coords.y + j * m_tile_size);
-				texcoord_tile[0] = glm::vec2(float((tile-1)%m_tilesheet_size.x) / m_tilesheet_size.x, float((tile-1)/m_tilesheet_size.x) / m_tilesheet_size.y);
+				texcoord_tile[0] = glm::vec2(float((tile)%m_tilesheet_size.x) / m_tilesheet_size.x,
+											 float((tile)/m_tilesheet_size.x) / m_tilesheet_size.y);
 				texcoord_tile[1] = texcoord_tile[0] + m_tile_tex_size;
 				//texcoord_tile[0] += half_texel;
 				texcoord_tile[1] -= half_texel;
@@ -161,7 +175,7 @@ bool TileMap::collisionMoveLeft(glm::ivec2 const& pos, glm::ivec2 const& size) c
 	y1 = (pos.y + size.y - 1) / m_tile_size;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(m_map[y*m_map_size.x+x] != 0)
+		if(m_map[y*m_map_size.x+x] != -1)
 			return true;
 	}
 	
@@ -177,7 +191,7 @@ bool TileMap::collisionMoveRight(glm::ivec2 const& pos, glm::ivec2 const& size) 
 	y1 = (pos.y + size.y - 1) / m_tile_size;
 	for(int y=y0; y<=y1; y++)
 	{
-		if(m_map[y*m_map_size.x+x] != 0)
+		if(m_map[y*m_map_size.x+x] != -1)
 			return true;
 	}
 	
@@ -193,7 +207,7 @@ bool TileMap::collisionMoveDown(glm::ivec2 const& pos, glm::ivec2 const& size, i
 	y = (pos.y + size.y - 1) / m_tile_size;
 	for(int x=x0; x<=x1; x++)
 	{
-		if(m_map[y*m_map_size.x+x] != 0)
+		if(m_map[y*m_map_size.x+x] != -1)
 		{
 			if(*posY - m_tile_size * y + size.y <= 4)
 			{
@@ -216,7 +230,7 @@ bool TileMap::collisionMoveUp(glm::ivec2 const& pos, glm::ivec2 const& size, int
 	y = pos.y / m_tile_size;
 	for (int x = x0; x <= x1; x++)
 	{
-		if (m_map[y * m_map_size.x + x] != 0)
+		if (m_map[y * m_map_size.x + x] != -1)
 		{
 			if (*posY - m_tile_size * y - size.y <= 4)
 			{
