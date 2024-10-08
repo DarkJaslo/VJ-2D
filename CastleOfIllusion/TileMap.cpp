@@ -89,6 +89,7 @@ bool TileMap::loadLevel(std::string const& level_file)
 	sstream >> m_tilesheet_size.x >> m_tilesheet_size.y;
 	m_tile_tex_size = glm::vec2(1.f / m_tilesheet_size.x, 1.f / m_tilesheet_size.y);
 	
+	m_map.clear();
 	m_map.resize(m_map_size.x * m_map_size.y);
 	for (int j=0; j<m_map_size.y; j++)
 	{
