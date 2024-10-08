@@ -2,15 +2,19 @@
 #define _TILE_MAP_INCLUDE
 
 
+#include <vector>
 #include <glm/glm.hpp>
 #include "Texture.h"
 #include "ShaderProgram.h"
 
 
-// Class Tilemap is capable of loading a tile map from a text file in a very
-// simple format (see level01.txt for an example). With this information
-// it builds a single VBO that contains all tiles. As a result the render
-// method draws the whole map independently of what is visible.
+// Class Tilemap is capable of loading a tile map from a text file in a simple format
+// (see test.txt for an example). Tiles are indexed with 2 characters from a to z refering
+// to its row and column in the tilesheet, a being 0 and z being 26. An empty tile is 
+// represented with '..'. With this information it builds a single VBO that contains all tiles.
+// As a result the render method draws the whole map independently of what is visible.
+
+
 
 
 class TileMap
@@ -79,7 +83,8 @@ private:
 	glm::vec2 m_tile_tex_size;
 
 	// The map
-	int* m_map;
+	// Stores the index of each tile, -1 indicates an empty tile
+	std::vector<int> m_map;
 
 };
 

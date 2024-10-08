@@ -5,7 +5,6 @@
 #include <vector>
 
 
-using namespace std;
 
 
 // AnimKeyframes contains all information related to a single animation.
@@ -16,7 +15,7 @@ using namespace std;
 struct AnimKeyframes
 {
 	float millisecsPerKeyframe;
-	vector<glm::vec2> keyframeDispl;
+	std::vector<glm::vec2> keyframeDispl;
 };
 
 

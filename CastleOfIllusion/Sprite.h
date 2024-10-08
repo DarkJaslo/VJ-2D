@@ -90,7 +90,7 @@ private:
 	glm::vec2 m_texcoord_displ;
 
 	// The different animations the sprite may have
-	vector<AnimKeyframes> m_animations;
+	std::vector<AnimKeyframes> m_animations;
 };
 
 
