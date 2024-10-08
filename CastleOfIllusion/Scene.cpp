@@ -58,14 +58,14 @@ void Scene::initShaders()
 	vertex_shader.initFromFile(VERTEX_SHADER, "shaders/texture.vert");
 	if(!vertex_shader.isCompiled())
 	{
-		cerr << "" << vertex_shader.log() << endl << endl;
+		std::cerr << "" << vertex_shader.log() << std::endl << std::endl;
 		throw std::runtime_error("Vertex Shader compilation error!");
 	}
 
 	fragment_shader.initFromFile(FRAGMENT_SHADER, "shaders/texture.frag");
 	if(!fragment_shader.isCompiled())
 	{
-		cerr << "" << fragment_shader.log() << endl << endl;
+		std::cerr << "" << fragment_shader.log() << std::endl << std::endl;
 		throw std::runtime_error("Fragment Shader compilation error!");
 	}
 
@@ -75,7 +75,7 @@ void Scene::initShaders()
 	m_tex_program->link();
 	if(!m_tex_program->isLinked())
 	{
-		cerr << "" << m_tex_program->log() << endl << endl;
+		std::cerr << "" << m_tex_program->log() << std::endl << std::endl;
 		throw std::runtime_error("Shader linking error!");
 	}
 
