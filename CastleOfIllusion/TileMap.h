@@ -2,6 +2,7 @@
 #define _TILE_MAP_INCLUDE
 
 
+#include <vector>
 #include <glm/glm.hpp>
 #include "Texture.h"
 #include "ShaderProgram.h"
@@ -82,7 +83,8 @@ private:
 	glm::vec2 m_tile_tex_size;
 
 	// The map
-	int* m_map;
+	// Stores the index of each tile, -1 indicates an empty tile
+	std::vector<int> m_map;
 
 };
 
