@@ -4,6 +4,8 @@
 #include "Texture.h"
 #include "Sprite.h"
 #include "TileMap.h"
+#include "Collision.h"
+#include "EntityType.h"
 #include <memory>
 
 // Represents a game entity, that is, something that is dynamic, has a position, could move and
@@ -20,13 +22,31 @@ public:
     virtual void render();
 
     // Adds the given vector to the entity's position
-    virtual void changePosition(glm::ivec2 change);
+    virtual void changePosition(glm::vec2 change);
 
     // Sets the position of the entity
-    virtual void setPosition(glm::ivec2 new_position);
+    virtual void setPosition(glm::vec2 new_position);
 
     // Gets the entity's position
-    virtual glm::ivec2 getPosition() const;
+    virtual glm::vec2 getPosition() const;
+
+    // Gets the entity's type
+    virtual EntityType getType() const;
+
+    // Gets the sprite's x and y sizes
+    glm::ivec2 getSpriteSize() const;
+
+    // Returns (minX,minY) and (maxX,maxY) of the collision box
+    std::pair<glm::vec2, glm::vec2> getMinMaxCollisionCoords() const;
+
+    // Called when the entity collides with something
+    virtual void collideWithEntity(Collision collision) = 0;
+
+    // Returns true iff this Entity is colliding with other
+    bool operator&(Entity const& other) const;
+
+    // Returns the collision info for this Entity (first) and the other (second)
+    std::pair<Collision, Collision> operator|(Entity const& other) const;
 
 protected:
     // The spritesheet
@@ -38,8 +58,14 @@ protected:
     // A pointer to the tilemap
     std::shared_ptr<TileMap> m_tilemap;
 
-    // The position
+    // The coordinates of the midpoint in the base of the Entity
     glm::ivec2 m_pos;
+
+    // The x and y sizes of the collision box
+    glm::ivec2 m_collision_box_size;
+
+    // The type of this entity
+    EntityType m_type = EntityType::Unknown;
 };
 
 #endif // _ENTITY_INCLUDE
