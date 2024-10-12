@@ -191,14 +191,18 @@ std::optional<glm::vec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 c
 		for (int y=top; y<=bottom; y++)
 		{
 			if (m_map[y*m_map_size.x+right] != -1)
+			{
 				return glm::vec2(m_tile_size * right - size.x, pos.y);
+			}
 		}
 	}
 	else { // Moving left
 		for (int y=top; y<=bottom; y++)
 		{
 			if (m_map[y*m_map_size.x+left] != -1)
+			{
 				return glm::vec2(m_tile_size * (left+1), pos.y);
+			}
 		}
 	}
 
