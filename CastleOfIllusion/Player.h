@@ -16,16 +16,23 @@ public:
 	
 	// Updates the player
 	virtual void update(int delta_time) final override;
+	void updateMovement(int delta_time);
 	
 private:
-	// True iff the player is jumping
-	bool m_is_jumping = false;
+	// True iff the player feet are on the floor
+	bool m_is_grounded = false;
 	
 	glm::ivec2 m_tilemap_displ;
 
 	int m_jump_angle; 
 
 	int m_start_y;
+
+	// Player's movement acceleration
+	glm::vec2 m_acc;
+
+	// Calculates the velocity needed for the player to jump to height
+	float calculateJumpVelocity(float height, float gravity);
 };
 
 #endif // _PLAYER_INCLUDE

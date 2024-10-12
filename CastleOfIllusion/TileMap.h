@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 #include "Texture.h"
 #include "ShaderProgram.h"
+#include <optional>
 
 
 // Class Tilemap is capable of loading a tile map from a text file in a simple format
@@ -32,10 +33,13 @@ public:
 	// Returns the size of one tile
 	int getTileSize() const { return m_tile_size; }
 
-	bool collisionMoveLeft(glm::ivec2 const& pos, glm::ivec2 const& size) const;
-	bool collisionMoveRight(glm::ivec2 const& pos, glm::ivec2 const& size) const;
-	bool collisionMoveDown(glm::ivec2 const& pos, glm::ivec2 const& size, int *posY) const;
-	bool collisionMoveUp(glm::ivec2 const& pos, glm::ivec2 const& size, int *posY) const;
+	// Checks if a rectangle at the position and of the size provided collides horizontally with a tile in the 
+	// tilemap, if so, returns the position it would be right before colliding
+	std::optional<glm::vec2> xCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const;
+	// Checks if a rectangle at the position and of the size provided collides vertically with a tile in the 
+	// tilemap, if so, returns the position it would be right before colliding
+	std::optional<glm::vec2> yCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const;
+	bool isGrounded(glm::ivec2 const& pos, glm::ivec2 const& size) const;
 	
 private:
 	// Private constructor for the factory pattern

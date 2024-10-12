@@ -8,8 +8,9 @@
 #define SCREEN_X 25
 #define SCREEN_Y 15
 
-#define INIT_PLAYER_X_TILES 3
-#define INIT_PLAYER_Y_TILES 11
+// coordinates of the tile where the player appears 
+#define INIT_PLAYER_X_TILES 4
+#define INIT_PLAYER_Y_TILES 8
 
 
 Scene::Scene()
@@ -22,7 +23,7 @@ Scene::Scene()
 void Scene::init()
 {
 	initShaders();
-	m_tilemap.reset(TileMap::createTileMap("levels/test.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+	m_tilemap.reset(TileMap::createTileMap("levels/test tiles.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
 	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
 		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
