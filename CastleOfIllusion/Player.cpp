@@ -109,12 +109,12 @@ void Player::update(int delta_time)
 		if (Game::getKey(GLFW_KEY_UP))
 		{
 			m_is_grounded = false;
-			m_vel.y = calculateJumpVelocity(JUMP_HEIGHT, gravity);
+			m_vel.y = calculateJumpVelocity(JUMP_HEIGHT, S_GRAVITY);
 		}
 	}
 	
 	// Update y position
-	new_vel = m_vel.y + gravity*static_cast<float>(delta_time);
+	new_vel = m_vel.y + S_GRAVITY*static_cast<float>(delta_time);
 	if (new_vel < MAX_FALL_VELOCITY)
 	{
 		m_vel.y = new_vel;
@@ -138,4 +138,9 @@ void Player::update(int delta_time)
 float Player::calculateJumpVelocity(float height, float gravity)
 {
 	return -sqrt(2*gravity*height);
+}
+
+glm::ivec2 Player::getPosition() const
+{
+	return m_pos;
 }
