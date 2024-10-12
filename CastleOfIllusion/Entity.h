@@ -40,6 +40,9 @@ protected:
 
     // The position
     glm::ivec2 m_pos;
+
+    // The velocity
+    glm::vec2 m_vel;
 };
 
 #endif // _ENTITY_INCLUDE
