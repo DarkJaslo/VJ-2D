@@ -179,26 +179,26 @@ void TileMap::prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program)
 
 std::optional<glm::vec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
 {
-	int x0, x1, y0, y1;
+	int left, right, top, bottom;
 	
-	x0 = pos.x / m_tile_size;
-	x1 = (pos.x + size.x - 1) / m_tile_size;
-	y0 = pos.y / m_tile_size;
-	y1 = (pos.y + size.y - 1) / m_tile_size;
+	left = pos.x / m_tile_size;
+	right = (pos.x + size.x - 1) / m_tile_size;
+	top = pos.y / m_tile_size;
+	bottom = (pos.y + size.y - 1) / m_tile_size;
 
 	if (velocity.x > 0.f) // Moving right
 	{
-		for (int y=y0; y<=y1; y++)
+		for (int y=top; y<=bottom; y++)
 		{
-			if (m_map[y*m_map_size.x+x1] != -1)
-				return glm::vec2(m_tile_size * x1 - size.x, pos.y);
+			if (m_map[y*m_map_size.x+right] != -1)
+				return glm::vec2(m_tile_size * right - size.x, pos.y);
 		}
 	}
 	else { // Moving left
-		for (int y=y0; y<=y1; y++)
+		for (int y=top; y<=bottom; y++)
 		{
-			if (m_map[y*m_map_size.x+x0] != -1)
-				return glm::vec2(m_tile_size * (x0+1), pos.y);
+			if (m_map[y*m_map_size.x+left] != -1)
+				return glm::vec2(m_tile_size * (left+1), pos.y);
 		}
 	}
 
@@ -207,30 +207,30 @@ std::optional<glm::vec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 c
 
 std::optional<glm::vec2> TileMap::yCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
 {
-	int x0, x1, y0, y1;
+	int left, right, top, bottom;
 	
-	x0 = pos.x / m_tile_size;
-	x1 = (pos.x + size.x - 1) / m_tile_size;
-	y0 = pos.y / m_tile_size;
-	y1 = (pos.y + size.y - 1) / m_tile_size;
+	left = pos.x / m_tile_size;
+	right = (pos.x + size.x - 1) / m_tile_size;
+	top = pos.y / m_tile_size;
+	bottom = (pos.y + size.y - 1) / m_tile_size;
 
 	if (velocity.y > 0.f) // Falling
 	{
-		for (int x=x0; x<=x1; x++)
+		for (int x=left; x<=right; x++)
 		{
-			if (m_map[y1*m_map_size.x+x] != -1)
+			if (m_map[bottom*m_map_size.x+x] != -1)
 			{
-				return glm::vec2(pos.x, m_tile_size * y1 - size.y);
+				return glm::vec2(pos.x, m_tile_size * bottom - size.y);
 			}
 		}
 	}
 	else
 	{
-		for (int x=x0; x<=x1; x++)
+		for (int x=left; x<=right; x++)
 		{
-			if (m_map[y0*m_map_size.x+x] != -1)
+			if (m_map[top*m_map_size.x+x] != -1)
 			{
-				return glm::vec2(pos.x, m_tile_size * (y0+1));
+				return glm::vec2(pos.x, m_tile_size * (top+1));
 			}
 		}
 	}
@@ -239,12 +239,12 @@ std::optional<glm::vec2> TileMap::yCollision(glm::ivec2 const& pos, glm::ivec2 c
 
 bool TileMap::isGrounded(glm::ivec2 const& pos, glm::ivec2 const& size) const
 {
-	int x0, x1, y;
+	int left, right, y;
 	
-	x0 = pos.x / m_tile_size;
-	x1 = (pos.x + size.x - 1) / m_tile_size;
+	left = pos.x / m_tile_size;
+	right = (pos.x + size.x - 1) / m_tile_size;
 	y = (pos.y + size.y) / m_tile_size;
-	for (int x=x0; x<=x1; x++)
+	for (int x=left; x<=right; x++)
 	{
 		if (m_map[y*m_map_size.x+x] != -1)
 		{

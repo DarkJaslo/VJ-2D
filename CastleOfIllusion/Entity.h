@@ -43,6 +43,8 @@ protected:
 
     // The velocity
     glm::vec2 m_vel;
+
+    constexpr static float gravity = 0.003f;
 };
 
 #endif // _ENTITY_INCLUDE

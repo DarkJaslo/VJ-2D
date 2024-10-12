@@ -31,7 +31,8 @@ private:
 	// Player's movement acceleration
 	glm::vec2 m_acc;
 
-	float calculateJumpVelocity(float height);
+	// Calculates the velocity needed for the player to jump to height
+	float calculateJumpVelocity(float height, float gravity);
 };
 
 #endif // _PLAYER_INCLUDE

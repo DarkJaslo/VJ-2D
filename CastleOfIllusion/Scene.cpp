@@ -8,6 +8,7 @@
 #define SCREEN_X 25
 #define SCREEN_Y 15
 
+// coordinates of the tile where the player appears 
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 8
 
