@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "Game.h"
 
-#define JUMP_HEIGHT 64
+#define JUMP_HEIGHT 100
 #define MAX_X_VELOCITY 0.4f // Maximum velocity on the x axis
 #define MAX_FALL_VELOCITY 0.4f // Maximum velocity when falling
 #define ACCELERATION 0.001f // Acceleration on the x axis applied when pressing a key down
@@ -25,7 +25,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_vel = glm::vec2(0.f,0.f);
 	m_acc = glm::vec2(0.f,0.f);
 	m_spritesheet->loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	m_sprite.reset(Sprite::createSprite(glm::vec2(32, 32), glm::vec2(0.25, 0.25), m_spritesheet, shader_program));
+	m_sprite.reset(Sprite::createSprite(glm::vec2(50,50), glm::vec2(0.25, 0.25), m_spritesheet, shader_program));
 	setPosition(pos);
 	m_sprite->setNumberAnimations(4);
 
@@ -97,7 +97,7 @@ void Player::update(int delta_time)
 	}
 	m_pos.x += m_vel.x*static_cast<float>(delta_time);
 	
-	auto collision = m_tilemap->xCollision(m_pos, glm::ivec2(32, 32), m_vel);
+	auto collision = m_tilemap->xCollision(m_pos, glm::ivec2(50, 50), m_vel);
 	if (collision)
 	{
 		m_pos.x = collision->x;
@@ -121,7 +121,7 @@ void Player::update(int delta_time)
 	}
 	m_pos.y += m_vel.y*static_cast<float>(delta_time);
 	
-	collision = m_tilemap->yCollision(m_pos, glm::ivec2(32,32), m_vel);
+	collision = m_tilemap->yCollision(m_pos, glm::ivec2(50,50), m_vel);
 	if (collision)
 	{
 		m_pos.y = collision->y;
@@ -129,7 +129,7 @@ void Player::update(int delta_time)
 		m_vel.y = 0.f;
 	}
 
-	m_is_grounded = m_tilemap->isGrounded(m_pos, glm::ivec2(32,32));
+	m_is_grounded = m_tilemap->isGrounded(m_pos, glm::ivec2(50,50));
 	
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
@@ -138,9 +138,4 @@ void Player::update(int delta_time)
 float Player::calculateJumpVelocity(float height, float gravity)
 {
 	return -sqrt(2*gravity*height);
-}
-
-glm::ivec2 Player::getPosition() const
-{
-	return m_pos;
 }

@@ -7,8 +7,8 @@ Texture::Texture()
 {
 	m_wrap_s = GL_REPEAT;
 	m_wrap_t = GL_REPEAT;
-	m_minification_filter = GL_LINEAR_MIPMAP_LINEAR;
-	m_magnification_filter = GL_LINEAR_MIPMAP_LINEAR;
+	m_minification_filter = GL_NEAREST;
+	m_magnification_filter = GL_NEAREST;
 }
 
 bool Texture::loadFromFile(std::string const& filename, PixelFormat format)

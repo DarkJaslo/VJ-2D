@@ -16,7 +16,6 @@ public:
 	
 	// Updates the player
 	virtual void update(int delta_time) final override;
-	virtual glm::ivec2 getPosition() const final override;
 	void updateMovement(int delta_time);
 	
 private:

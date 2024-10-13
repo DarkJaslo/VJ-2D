@@ -22,11 +22,20 @@ public:
     // Adds the given vector to the entity's position
     virtual void changePosition(glm::ivec2 change);
 
+    // Adds the given vector to the entity's velocity
+    virtual void changeVelocity(glm::vec2 change);
+
     // Sets the position of the entity
     virtual void setPosition(glm::ivec2 new_position);
 
+    // Sets the velocity of the entity
+    virtual void setVelocity(glm::vec2 new_velocity);
+
     // Gets the entity's position
     virtual glm::ivec2 getPosition() const;
+
+    // Gets the entity's velocity
+    virtual glm::vec2 getVelocity() const;
 
 protected:
     // The spritesheet

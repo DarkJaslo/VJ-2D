@@ -5,7 +5,7 @@
 void Game::init()
 {
 	instance().m_is_playing = true;
-	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClearColor(0.53f, 0.77f, 1.0f, 1.0f);
 	instance().m_scene.init();
 }
 

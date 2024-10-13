@@ -18,17 +18,16 @@ Scene::Scene()
 	m_tilemap.reset();
 	m_player.reset();
 	m_tex_program.reset(new ShaderProgram());
+	m_camera.reset();
 }
 
 void Scene::init()
 {
 	initShaders();
-	m_tilemap.reset(TileMap::createTileMap("levels/testTiles.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+	m_tilemap.reset(TileMap::createTileMap("levels/testSimple.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
-	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
-		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
-
-	m_projection_matrix = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
+	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
+	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
 	m_current_time = 0.0f;
 }
 
@@ -36,6 +35,7 @@ void Scene::update(int delta_time)
 {
 	m_current_time += delta_time;
 	m_player->update(delta_time);
+	m_camera->update(delta_time);
 }
 
 void Scene::render()
@@ -43,7 +43,7 @@ void Scene::render()
 	glm::mat4 modelview;
 
 	m_tex_program->use();
-	m_tex_program->setUniformMatrix4f("projection", m_projection_matrix);
+	m_tex_program->setUniformMatrix4f("projection", m_camera->getProjectionMatrix());
 	m_tex_program->setUniform4f("color", 1.0f, 1.0f, 1.0f, 1.0f);
 	modelview = glm::mat4(1.0f);
 	m_tex_program->setUniformMatrix4f("modelview", modelview);
