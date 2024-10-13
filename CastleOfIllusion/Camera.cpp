@@ -2,7 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-Camera::Camera(float width, float height, std::shared_ptr<Player> player, glm::vec2 update_speed = glm::vec2(1.4f, 1.4f))
+Camera::Camera(float width, float height, std::shared_ptr<Player> player, glm::vec2 update_speed)
 {
     m_size.x = width;
     m_size.y = height;

@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
 #include "Scene.h"
 #include "Game.h"
 
@@ -30,7 +29,7 @@ void Scene::init()
 		                      m_tilemap, 
 		                      glm::ivec2(SCREEN_X, SCREEN_Y), 
 		                      m_tex_program));
-  m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
+  	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
 
 	m_entities.push_back(m_player);
 

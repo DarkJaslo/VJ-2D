@@ -10,7 +10,7 @@
 class Camera
 {
 public:
-    Camera(float width, float height, std::shared_ptr<Player> player, glm::vec2 update_speed);
+    Camera(float width, float height, std::shared_ptr<Player> player, glm::vec2 update_speed = glm::vec2(1.4f, 1.4f));
 
 	// Updates the camera
     void update(int delta_time);
