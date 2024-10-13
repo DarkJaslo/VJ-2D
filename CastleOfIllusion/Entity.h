@@ -60,12 +60,17 @@ protected:
 
     // The coordinates of the midpoint in the base of the Entity
     glm::ivec2 m_pos;
-
+  
     // The x and y sizes of the collision box
     glm::ivec2 m_collision_box_size;
 
     // The type of this entity
     EntityType m_type = EntityType::Unknown;
+  
+    // The velocity
+    glm::vec2 m_vel;
+
+    constexpr static float S_GRAVITY = 0.003f;
 };
 
 #endif // _ENTITY_INCLUDE

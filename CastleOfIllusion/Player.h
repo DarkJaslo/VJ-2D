@@ -18,12 +18,12 @@ public:
 	
 	// Updates the player
 	virtual void update(int delta_time) final override;
-
+  
 	// Called when the player collides with something
-	virtual void collideWithEntity(Collision collision) final override;
+	virtual void collideWithEntity(Collision collision) final override;	
 	
 private:
-	// Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
+  // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
 	void takeHit();
 
 	// Gains power from eating cake
@@ -32,15 +32,23 @@ private:
 	// Gains points from coins or defeating enemies
 	void gainPoints(unsigned int gain);
 
-
 	// True iff the player is jumping
 	bool m_is_jumping = false;
+  
+  // Calculates the velocity needed for the player to jump to height
+	float calculateJumpVelocity(float height, float gravity) const;
+	
+  // True iff the player feet are on the floor
+	bool m_is_grounded = false;
 	
 	glm::ivec2 m_tilemap_displ;
 
 	int m_jump_angle; 
 
 	int m_start_y;
+  
+	// Player's movement acceleration
+	glm::vec2 m_acc;
 
 	// The points the player currently has
 	int m_points = 0;
