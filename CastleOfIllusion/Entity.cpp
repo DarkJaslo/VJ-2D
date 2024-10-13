@@ -10,19 +10,19 @@ void Entity::render()
     m_sprite->render();
 }
 
-void Entity::changePosition(glm::vec2 change)
+void Entity::changePosition(glm::ivec2 change)
 {
     m_pos += change; 
     m_sprite->setPosition(m_pos);
 }
 
-void Entity::setPosition(glm::vec2 new_position)
+void Entity::setPosition(glm::ivec2 new_position)
 {
     m_pos = new_position;
     m_sprite->setPosition(new_position);
 }
 
-glm::vec2 Entity::getPosition() const
+glm::ivec2 Entity::getPosition() const
 {
     return m_pos;
 }
@@ -40,7 +40,7 @@ glm::ivec2 Entity::getSpriteSize() const
     return m_sprite->getQuadSize();
 }
 
-std::pair<glm::vec2, glm::vec2> Entity::getMinMaxCollisionCoords() const 
+std::pair<glm::ivec2, glm::ivec2> Entity::getMinMaxCollisionCoords() const 
 {
     glm::vec2 min(m_pos.x - m_collision_box_size.x / 2.f, m_pos.y);
     glm::vec2 max(m_pos.x + m_collision_box_size.x / 2.f, m_pos.y + m_collision_box_size.y);

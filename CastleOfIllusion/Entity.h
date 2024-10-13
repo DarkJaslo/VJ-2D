@@ -22,13 +22,13 @@ public:
     virtual void render();
 
     // Adds the given vector to the entity's position
-    virtual void changePosition(glm::vec2 change);
+    virtual void changePosition(glm::ivec2 change);
 
     // Sets the position of the entity
-    virtual void setPosition(glm::vec2 new_position);
+    virtual void setPosition(glm::ivec2 new_position);
 
     // Gets the entity's position
-    virtual glm::vec2 getPosition() const;
+    virtual glm::ivec2 getPosition() const;
 
     // Gets the entity's type
     virtual EntityType getType() const;
@@ -37,7 +37,7 @@ public:
     glm::ivec2 getSpriteSize() const;
 
     // Returns (minX,minY) and (maxX,maxY) of the collision box
-    std::pair<glm::vec2, glm::vec2> getMinMaxCollisionCoords() const;
+    std::pair<glm::ivec2, glm::ivec2> getMinMaxCollisionCoords() const;
 
     // Called when the entity collides with something
     virtual void collideWithEntity(Collision collision) = 0;

@@ -19,7 +19,7 @@ public:
     Collision& operator=(Collision&& other) = default;
 
     // The vector from the position of the implicit Entity to the collided entity
-    glm::vec2 vector;
+    glm::ivec2 vector;
 
     // The type of entity we collided with
     EntityType type;
