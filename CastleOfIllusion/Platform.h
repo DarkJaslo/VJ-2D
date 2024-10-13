@@ -11,9 +11,6 @@ public:
     virtual void update(int delta_time) override;
 
 private:
-    // The entities currently on top of the platform
-    std::vector<std::shared_ptr<Entity>> m_entities_on_top;
-
 
 };
 

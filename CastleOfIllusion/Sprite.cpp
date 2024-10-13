@@ -4,7 +4,7 @@
 #include "Sprite.h"
 
 
-Sprite *Sprite::createSprite(glm::vec2 const& quad_size, glm::vec2 const& size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
+Sprite *Sprite::createSprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
 	                         std::shared_ptr<ShaderProgram> program)
 {
 	Sprite* sprite = new Sprite(quad_size, size_in_spritesheet, spritesheet, program);
@@ -12,7 +12,7 @@ Sprite *Sprite::createSprite(glm::vec2 const& quad_size, glm::vec2 const& size_i
 }
 
 
-Sprite::Sprite(glm::vec2 const& quad_size, glm::vec2 const& size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
+Sprite::Sprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
 	           std::shared_ptr<ShaderProgram> program)
 {
 	float vertices[24] = {0.f, 0.f, 0.f, 0.f, 
@@ -35,6 +35,7 @@ Sprite::Sprite(glm::vec2 const& quad_size, glm::vec2 const& size_in_spritesheet,
 	m_current_animation = -1;
 	m_time_animation = 0.f;
 	m_position = glm::vec2(0.f);
+	m_quad_size = quad_size;
 }
 
 void Sprite::update(int delta_time)
@@ -82,7 +83,7 @@ void Sprite::setAnimationSpeed(int animation_id, int keyframes_per_sec)
 		m_animations[animation_id].millisecsPerKeyframe = 1000.f / keyframes_per_sec;
 }
 
-void Sprite::addKeyframe(int animation_id, glm::vec2 const& displacement)
+void Sprite::addKeyframe(int animation_id, glm::vec2 displacement)
 {
 	if(animation_id < static_cast<int>(m_animations.size()))
 		m_animations[animation_id].keyframeDispl.push_back(displacement);
@@ -104,7 +105,12 @@ int Sprite::animation() const
 	return m_current_animation;
 }
 
-void Sprite::setPosition(glm::vec2 const& pos)
+void Sprite::setPosition(glm::vec2 pos)
 {
 	m_position = pos;
+}
+
+glm::ivec2 Sprite::getQuadSize() const
+{
+	return m_quad_size;
 }
