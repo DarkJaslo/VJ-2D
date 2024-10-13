@@ -201,7 +201,7 @@ void Player::gainPoints(unsigned int gain)
 	// Update UI
 }
 
-float Player::calculateJumpVelocity(float height, float gravity)
+float Player::calculateJumpVelocity(float height, float gravity) const
 {
 	return -sqrt(2*gravity*height);
 }
