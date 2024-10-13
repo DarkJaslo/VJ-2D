@@ -134,13 +134,74 @@ void Player::update(int delta_time)
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
+void Player::collideWithEntity(Collision collision) 
+{
+	switch (collision.type) 
+	{
+	case EntityType::Enemy:
+	case EntityType::Projectile:
+	case EntityType::Boss:
+	{
+		takeHit();
+		return;
+	}
+	case EntityType::Cake: 
+	{
+		gainPower();
+		return;
+	}
+	case EntityType::Coin: 
+	{
+		// Some hardcoded number for now
+		gainPoints(123);
+		return;
+	}
+	default:
+		return;
+	}
+}
+
+void Player::takeHit() 
+{
+	// Check vulnerability
+
+	--m_power;
+
+	// Debug
+	std::cout << "Power left: " << m_power << "\n";
+
+	if (--m_power <= 0) 
+	{
+		// Lose game
+	}
+
+	// Trigger invulnerability for a while
+
+	// Flicker animation
+
+	// Update UI, play sound
+}
+
+void Player::gainPower() 
+{
+	if (m_power + 1 <= m_max_power) 
+	{
+		++m_power;
+		// Update UI, play sound
+	}
+
+	// Debug
+	std::cout << "Power: " << m_power << "\n";
+}
+
+void Player::gainPoints(unsigned int gain) 
+{
+	m_points += gain;
+
+	// Update UI
+}
 
 float Player::calculateJumpVelocity(float height, float gravity)
 {
 	return -sqrt(2*gravity*height);
-}
-
-glm::ivec2 Player::getPosition() const
-{
-	return m_pos;
 }

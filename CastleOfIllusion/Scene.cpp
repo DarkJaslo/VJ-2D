@@ -26,7 +26,11 @@ void Scene::init()
 	m_tilemap.reset(TileMap::createTileMap("levels/testTiles.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
 	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
-		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
+		                      m_tilemap, 
+		                      glm::ivec2(SCREEN_X, SCREEN_Y), 
+		                      m_tex_program));
+
+	m_entities.push_back(m_player);
 
 	m_projection_matrix = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	m_current_time = 0.0f;
@@ -36,6 +40,22 @@ void Scene::update(int delta_time)
 {
 	m_current_time += delta_time;
 	m_player->update(delta_time);
+
+	// Check collisions between entities (each pair once)
+	for (std::size_t i = 0; i < m_entities.size(); ++i)
+	{
+		// TODO: skip non-visible
+		for (std::size_t j = i+1; j < m_entities.size(); ++j)
+		{
+			// TODO: skip non-visible
+			if (*m_entities[i] & *m_entities[j])
+			{
+				auto&& [i_collision, j_collision] = *m_entities[i] | *m_entities[j];
+				m_entities[i]->collideWithEntity(i_collision);
+				m_entities[j]->collideWithEntity(j_collision);
+			}
+		}
+	}
 }
 
 void Scene::render()

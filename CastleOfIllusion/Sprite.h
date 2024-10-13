@@ -1,7 +1,6 @@
 #ifndef _SPRITE_INCLUDE
 #define _SPRITE_INCLUDE
 
-
 #include <vector>
 #include <memory>
 #include <glm/glm.hpp>
@@ -9,18 +8,15 @@
 #include "ShaderProgram.h"
 #include "AnimKeyframes.h"
 
-
 // This class is derived from code seen earlier in TexturedQuad but it is also
 // able to manage animations stored as a spritesheet. 
-
-
 class Sprite
 {
 
 public:
 	// Textured quads can only be created inside an OpenGL context
-	static Sprite* createSprite(glm::vec2 const& quad_size, glm::vec2 const& size_in_spritesheet,
-		std::shared_ptr<Texture> spritesheet, std::shared_ptr<ShaderProgram> program);
+	static Sprite* createSprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet,
+		                        std::shared_ptr<Texture> spritesheet, std::shared_ptr<ShaderProgram> program);
 
 	~Sprite() { free(); }
 
@@ -37,7 +33,7 @@ public:
 	void setAnimationSpeed(int animation_id, int keyframes_per_sec);
 	
 	// Adds a keyframe to the specified animation
-	void addKeyframe(int animation_id, glm::vec2 const& frame);
+	void addKeyframe(int animation_id, glm::vec2 frame);
 
 	// Changes the current animation
 	void changeAnimation(int animation_id);
@@ -46,11 +42,13 @@ public:
 	int animation() const;
 	
 	// Sets the position of the sprite
-	void setPosition(glm::vec2 const& pos);
+	void setPosition(glm::vec2 pos);
+
+	glm::ivec2 getQuadSize() const;
 
 private:
 	// Private constructor for the factory pattern
-	Sprite(glm::vec2 const& quad_size, glm::vec2 const& size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
+	Sprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
 		   std::shared_ptr<ShaderProgram> program);
 
 	// Cleans up resources
@@ -76,6 +74,9 @@ private:
 
 	// The position of the sprite
 	glm::vec2 m_position;
+
+	// The x and y sizes of the quad
+	glm::ivec2 m_quad_size;
 
 	// The currently selected animation
 	int m_current_animation;
