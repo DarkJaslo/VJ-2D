@@ -74,10 +74,6 @@ void Scene::update(int delta_time)
 				m_entities[i]->collideWithEntity(i_collision);
 				m_entities[j]->collideWithEntity(j_collision);
 			}
-			else 
-			{
-				//std::cout << "Tested collision between entities, but got false" << std::endl;
-			}
 		}
 	}
 }
