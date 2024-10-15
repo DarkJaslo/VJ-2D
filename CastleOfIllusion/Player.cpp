@@ -16,16 +16,18 @@ enum PlayerAnims
 	STAND_LEFT, STAND_RIGHT, MOVE_LEFT, MOVE_RIGHT
 };
 
-Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec2 const& tilemap_pos,
+Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec2 const& tilemap_pos, 
+			   glm::ivec2 const& sprite_size, glm::ivec2 const& collision_box_size,
 	           std::shared_ptr<ShaderProgram> shader_program)
 { 
 	m_tilemap = tilemap;
+	m_collision_box_size = collision_box_size;
 	m_spritesheet.reset(new Texture());
-	m_is_grounded = false;
+	m_grounded = false;
 	m_vel = glm::vec2(0.f,0.f);
 	m_acc = glm::vec2(0.f,0.f);
 	m_spritesheet->loadFromFile("images/bub.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	m_sprite.reset(Sprite::createSprite(glm::vec2(50,50), glm::vec2(0.25, 0.25), m_spritesheet, shader_program));
+	m_sprite.reset(Sprite::createSprite(sprite_size, glm::vec2(0.25, 0.25), m_spritesheet, shader_program));
 	setPosition(pos);
 	m_sprite->setNumberAnimations(4);
 
@@ -89,6 +91,37 @@ void Player::update(int delta_time)
 			m_sprite->changeAnimation(STAND_RIGHT);
 	}
 	
+	if (Game::getKey(GLFW_KEY_DOWN))
+	{
+		if (m_grounded)
+		{
+			if (m_state != PlayerState::Crouching)
+			{
+				m_state = PlayerState::Crouching;
+				std::cout << "CROUCHING" << std::endl;
+			}
+		}
+		else
+		{
+			if (m_state != PlayerState::Attacking)
+			{
+				m_state = PlayerState::Attacking;
+				std::cout << "ATTACKING" << std::endl;
+			}
+		}
+	}
+	else
+	{
+		if (m_grounded)
+		{
+			if (m_state != PlayerState::Standing)
+			{
+				m_state = PlayerState::Standing;
+				std::cout << "STANDING" << std::endl;
+			}
+		}
+	}
+
 	// Update x position
 	float new_vel = m_vel.x + m_acc.x * static_cast<float>(delta_time);
 	if (abs(new_vel) < MAX_X_VELOCITY)
@@ -97,18 +130,23 @@ void Player::update(int delta_time)
 	}
 	m_pos.x += m_vel.x*static_cast<float>(delta_time);
 	
-	auto collision = m_tilemap->xCollision(m_pos, glm::ivec2(50, 50), m_vel);
+	auto collision = m_tilemap->xCollision(m_pos, m_collision_box_size, m_vel);
 	if (collision)
 	{
 		m_pos.x = collision->x;
 	}
 
 	// Y AXIS
-	if (m_is_grounded)
+	if (m_grounded)
 	{
 		if (Game::getKey(GLFW_KEY_UP))
 		{
-			m_is_grounded = false;
+			if (m_state != PlayerState::Jumping)
+			{
+				m_state = PlayerState::Jumping;
+				std::cout << "JUMPING" << std::endl;
+			}
+			m_grounded = false;
 			m_vel.y = calculateJumpVelocity(JUMP_HEIGHT, S_GRAVITY);
 		}
 	}
@@ -121,7 +159,7 @@ void Player::update(int delta_time)
 	}
 	m_pos.y += m_vel.y*static_cast<float>(delta_time);
 	
-	collision = m_tilemap->yCollision(m_pos, glm::ivec2(50,50), m_vel);
+	collision = m_tilemap->yCollision(m_pos, m_collision_box_size, m_vel);
 	if (collision)
 	{
 		m_pos.y = collision->y;
@@ -129,7 +167,7 @@ void Player::update(int delta_time)
 		m_vel.y = 0.f;
 	}
 
-	m_is_grounded = m_tilemap->isGrounded(m_pos, glm::ivec2(50,50));
+	m_grounded = m_tilemap->isGrounded(m_pos, m_collision_box_size);
 	
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
@@ -204,4 +242,9 @@ void Player::gainPoints(unsigned int gain)
 float Player::calculateJumpVelocity(float height, float gravity) const
 {
 	return -sqrt(2*gravity*height);
+}
+
+PlayerState Player::getPlayerState()
+{
+	return m_state;
 }
