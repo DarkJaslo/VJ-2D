@@ -11,7 +11,7 @@ class Player : public Entity
 {
 
 public:
-	Player(glm::vec2 const& pos, 
+	Player(glm::ivec2 const& pos, 
 		   std::shared_ptr<TileMap> tilemap, 
 		   glm::ivec2 const& tilemap_pos, 
 		   std::shared_ptr<ShaderProgram> shader_program);
@@ -21,9 +21,12 @@ public:
   
 	// Called when the player collides with something
 	virtual void collideWithEntity(Collision collision) final override;	
+
+	// Returns the type of entity the player is
+	virtual EntityType getType() const override { return EntityType::Player; }
 	
 private:
-  // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
+    // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
 	void takeHit();
 
 	// Gains power from eating cake
@@ -35,10 +38,10 @@ private:
 	// True iff the player is jumping
 	bool m_is_jumping = false;
   
-  // Calculates the velocity needed for the player to jump to height
+    // Calculates the velocity needed for the player to jump to height
 	float calculateJumpVelocity(float height, float gravity) const;
 	
-  // True iff the player feet are on the floor
+    // True iff the player feet are on the floor
 	bool m_is_grounded = false;
 	
 	glm::ivec2 m_tilemap_displ;

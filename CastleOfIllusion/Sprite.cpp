@@ -83,6 +83,11 @@ void Sprite::setAnimationSpeed(int animation_id, int keyframes_per_sec)
 		m_animations[animation_id].millisecsPerKeyframe = 1000.f / keyframes_per_sec;
 }
 
+void Sprite::setTextureCoordsOffset(glm::vec2 offset) 
+{
+	m_texcoord_displ = offset;
+}
+
 void Sprite::addKeyframe(int animation_id, glm::vec2 displacement)
 {
 	if(animation_id < static_cast<int>(m_animations.size()))

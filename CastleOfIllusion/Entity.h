@@ -31,7 +31,7 @@ public:
     virtual glm::ivec2 getPosition() const;
 
     // Gets the entity's type
-    virtual EntityType getType() const;
+    virtual EntityType getType() const { return EntityType::Unknown; }
 
     // Gets the sprite's x and y sizes
     glm::ivec2 getSpriteSize() const;
@@ -48,6 +48,15 @@ public:
     // Returns the collision info for this Entity (first) and the other (second)
     std::pair<Collision, Collision> operator|(Entity const& other) const;
 
+    // Returns true iff the entity can be processed for collision detection
+    inline bool canCollide() const { return m_enabled && m_can_collide; }
+
+    // Returns true iff the entity is enabled
+    inline bool isEnabled() const { return m_enabled; }
+
+    // Sets whether the entity is enabled or not
+    void setEnabled(bool enabled) { m_enabled = enabled; }
+
 protected:
     // The spritesheet
     std::shared_ptr<Texture> m_spritesheet;
@@ -63,12 +72,15 @@ protected:
   
     // The x and y sizes of the collision box
     glm::ivec2 m_collision_box_size;
-
-    // The type of this entity
-    EntityType m_type = EntityType::Unknown;
   
     // The velocity
     glm::vec2 m_vel;
+
+    // True iff this entity can collide with other entities. Disable for destroy or fading animations, for instance
+    bool m_can_collide = true;
+
+    // True iff this entity is enabled (is processed by the game)
+    bool m_enabled = true;
 
     constexpr static float S_GRAVITY = 0.003f;
 };

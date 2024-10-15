@@ -1,13 +1,16 @@
 #include "Entity.h"
+#include <iostream>
 
 void Entity::update(int delta_time)
 {
-    m_sprite->update(delta_time);
+    if (m_enabled)
+        m_sprite->update(delta_time);
 }
 
 void Entity::render()
 {
-    m_sprite->render();
+    if (m_enabled)
+        m_sprite->render();
 }
 
 void Entity::changePosition(glm::ivec2 change)
@@ -25,11 +28,6 @@ void Entity::setPosition(glm::ivec2 new_position)
 glm::ivec2 Entity::getPosition() const
 {
     return m_pos;
-}
-
-EntityType Entity::getType() const 
-{
-    return m_type;
 }
 
 glm::ivec2 Entity::getSpriteSize() const
@@ -58,6 +56,6 @@ bool Entity::operator&(Entity const& other) const
 
 std::pair<Collision, Collision> Entity::operator|(Entity const& other) const
 {
-    return std::make_pair(Collision(other.m_pos - m_pos, other.getType()), 
-                          Collision(m_pos - other.m_pos, m_type));
+    return std::make_pair(Collision(other.m_pos - m_pos, const_cast<Entity*>(&other)), 
+                          Collision(m_pos - other.m_pos, const_cast<Entity*>(this)));
 }
