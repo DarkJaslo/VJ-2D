@@ -18,7 +18,7 @@ public:
 	
 	// Updates the player
 	virtual void update(int delta_time) final override;
-  
+
 	// Called when the player collides with something
 	virtual void collideWithEntity(Collision collision) final override;	
 

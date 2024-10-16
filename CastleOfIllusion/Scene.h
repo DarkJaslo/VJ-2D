@@ -5,6 +5,7 @@
 #include "ShaderProgram.h"
 #include "TileMap.h"
 #include "Player.h"
+#include "Camera.h"
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
@@ -39,9 +40,8 @@ private:
 	
 	// The texture shading program
 	std::shared_ptr<ShaderProgram> m_tex_program;
+	std::shared_ptr<Camera> m_camera;
 	float m_current_time;
-	glm::mat4 m_projection_matrix;
-
 };
 
 #endif // _SCENE_INCLUDE
