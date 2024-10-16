@@ -41,7 +41,6 @@ void Scene::init()
 
 	readSceneFile("levels/testTiles.entities");
 
-	m_projection_matrix = glm::ortho(0.f, float(SCREEN_WIDTH), float(SCREEN_HEIGHT), 0.f);
 	m_current_time = 0.0f;
 }
 
