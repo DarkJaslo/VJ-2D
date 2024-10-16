@@ -23,6 +23,12 @@ public:
 private:
 	void initShaders();
 
+	// Reads from a file which entities will be on the level, with information on how to create them
+	void readSceneFile(std::string&& path);
+
+	// Creates a coin and adds it to the scene
+	void createCoin(std::istringstream& split_line);
+
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
 	
@@ -38,6 +44,4 @@ private:
 	float m_current_time;
 };
 
-
 #endif // _SCENE_INCLUDE
-
