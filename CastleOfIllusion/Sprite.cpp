@@ -36,6 +36,7 @@ Sprite::Sprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet, std::shared_
 	m_time_animation = 0.f;
 	m_position = glm::vec2(0.f);
 	m_quad_size = quad_size;
+	m_size_in_spritesheet = size_in_spritesheet;
 }
 
 void Sprite::update(int delta_time)
@@ -86,7 +87,7 @@ void Sprite::setAnimationSpeed(int animation_id, int keyframes_per_sec)
 void Sprite::addKeyframe(int animation_id, glm::vec2 displacement)
 {
 	if(animation_id < static_cast<int>(m_animations.size()))
-		m_animations[animation_id].keyframeDispl.push_back(displacement);
+		m_animations[animation_id].keyframeDispl.push_back(displacement*m_size_in_spritesheet);
 }
 
 void Sprite::changeAnimation(int animation_id)
@@ -113,4 +114,29 @@ void Sprite::setPosition(glm::vec2 pos)
 glm::ivec2 Sprite::getQuadSize() const
 {
 	return m_quad_size;
+}
+
+void Sprite::turnRight()
+{
+	float vertices[24] = { 0.f, 0.f, 0.f, 0.f,
+						  m_quad_size.x, 0.f, m_size_in_spritesheet.x, 0.f,
+						  m_quad_size.x, m_quad_size.y, m_size_in_spritesheet.x, m_size_in_spritesheet.y,
+						  0.f, 0.f, 0.f, 0.f,
+						  m_quad_size.x, m_quad_size.y, m_size_in_spritesheet.x, m_size_in_spritesheet.y,
+						  0.f, m_quad_size.y, 0.f, m_size_in_spritesheet.y };
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), vertices, GL_STATIC_DRAW);
+}
+void Sprite::turnLeft()
+{
+	float vertices[24] = { 0.f, 0.f, m_size_in_spritesheet.x, 0.f,
+						  m_quad_size.x, 0.f, 0.f, 0.f,
+						  m_quad_size.x, m_quad_size.y, 0.f, m_size_in_spritesheet.y,
+						  0.f, 0.f, m_size_in_spritesheet.x, 0.f,
+						  m_quad_size.x, m_quad_size.y, 0.f, m_size_in_spritesheet.y,
+						  0.f, m_quad_size.y, m_size_in_spritesheet.x, m_size_in_spritesheet.y };
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), vertices, GL_STATIC_DRAW);
 }

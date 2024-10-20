@@ -57,8 +57,8 @@ glm::ivec2 Entity::getSpriteSize() const
 
 std::pair<glm::ivec2, glm::ivec2> Entity::getMinMaxCollisionCoords() const 
 {
-    glm::vec2 min(m_pos.x - m_collision_box_size.x / 2.f, m_pos.y);
-    glm::vec2 max(m_pos.x + m_collision_box_size.x / 2.f, m_pos.y + m_collision_box_size.y);
+    glm::vec2 min(m_pos.x - m_collision_box_size.x / 2.f, m_pos.y - m_collision_box_size.y);
+    glm::vec2 max(m_pos.x + m_collision_box_size.x / 2.f, m_pos.y);
 
     return std::make_pair(min, max);
 }

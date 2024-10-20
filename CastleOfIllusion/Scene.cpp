@@ -26,7 +26,7 @@ void Scene::init()
 	m_tilemap.reset(TileMap::createTileMap("levels/testSimple.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
 	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
-		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), glm::ivec2(50,50), glm::ivec2(50,50), m_tex_program));
+		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_player_sprite_size, m_player_collision_size, m_tex_program));
 							  
   	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
 

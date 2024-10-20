@@ -46,6 +46,9 @@ public:
 
 	glm::ivec2 getQuadSize() const;
 
+	void turnRight();
+	void turnLeft();
+
 private:
 	// Private constructor for the factory pattern
 	Sprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
@@ -89,6 +92,8 @@ private:
 
 	// ?
 	glm::vec2 m_texcoord_displ;
+
+	glm::vec2 m_size_in_spritesheet;
 
 	// The different animations the sprite may have
 	std::vector<AnimKeyframes> m_animations;

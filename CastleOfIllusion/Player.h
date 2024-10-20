@@ -7,8 +7,11 @@
 
 enum class PlayerState
 {
-    Standing,
+    Idle,
+    Moving,
+    Sliding,
     Jumping,
+    Falling,
     Crouching,
     Attacking,
 };
@@ -33,7 +36,9 @@ public:
     virtual void collideWithEntity(Collision collision) final override;
 
     // Gets the state the player is currently in
-    PlayerState getPlayerState();
+    PlayerState getPlayerState() const;
+
+    bool isAttacking() const;
     
 private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
@@ -47,13 +52,15 @@ private:
       
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
+
+    void configureAnimations();
     
     // The player's state
     PlayerState m_state;
 
     // True iff the player's feet are on the floor
     bool m_grounded = false;
-    
+
     glm::ivec2 m_tilemap_displ;
       
     // Player's movement acceleration

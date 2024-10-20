@@ -79,7 +79,7 @@ protected:
     // The velocity
     glm::vec2 m_vel;
 
-    constexpr static float S_GRAVITY = 0.003f;
+    constexpr static float S_GRAVITY = 0.006f;
 };
 
 #endif // _ENTITY_INCLUDE
