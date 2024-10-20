@@ -13,7 +13,8 @@ enum class PlayerState
     Jumping,
     Falling,
     Crouching,
-    Attacking,
+    AttackingUp,
+    AttackingDown,
 };
 
 // Represents a player.
@@ -38,6 +39,7 @@ public:
     // Gets the state the player is currently in
     PlayerState getPlayerState() const;
 
+    // Returns true iff the player is attacking
     bool isAttacking() const;
 
     // Returns the type of entity the player is
@@ -56,6 +58,7 @@ private:
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
 
+    // Creates and configures the player animations
     void configureAnimations();
     
     // The player's state

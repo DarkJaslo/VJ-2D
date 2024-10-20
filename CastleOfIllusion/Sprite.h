@@ -15,6 +15,7 @@ class Sprite
 
 public:
 	// Textured quads can only be created inside an OpenGL context
+	// Assumes 
 	static Sprite* createSprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet,
 		                        std::shared_ptr<Texture> spritesheet, std::shared_ptr<ShaderProgram> program);
 
@@ -36,7 +37,7 @@ public:
 	void setTextureCoordsOffset(glm::vec2 offset);
 	
 	// Adds a keyframe to the specified animation
-	void addKeyframe(int animation_id, glm::vec2 frame);
+	void addKeyframe(int animation_id, glm::vec2 displacement);
 
 	// Changes the current animation
 	void changeAnimation(int animation_id);
@@ -49,7 +50,10 @@ public:
 
 	glm::ivec2 getQuadSize() const;
 
+	// Flips the sprite so that it looks to the right (default)
 	void turnRight();
+
+	// Flips the sprite so that it looks to the left
 	void turnLeft();
 
 private:
@@ -96,6 +100,7 @@ private:
 	// The texture coordinates offset, ie. the position of the top left corner of the miniquad inside the texture
 	glm::vec2 m_texcoord_displ;
 
+	// The size of a single sprite in the spritesheet
 	glm::vec2 m_size_in_spritesheet;
 
 	// The different animations the sprite may have

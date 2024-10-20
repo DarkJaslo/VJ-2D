@@ -15,9 +15,12 @@
 #define ACCELERATION 0.001f // Acceleration on the x axis applied when pressing a key down
 #define DECELERATION 0.001f // Deceleration on the x axis applied when not pressing a key down
 
+#define SIZE_IN_TEXTURE_X 0.0625
+#define SIZE_IN_TEXTURE_Y 0.09090909
+
 enum PlayerAnims
 {
-	IDLE, MOVE, CROUCH, JUMP, FALL,	SLIDE
+	IDLE, MOVE, CROUCH, JUMP, FALL,	SLIDE, ATTACK_UP, ATTACK_DOWN
 };
 
 Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec2 const& tilemap_pos, 
@@ -34,14 +37,15 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_acc = glm::vec2(0.f,0.f);
 
 	m_spritesheet->loadFromFile("images/MickeyMouse.png", TEXTURE_PIXEL_FORMAT_RGBA);
-	m_sprite.reset(Sprite::createSprite(sprite_size, glm::vec2(0.0625, 0.09090909), m_spritesheet, shader_program));
+
+	m_sprite.reset(Sprite::createSprite(sprite_size, glm::vec2(SIZE_IN_TEXTURE_X, SIZE_IN_TEXTURE_Y), m_spritesheet, shader_program));
 	
 	setPosition(pos);
 	configureAnimations();
 
 	m_sprite->changeAnimation(0);
 	m_tilemap_displ = tilemap_pos;
-	//m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
+
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
@@ -50,13 +54,15 @@ void Player::update(int delta_time)
 	m_sprite->update(delta_time);
 	PlayerState prev_state = m_state;
 
-	// X AXIS
+	//////// X AXIS
 	if (Game::getKey(GLFW_KEY_A))
 	{
 		m_sprite->turnLeft();
+
+		// Don't move if crouching
 		if (!Game::getKey(GLFW_KEY_S))
 		{
-			if (m_grounded && !Game::getKey(GLFW_KEY_S))
+			if (m_grounded)
 			{
 				m_state = PlayerState::Moving;
 			}
@@ -66,6 +72,8 @@ void Player::update(int delta_time)
 	else if (Game::getKey(GLFW_KEY_D))
 	{
 		m_sprite->turnRight();
+
+		//Don't move if crouching
 		if (!Game::getKey(GLFW_KEY_S))
 		{
 			if (m_grounded)
@@ -90,6 +98,7 @@ void Player::update(int delta_time)
 		}
 	}
 
+	// Decelerate movement on the x axis if 
 	if ((!Game::getKey(GLFW_KEY_A) && !Game::getKey(GLFW_KEY_D)) || Game::getKey(GLFW_KEY_S))
 	{
 		m_acc.x = 0.f;
@@ -103,6 +112,7 @@ void Player::update(int delta_time)
 		}
 	}
 	
+	// Crouch/attack
 	if (Game::getKey(GLFW_KEY_S))
 	{
 		if (m_grounded)
@@ -114,9 +124,19 @@ void Player::update(int delta_time)
 		}
 		else
 		{
-			if (m_state != PlayerState::Attacking)
+			if (m_vel.y < 0)
 			{
-				m_state = PlayerState::Attacking;
+				if (m_state != PlayerState::AttackingUp)
+				{
+					m_state = PlayerState::AttackingUp;
+				}
+			}
+			else
+			{
+				if (m_state != PlayerState::AttackingDown)
+				{
+					m_state = PlayerState::AttackingDown;
+				}
 			}
 		}
 	}
@@ -135,9 +155,11 @@ void Player::update(int delta_time)
 		m_pos.x = collision->x + m_collision_box_size.x/2;
 	}
 
-	// Y AXIS
+	//////// Y AXIS
+
 	if (m_grounded)
 	{
+		// Jump
 		if (Game::getKey(GLFW_KEY_W))
 		{
 			if (m_state != PlayerState::Jumping)
@@ -146,6 +168,21 @@ void Player::update(int delta_time)
 			}
 			m_grounded = false;
 			m_vel.y = calculateJumpVelocity(JUMP_HEIGHT, S_GRAVITY);
+		}
+	}
+	else
+	{
+		// Update from going up to going down
+		if (m_vel.y > 0)
+		{
+			if (m_state == PlayerState::AttackingUp)
+			{
+				m_state = PlayerState::AttackingDown;
+			}
+			else if (m_state != PlayerState::Falling && m_state != PlayerState::AttackingDown)
+			{
+				m_state = PlayerState::Falling;
+			}
 		}
 	}
 
@@ -165,10 +202,10 @@ void Player::update(int delta_time)
 		m_vel.y = 0.f;
 	}
 
+	// Update grounded
 	m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
 	
 	// Change animation if necessary
-
 	if (prev_state != m_state)
 	{
 		switch (m_state)
@@ -189,17 +226,26 @@ void Player::update(int delta_time)
 				std::cout << "jump" << std::endl;
 				m_sprite->changeAnimation(JUMP);
 				break;
+			case PlayerState::Falling:
+				std::cout << "jump" << std::endl;
+				m_sprite->changeAnimation(FALL);
+				break;
 			case PlayerState::Sliding:
 				std::cout << "slide" << std::endl;
 				m_sprite->changeAnimation(SLIDE);
 				break;
-			case PlayerState::Attacking:
+			case PlayerState::AttackingUp:
 				std::cout << "attack" << std::endl;
-				// change animation
+				m_sprite->changeAnimation(ATTACK_UP);
+				break;
+			case PlayerState::AttackingDown:
+				std::cout << "attack" << std::endl;
+				m_sprite->changeAnimation(ATTACK_DOWN);
 				break;
 		}
 	}
 
+	// Update sprite position
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
@@ -283,17 +329,17 @@ PlayerState Player::getPlayerState() const
 
 bool Player::isAttacking() const
 {
-	return m_state == PlayerState::Attacking;
+	return m_state == PlayerState::AttackingDown;
 }
 
 void Player::configureAnimations()
 {
-	m_sprite->setNumberAnimations(6);
+	m_sprite->setNumberAnimations(8);
 
 	// Idle
 	m_sprite->setAnimationSpeed(IDLE, 3);
-	m_sprite->addKeyframe(IDLE, glm::vec2(0.f, 1.f));
-	m_sprite->addKeyframe(IDLE, glm::vec2(1.f, 1.f));
+	m_sprite->addKeyframe(IDLE, glm::vec2(0.f, 0.f));
+	m_sprite->addKeyframe(IDLE, glm::vec2(1.f, 0.f));
 
 	// Moving
 	// The core animation is only six frames, but the original game makes Mickey blink every 2 loops, and so do we
@@ -322,18 +368,26 @@ void Player::configureAnimations()
 
 	// Crouching
 	m_sprite->setAnimationSpeed(CROUCH, 8);
-	m_sprite->addKeyframe(CROUCH, glm::vec2(0.f, 2.f));
-	m_sprite->addKeyframe(CROUCH, glm::vec2(1.f, 2.f));
+	m_sprite->addKeyframe(CROUCH, glm::vec2(0.f, 1.f));
+	m_sprite->addKeyframe(CROUCH, glm::vec2(1.f, 1.f));
 
 	// Jumping
 	m_sprite->setAnimationSpeed(JUMP, 1);
-	m_sprite->addKeyframe(JUMP, glm::vec2(2.f, 2.f));
+	m_sprite->addKeyframe(JUMP, glm::vec2(2.f, 1.f));
 
 	// Falling
 	m_sprite->setAnimationSpeed(FALL, 1);
-	m_sprite->addKeyframe(FALL, glm::vec2(2.f, 3.f));
+	m_sprite->addKeyframe(FALL, glm::vec2(3.f, 1.f));
 
 	// Sliding
 	m_sprite->setAnimationSpeed(SLIDE, 1);
 	m_sprite->addKeyframe(SLIDE, glm::vec2(10.f, 0.f));
+
+	// Attacking up
+	m_sprite->setAnimationSpeed(ATTACK_UP, 1);
+	m_sprite->addKeyframe(ATTACK_UP, glm::vec2(5.f, 1.f));
+
+	// Attacking down
+	m_sprite->setAnimationSpeed(ATTACK_DOWN, 1);
+	m_sprite->addKeyframe(ATTACK_DOWN, glm::vec2(6.f, 1.f));
 }
