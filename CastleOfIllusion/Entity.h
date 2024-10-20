@@ -63,8 +63,11 @@ public:
     // Returns true iff the entity is enabled
     inline bool isEnabled() const { return m_enabled; }
 
+    // Sets whether the entity can collide or not
+    void setCollisions (bool can_collide) { m_can_collide = can_collide; }
+
     // Sets whether the entity is enabled or not
-    void setEnabled(bool enabled) { m_enabled = enabled; }
+    void setEnabled (bool enabled) { m_enabled = enabled; }
 
 protected:
     // The spritesheet

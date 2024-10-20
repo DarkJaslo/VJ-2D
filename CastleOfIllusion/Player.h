@@ -47,8 +47,8 @@ private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
 	void takeHit();
 
-    // Gains power from eating cake
-    void gainPower();
+	// Gains power from eating cake
+	void gainPower(unsigned int gain);
 
     // Gains points from coins or defeating enemies
     void gainPoints(unsigned int gain);
