@@ -7,10 +7,14 @@
 #include "Player.h"
 #include "Camera.h"
 
+
 #define PLAYER_SPRITE_SIZE_X 32*4
 #define PLAYER_SPRITE_SIZE_Y 48*4
 #define PLAYER_COLLISION_SIZE_X 16*4
 #define PLAYER_COLLISION_SIZE_Y 32*4
+
+class Coin;
+class Cake;
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
@@ -31,8 +35,14 @@ private:
 	// Reads from a file which entities will be on the level, with information on how to create them
 	void readSceneFile(std::string&& path);
 
+	// Creates a chest and adds it to the scene
+	void createChest(std::istringstream& split_line);
+
 	// Creates a coin and adds it to the scene
-	void createCoin(std::istringstream& split_line);
+	[[nodiscard]] std::shared_ptr<Coin> createCoin(std::istringstream& split_line);
+
+	// Creates a cake and adds it to the scene
+	[[nodiscard]] std::shared_ptr<Cake> createCake(std::istringstream& split_line);
 
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;

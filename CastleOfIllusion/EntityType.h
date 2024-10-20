@@ -13,7 +13,8 @@ enum class EntityType
 	Projectile,
 	Coin,
 	Cake,
-	Platform
+	Platform,
+	ThrowableTile,
 };
 
 inline std::string toString(EntityType type) 

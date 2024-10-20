@@ -3,6 +3,9 @@
 
 #include "Entity.h"
 
+// Represents a coin, an item which is collected upon contact with the player. Can be found on chests.
+// There are two types of coin, the small coin and the big coin. The only changes are the size, the sprite and the
+// amount of points gained from collecting them.
 class Coin : public Entity
 {
 public:
@@ -32,9 +35,6 @@ private:
 
     // Time the coin stays there until it disappears
     static constexpr int s_timeout = 3000;
-
-    // The size of the sprite
-    static constexpr int s_sprite_size = 16;
 
     // The time this coin has been alive
     int m_alive_time = 0;

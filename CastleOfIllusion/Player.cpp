@@ -1,10 +1,13 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <algorithm>
+
 #include <GL/glew.h>
 #include "Player.h"
 #include "Game.h"
 #include "Coin.h"
+#include "Cake.h"
 
 #define JUMP_HEIGHT 4*16*4
 #define MAX_X_VELOCITY 0.6f // Maximum velocity on the x axis
@@ -39,7 +42,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_sprite->changeAnimation(0);
 	m_tilemap_displ = tilemap_pos;
 	//m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
-	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x - m_sprite->getQuadSize().x / 2), static_cast<float>(m_tilemap_displ.y + m_pos.y - m_sprite->getQuadSize().y)));
+	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
 void Player::update(int delta_time)
@@ -190,10 +193,14 @@ void Player::update(int delta_time)
 				std::cout << "slide" << std::endl;
 				m_sprite->changeAnimation(SLIDE);
 				break;
+			case PlayerState::Attacking:
+				std::cout << "attack" << std::endl;
+				// change animation
+				break;
 		}
 	}
 
-	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x - m_sprite->getQuadSize().x/2), static_cast<float>(m_tilemap_displ.y + m_pos.y - m_sprite->getQuadSize().y)));
+	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
 void Player::collideWithEntity(Collision collision) 
@@ -209,7 +216,8 @@ void Player::collideWithEntity(Collision collision)
 	}
 	case EntityType::Cake: 
 	{
-		gainPower();
+		auto cake = static_cast<Cake*>(collision.entity);
+		gainPower(cake->getPower());
 		return;
 	}
 	case EntityType::Coin: 
@@ -244,13 +252,10 @@ void Player::takeHit()
 	// Update UI, play sound
 }
 
-void Player::gainPower() 
+void Player::gainPower(unsigned int gain) 
 {
-	if (m_power + 1 <= m_max_power) 
-	{
-		++m_power;
-		// Update UI, play sound
-	}
+	m_power = std::min(static_cast<unsigned int>(m_max_power), m_power + gain);
+	// Update UI, play sound
 
 	// Debug
 	std::cout << "Power: " << m_power << "\n";
