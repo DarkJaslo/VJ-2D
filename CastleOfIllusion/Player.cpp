@@ -4,6 +4,7 @@
 #include <GL/glew.h>
 #include "Player.h"
 #include "Game.h"
+#include "Coin.h"
 
 #define JUMP_HEIGHT 4*16*4
 #define MAX_X_VELOCITY 0.6f // Maximum velocity on the x axis
@@ -20,6 +21,8 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 			   glm::ivec2 const& sprite_size, glm::ivec2 const& collision_box_size,
 	           std::shared_ptr<ShaderProgram> shader_program)
 { 
+	std::cout << "Creating player at position " << pos.x << "," << pos.y << std::endl;
+
 	m_tilemap = tilemap;
 	m_collision_box_size = collision_box_size;
 	m_spritesheet.reset(new Texture());
@@ -195,7 +198,7 @@ void Player::update(int delta_time)
 
 void Player::collideWithEntity(Collision collision) 
 {
-	switch (collision.type) 
+	switch (collision.entity->getType()) 
 	{
 	case EntityType::Enemy:
 	case EntityType::Projectile:
@@ -211,8 +214,8 @@ void Player::collideWithEntity(Collision collision)
 	}
 	case EntityType::Coin: 
 	{
-		// Some hardcoded number for now
-		gainPoints(123);
+		auto coin = static_cast<Coin*>(collision.entity);
+		gainPoints(coin->getPoints());
 		return;
 	}
 	default:
@@ -258,6 +261,9 @@ void Player::gainPoints(unsigned int gain)
 	m_points += gain;
 
 	// Update UI
+
+	// Debug
+	std::cout << "Points: " << m_points << "\n";
 }
 
 float Player::calculateJumpVelocity(float height, float gravity) const

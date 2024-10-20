@@ -31,6 +31,9 @@ public:
 
 	// Sets the speed of the animation
 	void setAnimationSpeed(int animation_id, int keyframes_per_sec);
+
+	// Sets the offset inside the texture coordinates, assuming the position is the top left corner of the miniquad
+	void setTextureCoordsOffset(glm::vec2 offset);
 	
 	// Adds a keyframe to the specified animation
 	void addKeyframe(int animation_id, glm::vec2 frame);
@@ -90,7 +93,7 @@ private:
 	// The time of the animation
 	float m_time_animation;
 
-	// ?
+	// The texture coordinates offset, ie. the position of the top left corner of the miniquad inside the texture
 	glm::vec2 m_texcoord_displ;
 
 	glm::vec2 m_size_in_spritesheet;
