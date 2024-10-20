@@ -113,7 +113,7 @@ int Sprite::animation() const
 
 void Sprite::setPosition(glm::vec2 pos)
 {
-	m_position = pos;
+	m_position = pos - glm::vec2(static_cast<float>(m_quad_size.x) / 2.0f, m_quad_size.y);
 }
 
 glm::ivec2 Sprite::getQuadSize() const

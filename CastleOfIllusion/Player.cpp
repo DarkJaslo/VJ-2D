@@ -42,7 +42,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_sprite->changeAnimation(0);
 	m_tilemap_displ = tilemap_pos;
 	//m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
-	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x - m_sprite->getQuadSize().x / 2), static_cast<float>(m_tilemap_displ.y + m_pos.y - m_sprite->getQuadSize().y)));
+	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
 void Player::update(int delta_time)
@@ -193,10 +193,14 @@ void Player::update(int delta_time)
 				std::cout << "slide" << std::endl;
 				m_sprite->changeAnimation(SLIDE);
 				break;
+			case PlayerState::Attacking:
+				std::cout << "attack" << std::endl;
+				// change animation
+				break;
 		}
 	}
 
-	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x - m_sprite->getQuadSize().x/2), static_cast<float>(m_tilemap_displ.y + m_pos.y - m_sprite->getQuadSize().y)));
+	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
 }
 
 void Player::collideWithEntity(Collision collision) 
