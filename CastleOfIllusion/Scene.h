@@ -7,6 +7,11 @@
 #include "Player.h"
 #include "Camera.h"
 
+#define PLAYER_SPRITE_SIZE_X 32*4
+#define PLAYER_SPRITE_SIZE_Y 48*4
+#define PLAYER_COLLISION_SIZE_X 16*4
+#define PLAYER_COLLISION_SIZE_Y 32*4
+
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
 
@@ -42,6 +47,9 @@ private:
 	std::shared_ptr<ShaderProgram> m_tex_program;
 	std::shared_ptr<Camera> m_camera;
 	float m_current_time;
+
+	glm::ivec2 const m_player_sprite_size {PLAYER_SPRITE_SIZE_X, PLAYER_SPRITE_SIZE_Y};
+	glm::ivec2 const m_player_collision_size{PLAYER_COLLISION_SIZE_X, PLAYER_COLLISION_SIZE_Y};
 };
 
 #endif // _SCENE_INCLUDE

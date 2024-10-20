@@ -9,9 +9,9 @@
 #include "Game.h"
 #include "Coin.h"
 
-
-#define SCREEN_X 25
-#define SCREEN_Y 15
+// Tilemap top left screen position
+#define SCREEN_X 0
+#define SCREEN_Y 0
 
 // coordinates of the tile where the player appears 
 #define INIT_PLAYER_X_TILES 4
@@ -31,11 +31,10 @@ void Scene::init()
 	initShaders();
 	m_tilemap.reset(TileMap::createTileMap("levels/testSimple.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
-	m_player.reset(new Player(glm::ivec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
-		                      m_tilemap, 
-		                      glm::ivec2(SCREEN_X, SCREEN_Y), 
-		                      m_tex_program));
-  	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
+	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
+		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_player_sprite_size, m_player_collision_size, m_tex_program));
+
+  m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
 
 	m_entities.push_back(m_player);
 
