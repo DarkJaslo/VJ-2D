@@ -1,9 +1,9 @@
-#include "Coin.h"
+#include "Cake.h"
 #include <iostream>
 
-Coin::Coin(glm::ivec2 const& pos,
+Cake::Cake(glm::ivec2 pos,
     std::shared_ptr<TileMap> tilemap,
-    glm::ivec2 const& tilemap_pos,
+    glm::ivec2 tilemap_pos,
     std::shared_ptr<ShaderProgram> shader_program,
     bool is_big)
     : m_is_big(is_big)
@@ -16,7 +16,7 @@ Coin::Coin(glm::ivec2 const& pos,
         m_spritesheet,
         shader_program));
 
-    glm::vec2 tex_coords = is_big ? glm::vec2(0.375f, 0.f) : glm::vec2(0.25f, 0.f);
+    glm::vec2 tex_coords = is_big ? glm::vec2(0.125f, 0.0f) : glm::vec2(0.0f, 0.0f);
     m_sprite->setTextureCoordsOffset(tex_coords);
 
     setPosition(pos);
@@ -26,11 +26,11 @@ Coin::Coin(glm::ivec2 const& pos,
     m_can_collide = false;
 }
 
-void Coin::update(int delta_time) 
+void Cake::update(int delta_time)
 {
     if (!m_enabled)
         return;
-    
+
     Entity::update(delta_time);
 
     m_alive_time += delta_time;
@@ -40,7 +40,7 @@ void Coin::update(int delta_time)
     }
 }
 
-void Coin::collideWithEntity(Collision collision)
+void Cake::collideWithEntity(Collision collision)
 {
     if (!m_enabled)
         return;
@@ -62,10 +62,10 @@ void Coin::collideWithEntity(Collision collision)
     }
 }
 
-unsigned int Coin::getPoints() const
+unsigned int Cake::getPower() const
 {
     if (m_is_big)
-        return s_big_points;
+        return s_big_power;
 
-    return s_small_points;
+    return s_small_power;
 }

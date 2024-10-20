@@ -1,10 +1,13 @@
 #include <cmath>
 #include <iostream>
 #include <memory>
+#include <algorithm>
+
 #include <GL/glew.h>
 #include "Player.h"
 #include "Game.h"
 #include "Coin.h"
+#include "Cake.h"
 
 #define JUMP_HEIGHT 100
 #define MAX_X_VELOCITY 0.4f // Maximum velocity on the x axis
@@ -151,7 +154,8 @@ void Player::collideWithEntity(Collision collision)
 	}
 	case EntityType::Cake: 
 	{
-		gainPower();
+		auto cake = static_cast<Cake*>(collision.entity);
+		gainPower(cake->getPower());
 		return;
 	}
 	case EntityType::Coin: 
@@ -186,13 +190,10 @@ void Player::takeHit()
 	// Update UI, play sound
 }
 
-void Player::gainPower() 
+void Player::gainPower(unsigned int gain) 
 {
-	if (m_power + 1 <= m_max_power) 
-	{
-		++m_power;
-		// Update UI, play sound
-	}
+	m_power = std::min(static_cast<unsigned int>(m_max_power), m_power + gain);
+	// Update UI, play sound
 
 	// Debug
 	std::cout << "Power: " << m_power << "\n";

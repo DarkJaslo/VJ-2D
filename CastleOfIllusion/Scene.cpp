@@ -8,6 +8,8 @@
 #include "Scene.h"
 #include "Game.h"
 #include "Coin.h"
+#include "Cake.h"
+#include "Chest.h"
 
 
 #define SCREEN_X 25
@@ -150,12 +152,41 @@ void Scene::readSceneFile(std::string&& path)
 		// Get entity type
 		split_line >> word;
 
-		if (word == "coin")
-			createCoin(split_line);
+		if (word == "chest")
+			createChest(split_line);
+		else 
+		{
+			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
+			throw std::runtime_error("");
+		}
 	}
 }
 
-void Scene::createCoin(std::istringstream& split_line)
+void Scene::createChest(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	std::string item;
+	split_line >> item;
+
+	std::shared_ptr<Entity> content;
+
+	if (item == "coin")
+		content = createCoin(split_line);
+	else if (item == "cake")
+		content = createCake(split_line);
+	else
+		throw std::runtime_error("Scene::createChest: Bad content type");
+
+	pos *= m_tilemap->getTileSize();
+
+	std::cout << "Creating chest at " << pos.x << "," << pos.y << std::endl;
+
+	m_entities.emplace_back(std::make_shared<Chest>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, content));
+}
+
+std::shared_ptr<Coin> Scene::createCoin(std::istringstream& split_line)
 {
 	std::string size;
 	split_line >> size;
@@ -166,13 +197,33 @@ void Scene::createCoin(std::istringstream& split_line)
 	else if (size == "small")
 		is_big = false;
 	else
-		throw std::runtime_error("Scene::readSceneFile: Bad coin type");
+		throw std::runtime_error("Scene::createCoin: Bad coin type");
 
-	glm::ivec2 pos;
-	split_line >> pos.x >> pos.y;
-	// These are tilemap coordinates -> we multiply by the tile size
-	pos *= m_tilemap->getTileSize();
+	std::cout << "Creating coin" << std::endl;
 
-	std::cout << "Creating coin at " << pos.x << "," << pos.y << std::endl;
-	m_entities.emplace_back(std::make_shared<Coin>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, is_big));
+	auto coin = std::make_shared<Coin>(glm::ivec2{0.0f, 0.0f}, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, is_big);
+	m_entities.push_back(coin);
+
+	return coin;
+}
+
+std::shared_ptr<Cake> Scene::createCake(std::istringstream& split_line) 
+{
+	std::string size;
+	split_line >> size;
+
+	bool is_big;
+	if (size == "big")
+		is_big = true;
+	else if (size == "small")
+		is_big = false;
+	else
+		throw std::runtime_error("Scene::createCake: Bad cake type");
+
+	std::cout << "Creating cake" << std::endl;
+
+	auto cake = std::make_shared<Cake>(glm::ivec2{0.0f,0.0f}, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, is_big);
+	m_entities.push_back(cake);
+
+	return cake;
 }

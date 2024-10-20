@@ -30,7 +30,7 @@ private:
 	void takeHit();
 
 	// Gains power from eating cake
-	void gainPower();
+	void gainPower(unsigned int gain);
 
 	// Gains points from coins or defeating enemies
 	void gainPoints(unsigned int gain);
