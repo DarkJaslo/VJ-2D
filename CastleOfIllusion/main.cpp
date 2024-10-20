@@ -40,7 +40,7 @@ int main(void)
 	std::cout << "Initialized library" << std::endl;
 
 	/* Create a windowed mode window and its OpenGL context */
-	window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello World", NULL, NULL);
+	window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Castle of Illusion", NULL, NULL);
 	if (!window)
 	{
 		glfwTerminate();
@@ -48,7 +48,7 @@ int main(void)
 	}
 
 	/* Set window initial position */
-	glfwSetWindowPos(window, 100, 100);
+	glfwSetWindowPos(window, 400, 200);
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
 

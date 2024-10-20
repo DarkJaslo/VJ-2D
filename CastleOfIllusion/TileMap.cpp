@@ -177,7 +177,7 @@ void TileMap::prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program)
 // Method collisionMoveDown also corrects Y coordinate if the box is
 // already intersecting a tile below.
 
-std::optional<glm::vec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
+std::optional<glm::ivec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
 {
 	int left, right, top, bottom;
 	
@@ -209,7 +209,7 @@ std::optional<glm::vec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 c
 	return std::nullopt;
 }
 
-std::optional<glm::vec2> TileMap::yCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
+std::optional<glm::ivec2> TileMap::yCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
 {
 	int left, right, top, bottom;
 	

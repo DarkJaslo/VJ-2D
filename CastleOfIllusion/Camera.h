@@ -10,29 +10,32 @@
 class Camera
 {
 public:
-    Camera(float width, float height, std::shared_ptr<Player> player, glm::vec2 update_speed = glm::vec2(1.4f, 1.4f));
+    Camera(float width, float height, std::shared_ptr<Player> player);
 
 	// Updates the camera
     void update(int delta_time);
 
+	// Gets the camera's size
+    glm::vec2 getSize() const;
+
 	// Gets the camera's position (top left)
-    void getPosition();
+    glm::vec2 getPosition() const;
 	
 	// Gets the camera's projection matrix
-	glm::mat4 getProjectionMatrix();    
+	glm::mat4 getProjectionMatrix() const;    
 
 private:
 	// The game's player
 	std::shared_ptr<Player> m_player;
 
-	// The size
+	// The size of the window the camera renders
     glm::vec2 m_size;
 
 	// The position (top left)
-	glm::vec2 m_pos = glm::vec2(0,0);
+	glm::vec2 m_pos{0,0};
 
 	// The velocity at a certain moment
-	glm::vec2 m_vel = glm::vec2(0,0);
+	glm::vec2 m_vel{0,0};
 
 	// The speed in which the camera catches the player when the player changes direction
 	// Both values have to be greater than 1
