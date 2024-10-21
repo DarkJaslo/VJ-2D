@@ -67,7 +67,7 @@ public:
     void setCollisions (bool can_collide) { m_can_collide = can_collide; }
 
     // Sets whether the entity is enabled or not
-    void setEnabled (bool enabled) { m_enabled = enabled; }
+    virtual void setEnabled (bool enabled) { m_enabled = enabled; }
 
 protected:
     // The spritesheet
@@ -96,6 +96,26 @@ protected:
     // True iff this entity is enabled (is processed by the game)
     bool m_enabled = true;
 
+    // True iff this entity is affected by gravity
+    bool m_affected_by_gravity = false;
+
+    // The bouncing coefficient
+    static constexpr float S_BOUNCE_COEFF = -0.7f;
+
+    // The bouncing minimum speed (to avoid vibrations)
+    static constexpr float S_MIN_BOUNCE_SPEED = 0.25f;
+
+    // True iff this entity is affected by bouncing
+    bool m_bounces = false;
+
+    // The x drag coefficient
+    static constexpr float S_X_DRAG = 0.05f;
+
+    // The minimum speed (in absolute value) in the X axis for entities affected by drag
+    static constexpr float S_MIN_X_SPEED = 0.25f;
+
+    // True iff the entity is affected by drag on the X axis
+    bool m_affected_by_x_drag = false;
 };
 
 #endif // _ENTITY_INCLUDE

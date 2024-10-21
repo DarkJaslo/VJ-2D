@@ -1,4 +1,5 @@
 #include "Coin.h"
+#include "TimedEvent.h"
 #include <iostream>
 
 Coin::Coin(glm::ivec2 const& pos,
@@ -8,6 +9,7 @@ Coin::Coin(glm::ivec2 const& pos,
     bool is_big)
     : m_is_big(is_big)
 {
+    m_tilemap = tilemap;
     m_spritesheet.reset(new Texture());
     m_spritesheet->loadFromFile("images/Items.png", TEXTURE_PIXEL_FORMAT_RGBA);
     glm::vec2 size_in_texture = glm::vec2(0.125f, 0.5f);
@@ -24,6 +26,8 @@ Coin::Coin(glm::ivec2 const& pos,
 
     m_enabled = false;
     m_can_collide = false;
+    m_affected_by_gravity = true;
+    m_bounces = true;
 }
 
 void Coin::update(int delta_time) 
@@ -32,12 +36,6 @@ void Coin::update(int delta_time)
         return;
     
     Entity::update(delta_time);
-
-    m_alive_time += delta_time;
-    if (m_alive_time >= s_timeout)
-    {
-        // Disappear
-    }
 }
 
 void Coin::collideWithEntity(Collision collision)
@@ -59,6 +57,33 @@ void Coin::collideWithEntity(Collision collision)
     }
     default:
         break;
+    }
+}
+
+void Coin::setEnabled(bool enabled) 
+{
+    Entity::setEnabled(enabled);
+
+    if (enabled) 
+    {
+        auto NoCollideAtStart = [this]()
+        {
+            if (!m_enabled)
+                return;
+
+            m_can_collide = true;
+        };
+        TimedEvents::pushEvent(std::make_unique<TimedEvent>(200, NoCollideAtStart));
+
+        auto Destroy = [this]()
+        {
+            if (!m_enabled)
+                return;
+
+            m_enabled = false;
+            m_can_collide = false;
+        };
+        TimedEvents::pushEvent(std::make_unique<TimedEvent>(s_timeout, Destroy));
     }
 }
 

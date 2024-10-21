@@ -1,4 +1,5 @@
 #include "ThrowableTile.h"
+#include "TimedEvent.h"
 
 #include <iostream>
 
@@ -63,14 +64,18 @@ void ThrowableTile::onPickUp()
 {
 	m_can_collide = false;
 	m_picked_up = true;
+	m_affected_by_gravity = false;
+	m_affected_by_x_drag = false;
 	// Probably change position so that it matches the player's animation
 }
 
-void ThrowableTile::onThrow() 
+void ThrowableTile::onThrow(glm::vec2 velocity) 
 {
 	m_can_collide = true;
 	m_picked_up = false;
 	m_thrown = true;
+	m_affected_by_gravity = true;
+	m_affected_by_x_drag = true;
 	// Add some force/speed to it
 }
 
@@ -81,6 +86,13 @@ void ThrowableTile::onDestroy()
 	// Probably disable gravity too
 
 	m_can_collide = false;
+	m_affected_by_gravity = false;
 	setVelocity({ 0.f, 0.f });
 	std::cout << "Throwable entity broken!" << std::endl;
+
+	auto Destroy = [this]() 
+	{
+		m_enabled = false;
+	};
+	TimedEvents::pushEvent(std::make_unique<TimedEvent>(50, Destroy));
 }

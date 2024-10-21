@@ -29,6 +29,7 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ThrowableTile.h" />
     <ClInclude Include="TileMap.h" />
+    <ClInclude Include="TimedEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cake.cpp" />

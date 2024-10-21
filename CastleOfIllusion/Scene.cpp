@@ -4,12 +4,14 @@
 #include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
+#include <algorithm>
 
 #include "Scene.h"
 #include "Game.h"
 #include "Coin.h"
 #include "Cake.h"
 #include "Chest.h"
+#include "TimedEvent.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -18,7 +20,6 @@
 // coordinates of the tile where the player appears 
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 8
-
 
 Scene::Scene()
 {
@@ -49,6 +50,9 @@ void Scene::update(int delta_time)
 {
 	m_current_time += delta_time;
 
+	// Updates scheduled events, if any
+	TimedEvents::updateEvents(delta_time);
+
 	// This includes the player, which is first of all
 	for (auto& entity : m_entities) 
 	{
@@ -62,13 +66,11 @@ void Scene::update(int delta_time)
 		if (!m_entities[i]->canCollide())
 			continue;
 
-		// TODO: skip non-visible
 		for (std::size_t j = i+1; j < m_entities.size(); ++j)
 		{
 			if (!m_entities[j]->canCollide())
 				continue;
 
-			// TODO: skip non-visible
 			if (*m_entities[i] & *m_entities[j])
 			{
 				std::cout << "Detected collision between entities" << std::endl;
