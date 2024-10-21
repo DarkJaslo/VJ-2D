@@ -18,6 +18,11 @@
 #define SIZE_IN_TEXTURE_X 0.0625
 #define SIZE_IN_TEXTURE_Y 0.09090909
 
+#define KEY_MOVE_LEFT GLFW_KEY_A
+#define KEY_MOVE_RIGHT GLFW_KEY_D
+#define KEY_MOVE_DOWN GLFW_KEY_S
+#define KEY_JUMP GLFW_KEY_W
+
 enum PlayerAnims
 {
 	IDLE, MOVE, CROUCH, JUMP, FALL,	SLIDE, ATTACK_UP, ATTACK_DOWN
@@ -55,12 +60,12 @@ void Player::update(int delta_time)
 	PlayerState prev_state = m_state;
 
 	//////// X AXIS
-	if (Game::getKey(GLFW_KEY_A))
+	if (Game::getKey(KEY_MOVE_LEFT))
 	{
 		m_sprite->turnLeft();
 
 		// Don't move if crouching
-		if (!Game::getKey(GLFW_KEY_S))
+		if (!(m_state == PlayerState::Crouching))
 		{
 			if (m_grounded)
 			{
@@ -69,12 +74,12 @@ void Player::update(int delta_time)
 			m_acc.x = -ACCELERATION;
 		}
 	}
-	else if (Game::getKey(GLFW_KEY_D))
+	else if (Game::getKey(KEY_MOVE_RIGHT))
 	{
 		m_sprite->turnRight();
 
 		//Don't move if crouching
-		if (!Game::getKey(GLFW_KEY_S))
+		if (!(m_state == PlayerState::Crouching))
 		{
 			if (m_grounded)
 			{
@@ -98,8 +103,8 @@ void Player::update(int delta_time)
 		}
 	}
 
-	// Decelerate movement on the x axis if 
-	if ((!Game::getKey(GLFW_KEY_A) && !Game::getKey(GLFW_KEY_D)) || Game::getKey(GLFW_KEY_S))
+	// Decelerate movement on the x axis if the player has stopped moving or is crouching
+	if ((!Game::getKey(KEY_MOVE_LEFT) && !Game::getKey(KEY_MOVE_RIGHT)) || (m_state == PlayerState::Crouching))
 	{
 		m_acc.x = 0.f;
 		if (m_vel.x > 0.f)
@@ -113,7 +118,7 @@ void Player::update(int delta_time)
 	}
 	
 	// Crouch/attack
-	if (Game::getKey(GLFW_KEY_S))
+	if (Game::getKey(KEY_MOVE_DOWN))
 	{
 		if (m_grounded)
 		{
@@ -160,7 +165,7 @@ void Player::update(int delta_time)
 	if (m_grounded)
 	{
 		// Jump
-		if (Game::getKey(GLFW_KEY_W))
+		if (Game::getKey(KEY_JUMP))
 		{
 			if (m_state != PlayerState::Jumping)
 			{
@@ -204,7 +209,8 @@ void Player::update(int delta_time)
 
 	// Update grounded
 	m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
-	
+
+	std::cout << m_grounded << std::endl;
 	// Change animation if necessary
 	if (prev_state != m_state)
 	{

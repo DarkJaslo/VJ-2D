@@ -15,7 +15,7 @@ class Sprite
 
 public:
 	// Textured quads can only be created inside an OpenGL context
-	// Assumes 
+	// Assumes the sprite is looking to the right
 	static Sprite* createSprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet,
 		                        std::shared_ptr<Texture> spritesheet, std::shared_ptr<ShaderProgram> program);
 
