@@ -4,6 +4,7 @@
 #include "Sprite.h"
 #include "TileMap.h"
 #include "Entity.h"
+#include "ThrowableTile.h"
 
 enum class PlayerState
 {
@@ -13,7 +14,12 @@ enum class PlayerState
     Jumping,
     Falling,
     Crouching,
-    Attacking,
+    AttackingUp,
+    AttackingDown,
+    HoldIdle,
+    HoldMoving,
+    HoldJumping,
+    HoldFalling
 };
 
 // Represents a player.
@@ -38,11 +44,12 @@ public:
     // Gets the state the player is currently in
     PlayerState getPlayerState() const;
 
+    // Returns true iff the player is attacking
     bool isAttacking() const;
 
     // Returns the type of entity the player is
     virtual EntityType getType() const override { return EntityType::Player; }
-	
+    	
 private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
 	void takeHit();
@@ -56,6 +63,7 @@ private:
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
 
+    // Creates and configures the player animations
     void configureAnimations();
     
     // The player's state
@@ -77,6 +85,14 @@ private:
 
     // The maximum (and initial) amount of power. In the original game, can be increased up to 5
     int m_max_power = 3;
+
+    // Pointer to the object the player is holding
+    ThrowableTile* m_trowable_obj;
+
+    // Returns true iff the player is holding an object
+    bool m_has_object;
+
+    bool m_looking_right;
 };
 
 #endif // _PLAYER_INCLUDE

@@ -66,7 +66,7 @@ void ThrowableTile::onPickUp()
 	// Probably change position so that it matches the player's animation
 }
 
-void ThrowableTile::onThrow() 
+void ThrowableTile::onThrow(glm::vec2 velocity) 
 {
 	m_can_collide = true;
 	m_picked_up = false;
