@@ -372,7 +372,7 @@ void Player::collideWithEntity(Collision collision)
 		if (throwable->isStatic()) 
 		{
 			// If I'm attacking, bounce on it
-			if (m_state == PlayerState::Attacking && throwable->isDestroyedOnImpact()) 
+			if (isAttacking() && throwable->isDestroyedOnImpact())
 			{
 				// Bounce up
 				m_vel.y = S_BOUNCE_SPEED;
