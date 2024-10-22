@@ -1,10 +1,74 @@
 #include "Entity.h"
+
 #include <iostream>
+#include <algorithm>
 
 void Entity::update(int delta_time)
 {
-    if (m_enabled)
-        m_sprite->update(delta_time);
+    if (!m_enabled)
+        return;
+
+    m_sprite->update(delta_time);
+
+    // Update Y position
+    if (m_affected_by_gravity) 
+    {
+        m_vel.y += S_GRAVITY * static_cast<float>(delta_time);
+        m_pos.y += static_cast<int>(m_vel.y * static_cast<float>(delta_time));
+    }
+
+    if (m_can_collide) 
+    {
+        auto y_collision = m_tilemap->yCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);
+        if (y_collision)
+        {
+            m_pos.y = y_collision->y + m_collision_box_size.y;
+
+            if (m_bounces)
+            {
+                m_vel.y *= S_BOUNCE_COEFF;
+                std::cout << "Vel y: " << m_vel.y << "\n";
+                if (abs(m_vel.y) <= S_MIN_BOUNCE_SPEED)
+                    m_vel.y = 0.0f;
+            }
+            else
+                m_vel.y = 0.0f;
+        }
+    }
+
+    // Saves work if the object is not moving (common case)
+    if (m_vel == glm::vec2(0.0f, 0.0f))
+    {
+        m_sprite->setPosition(m_pos);
+        return;
+    }
+
+    // Update X position
+    if (m_affected_by_x_drag) 
+    {
+        if (m_vel.x > 0) 
+            m_vel.x = std::max(m_vel.x - S_X_DRAG * static_cast<float>(delta_time), 0.0f);
+        else if (m_vel.x < 0)
+            m_vel.x = std::min(m_vel.x + S_X_DRAG * static_cast<float>(delta_time), 0.0f);
+    }
+
+    if (m_can_collide) 
+    {
+        auto x_collision = m_tilemap->xCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);
+        if (x_collision)
+        {
+            m_pos.x = x_collision->x + m_collision_box_size.x / 2;
+
+            if (m_bounces)
+            {
+                m_vel.x *= S_BOUNCE_COEFF;
+                if (abs(m_vel.x) <= S_MIN_BOUNCE_SPEED)
+                    m_vel.x = 0.0f;
+            }
+        }
+    }
+
+    m_sprite->setPosition(m_pos);
 }
 
 void Entity::render()

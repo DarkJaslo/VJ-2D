@@ -12,11 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimKeyframes.h" />
+    <ClInclude Include="Boss.h" />
     <ClInclude Include="Cake.h" />
     <ClInclude Include="Chest.h" />
     <ClInclude Include="Coin.h" />
     <ClInclude Include="Collision.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="EntityType.h" />
     <ClInclude Include="Game.h" />
@@ -29,12 +31,16 @@
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ThrowableTile.h" />
     <ClInclude Include="TileMap.h" />
+    <ClInclude Include="TimedEvent.h" />
+    <ClInclude Include="Void.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Boss.cpp" />
     <ClCompile Include="Cake.cpp" />
     <ClCompile Include="Chest.cpp" />
     <ClCompile Include="Coin.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
@@ -47,6 +53,7 @@
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ThrowableTile.cpp" />
     <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="Void.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{5BE6CA2A-E5A8-40CC-9015-047CE0C78036}</ProjectGuid>

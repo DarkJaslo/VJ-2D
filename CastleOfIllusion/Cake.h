@@ -21,6 +21,9 @@ public:
 
 	virtual EntityType getType() const override { return EntityType::Cake; }
 
+	// Sets whether the coin is enabled or not
+    virtual void setEnabled(bool enabled) override; 
+
 	unsigned int getPower() const;
 
 private:

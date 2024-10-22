@@ -63,6 +63,9 @@ private:
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
 
+    // Called when the player falls off the level
+    void onFallOff();
+
     // Creates and configures the player animations
     void configureAnimations();
     
@@ -86,11 +89,14 @@ private:
     // The maximum (and initial) amount of power. In the original game, can be increased up to 5
     int m_max_power = 3;
 
+    // The speed at which the player bounces up after attacking some entities like enemies
+    static constexpr float S_BOUNCE_SPEED = -1.5f;
+    
     // Pointer to the object the player is holding
-    ThrowableTile* m_trowable_obj;
+    ThrowableTile* m_throwable_obj;
 
     // Returns true iff the player is holding an object
-    bool m_has_object;
+    bool m_has_object = false;
 
     bool m_looking_right;
 };

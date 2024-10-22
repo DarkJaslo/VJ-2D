@@ -11,6 +11,6 @@ eddcbc................................................................
 dcdcbc........................................cdcecf..................
 dcdcbc..........................................................aaabab
 dcddbc..........................................................badcdc
-dcdcbcabababababababababababababababababababababababababababababdadddc
-dcdcbcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc
+dcdcbcabababababababababababababababababababababababababab......dadddc
+dcdcbcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdc......dcdcdc
 
