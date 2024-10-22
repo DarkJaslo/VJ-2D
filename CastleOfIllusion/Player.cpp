@@ -371,6 +371,8 @@ void Player::collideWithEntity(Collision collision)
 		auto throwable = static_cast<ThrowableTile*>(collision.entity);
 		if (throwable->isStatic()) 
 		{
+			m_throwable_obj = throwable;
+
 			// If I'm attacking, bounce on it
 			if (isAttacking() && throwable->isDestroyedOnImpact())
 			{
