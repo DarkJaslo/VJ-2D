@@ -47,6 +47,12 @@ private:
 	// Creates a void and adds it to the scene
 	void createVoid(std::istringstream& split_line);
 
+	// Creates a platform and adds it to the scene
+	void createPlatform(std::istringstream& split_line);
+
+	// Creates a barrel and adds it to the scene
+	void createBarrel(std::istringstream& split_line);
+
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
 	

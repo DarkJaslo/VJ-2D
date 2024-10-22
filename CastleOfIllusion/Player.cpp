@@ -44,7 +44,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_grounded = false;
 	m_vel = glm::vec2(0.f,0.f);
 	m_acc = glm::vec2(0.f,0.f);
-	m_throwable_obj = NULL;
+	m_throwable_obj = nullptr;
 
 	m_spritesheet->loadFromFile("images/MickeyMouse.png", TEXTURE_PIXEL_FORMAT_RGBA);
 
@@ -66,7 +66,7 @@ void Player::update(int delta_time)
 
 
 	// Handle grab interaction
-	if (Game::getKey(KEY_GRAB) && (m_throwable_obj != NULL) && m_can_grab)
+	if (Game::getKey(KEY_GRAB) && (m_throwable_obj != nullptr) && m_can_grab)
 	{
 		m_has_object = !m_has_object;
 		m_can_grab = false;
@@ -87,7 +87,7 @@ void Player::update(int delta_time)
 					m_throwable_obj->setPosition(m_pos + glm::ivec2(-16.f * 4.f, -24.f * 4));
 			}
 
-			m_throwable_obj = NULL;
+			m_throwable_obj = nullptr;
 		}
 	}
 
@@ -360,6 +360,10 @@ void Player::update(int delta_time)
 		else
 			m_throwable_obj->setPosition(m_pos + glm::ivec2(-4.f,-24.f*4));
 	}
+	else 
+	{
+		m_throwable_obj = nullptr;
+	}
 }
 
 void Player::collideWithEntity(Collision collision) 
@@ -391,75 +395,27 @@ void Player::collideWithEntity(Collision collision)
 		if (throwable->isStatic()) 
 		{
 			// Player can only grab one object at a time
-			if (!m_throwable_obj)
-				m_throwable_obj = throwable;
+			if (!m_throwable_obj && (Game::getKey(KEY_MOVE_LEFT) || Game::getKey(KEY_MOVE_RIGHT)))
+			{
+				glm::ivec2 me_to_object = throwable->getPosition() - m_pos;
+
+				// The Y coordinates have to practically match
+				int const MAX_Y_DIFFERENCE = 8;
+				if (me_to_object.y < MAX_Y_DIFFERENCE && ((m_looking_right && me_to_object.x > 0) || (!m_looking_right && me_to_object.x < 0)))
+					m_throwable_obj = throwable;
+			}
 
 			// If I'm attacking, bounce on it
 			if (isAttacking() && throwable->isDestroyedOnImpact())
-			{
-				// Bounce up
 				m_vel.y = S_BOUNCE_SPEED;
-			}
 			else 
-			{
-				// Physically collide with it: in this case it's a bit more difficult because we already have the
-				// updated X,Y coordinates of the player instead of being able to update them one by one.
-				//
-				// However, if we assume certain things about the game, there is a solution that works
-
-				auto [min, max] = throwable->getMinMaxCollisionCoords();
-
-				// If the amount of the player that is inside the box exceeds these values, then the player is 
-				// actually not inside in that axis
-				int const Y_MAX_MARGIN = m_collision_box_size.y / 2;
-				int const X_MAX_MARGIN = m_collision_box_size.x / 4;
-
-				auto player_max_y = m_pos.y;
-				auto player_max_x = m_pos.x + m_collision_box_size.x / 2.0f;
-				auto player_min_x = m_pos.x - m_collision_box_size.x / 2.0f;
-
-				// We don't contemplate collisions from below against this kind of object
-				int y_inside = player_max_y - min.y;
-				int x_inside_left = player_max_x - min.x;
-				int x_inside_right = max.x - player_min_x + 1;
-
-				bool actually_inside_y = y_inside < Y_MAX_MARGIN;
-				bool actually_inside_x = x_inside_left < X_MAX_MARGIN || x_inside_right < X_MAX_MARGIN;
-
-				auto CorrectX = [&]() 
-				{
-					if (x_inside_left < X_MAX_MARGIN)
-						m_pos.x -= x_inside_left;
-					else
-						m_pos.x += x_inside_right;
-
-					m_vel.x = 0.0f;
-				};
-
-				auto CorrectY = [&]() 
-				{
-					m_pos.y -= y_inside;
-					m_vel.y = 0.0f;
-					m_grounded = true;
-				};
-
-				if (actually_inside_x && actually_inside_y) 
-				{
-					// Inside in both axes, correct the smallest ("less inside")
-					int x_inside = x_inside_left < X_MAX_MARGIN ? x_inside_left : x_inside_right;
-					if (y_inside < x_inside) 
-						CorrectY();
-					else 
-						CorrectX();
-				}
-				else if (actually_inside_y)
-					CorrectY();
-				else if (actually_inside_x)
-					CorrectX();
-			}
+				computeCollisionAgainstSolid(throwable);
 		}
 		return;
 	}
+	case EntityType::Platform:
+		computeCollisionAgainstSolid(collision.entity);
+		return;
 	case EntityType::Void:
 		onFallOff();
 		return;
@@ -624,4 +580,70 @@ void Player::configureAnimations()
 	// Falling
 	m_sprite->setAnimationSpeed(HOLD_FALL, 1);
 	m_sprite->addKeyframe(HOLD_FALL, glm::vec2(9.f, 2.f));
+}
+
+void Player::computeCollisionAgainstSolid(Entity* solid) 
+{
+	// Physically collide with it: in this case it's a bit more difficult because we already have the
+	// updated X,Y coordinates of the player instead of being able to update them one by one.
+	//
+	// However, if we assume certain things about the game, there is a solution that works
+	auto [min, max] = solid->getMinMaxCollisionCoords();
+
+	// If the amount of the player that is inside the box exceeds these values, then the player is 
+	// actually not inside in that axis
+	int const Y_MAX_MARGIN = m_collision_box_size.y / 2;
+	int const X_MAX_MARGIN = m_collision_box_size.x / 4;
+
+	auto player_max_y = m_pos.y;
+	auto player_min_y = m_pos.y - m_collision_box_size.y;
+	auto player_max_x = m_pos.x + m_collision_box_size.x / 2.0f;
+	auto player_min_x = m_pos.x - m_collision_box_size.x / 2.0f;
+
+	int y_inside_up = player_max_y - min.y;
+	int y_inside_down = max.y - player_min_y;
+	int x_inside_left = player_max_x - min.x;
+	int x_inside_right = max.x - player_min_x + 1;
+
+	bool actually_inside_y = y_inside_up < Y_MAX_MARGIN || y_inside_down < Y_MAX_MARGIN;
+	bool actually_inside_x = x_inside_left < X_MAX_MARGIN || x_inside_right < X_MAX_MARGIN;
+
+	auto CorrectX = [&]()
+	{
+		if (x_inside_left < X_MAX_MARGIN)
+			m_pos.x -= x_inside_left;
+		else
+			m_pos.x += x_inside_right;
+
+		m_vel.x = 0.0f;
+	};
+
+	auto CorrectY = [&]()
+	{
+		if (y_inside_up < Y_MAX_MARGIN) 
+		{
+			m_pos.y -= y_inside_up;
+			m_grounded = true;
+		}
+		else
+			m_pos.y += y_inside_down;
+
+		m_vel.y = 0.0f;
+	};
+
+	if (actually_inside_x && actually_inside_y)
+	{
+		// Inside in both axes, correct the smallest ("less inside")
+		int x_inside = x_inside_left < X_MAX_MARGIN ? x_inside_left : x_inside_right;
+		int y_inside = y_inside_up < Y_MAX_MARGIN ? y_inside_up : y_inside_down;
+
+		if (y_inside_up < x_inside)
+			CorrectY();
+		else
+			CorrectX();
+	}
+	else if (actually_inside_y)
+		CorrectY();
+	else if (actually_inside_x)
+		CorrectX();
 }
