@@ -8,6 +8,7 @@
 #include "Game.h"
 #include "Coin.h"
 #include "Cake.h"
+#include "ThrowableTile.h"
 
 #define JUMP_HEIGHT 4*16*4
 #define MAX_X_VELOCITY 0.6f // Maximum velocity on the x axis
@@ -226,6 +227,80 @@ void Player::collideWithEntity(Collision collision)
 		gainPoints(coin->getPoints());
 		return;
 	}
+	case EntityType::ThrowableTile: 
+	{
+		auto throwable = static_cast<ThrowableTile*>(collision.entity);
+		if (throwable->isStatic()) 
+		{
+			// If I'm attacking, bounce on it
+			if (m_state == PlayerState::Attacking && throwable->isDestroyedOnImpact()) 
+			{
+				// Bounce up
+				m_vel.y = S_BOUNCE_SPEED;
+			}
+			else 
+			{
+				// Physically collide with it: in this case it's a bit more difficult because we already have the
+				// updated X,Y coordinates of the player instead of being able to update them one by one.
+				//
+				// However, if we assume certain things about the game, there is a solution that works
+
+				auto [min, max] = throwable->getMinMaxCollisionCoords();
+
+				// If the amount of the player that is inside the box exceeds these values, then the player is 
+				// actually not inside in that axis
+				int const Y_MAX_MARGIN = m_collision_box_size.y / 2;
+				int const X_MAX_MARGIN = m_collision_box_size.x / 4;
+
+				auto player_max_y = m_pos.y;
+				auto player_max_x = m_pos.x + m_collision_box_size.x / 2.0f;
+				auto player_min_x = m_pos.x - m_collision_box_size.x / 2.0f;
+
+				// We don't contemplate collisions from below against this kind of object
+				int y_inside = player_max_y - min.y;
+				int x_inside_left = player_max_x - min.x;
+				int x_inside_right = max.x - player_min_x + 1;
+
+				bool actually_inside_y = y_inside < Y_MAX_MARGIN;
+				bool actually_inside_x = x_inside_left < X_MAX_MARGIN || x_inside_right < X_MAX_MARGIN;
+
+				auto CorrectX = [&]() 
+				{
+					if (x_inside_left < X_MAX_MARGIN)
+						m_pos.x -= x_inside_left;
+					else
+						m_pos.x += x_inside_right;
+
+					m_vel.x = 0.0f;
+				};
+
+				auto CorrectY = [&]() 
+				{
+					m_pos.y -= y_inside;
+					m_vel.y = 0.0f;
+					m_grounded = true;
+				};
+
+				if (actually_inside_x && actually_inside_y) 
+				{
+					// Inside in both axes, correct the smallest ("less inside")
+					int x_inside = x_inside_left < X_MAX_MARGIN ? x_inside_left : x_inside_right;
+					if (y_inside < x_inside) 
+						CorrectY();
+					else 
+						CorrectX();
+				}
+				else if (actually_inside_y)
+					CorrectY();
+				else if (actually_inside_x)
+					CorrectX();
+			}
+		}
+		return;
+	}
+	case EntityType::Void:
+		onFallOff();
+		return;
 	default:
 		return;
 	}
@@ -284,6 +359,11 @@ PlayerState Player::getPlayerState() const
 bool Player::isAttacking() const
 {
 	return m_state == PlayerState::Attacking;
+}
+
+void Player::onFallOff() 
+{
+	std::cout << "Collided with void! Dying..." << std::endl;
 }
 
 void Player::configureAnimations()

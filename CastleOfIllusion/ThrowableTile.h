@@ -32,6 +32,9 @@ public:
 	// Returns true iff it has been thrown (and hasn't touched ground)
 	bool isBeingThrown() const { return m_thrown; }
 
+	// Returns true iff this is destroyed on impact
+	bool isDestroyedOnImpact() const { return m_destroyed_on_impact; }
+
 	// To be called when being picked up by the player
 	void onPickUp();
 

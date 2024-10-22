@@ -12,6 +12,7 @@
 #include "Cake.h"
 #include "Chest.h"
 #include "TimedEvent.h"
+#include "Void.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -155,6 +156,8 @@ void Scene::readSceneFile(std::string&& path)
 
 		if (word == "chest")
 			createChest(split_line);
+		else if (word == "void")
+			createVoid(split_line);
 		else 
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -227,4 +230,17 @@ std::shared_ptr<Cake> Scene::createCake(std::istringstream& split_line)
 	m_entities.push_back(cake);
 
 	return cake;
+}
+
+void Scene::createVoid(std::istringstream& split_line) 
+{
+	glm::ivec2 upleft_corner_pos;
+	glm::ivec2 collision_size;
+
+	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y >> collision_size.x >> collision_size.y;
+
+	upleft_corner_pos *= m_tilemap->getTileSize();
+	collision_size *= m_tilemap->getTileSize();
+
+	m_entities.emplace_back(std::make_shared<Void>(upleft_corner_pos, collision_size));
 }

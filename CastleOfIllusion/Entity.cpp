@@ -14,7 +14,7 @@ void Entity::update(int delta_time)
     if (m_affected_by_gravity) 
     {
         m_vel.y += S_GRAVITY * static_cast<float>(delta_time);
-        m_pos.y += m_vel.y * static_cast<float>(delta_time);
+        m_pos.y += static_cast<int>(m_vel.y * static_cast<float>(delta_time));
     }
 
     if (m_can_collide) 
@@ -46,12 +46,10 @@ void Entity::update(int delta_time)
     // Update X position
     if (m_affected_by_x_drag) 
     {
-        if (m_vel.x > 0)
-            m_vel.x -= S_X_DRAG * static_cast<float>(delta_time);
+        if (m_vel.x > 0) 
+            m_vel.x = std::max(m_vel.x - S_X_DRAG * static_cast<float>(delta_time), 0.0f);
         else if (m_vel.x < 0)
-            m_vel.x += S_X_DRAG * static_cast<float>(delta_time);
-
-        m_vel.x = std::min(0.0f, abs(m_vel.x));
+            m_vel.x = std::min(m_vel.x + S_X_DRAG * static_cast<float>(delta_time), 0.0f);
     }
 
     if (m_can_collide) 

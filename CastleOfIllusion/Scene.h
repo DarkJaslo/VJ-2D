@@ -44,6 +44,9 @@ private:
 	// Creates a cake and adds it to the scene
 	[[nodiscard]] std::shared_ptr<Cake> createCake(std::istringstream& split_line);
 
+	// Creates a void and adds it to the scene
+	void createVoid(std::istringstream& split_line);
+
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
 	
