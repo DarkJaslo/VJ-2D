@@ -13,6 +13,8 @@
 #include "Chest.h"
 #include "TimedEvent.h"
 #include "Void.h"
+#include "Platform.h"
+#include "Barrel.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -33,7 +35,7 @@ Scene::Scene()
 void Scene::init()
 {
 	initShaders();
-	m_tilemap.reset(TileMap::createTileMap("levels/testSimple.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+	m_tilemap.reset(TileMap::createTileMap("levels/level1.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
 	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
 		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_player_sprite_size, m_player_collision_size, m_tex_program));
@@ -158,6 +160,10 @@ void Scene::readSceneFile(std::string&& path)
 			createChest(split_line);
 		else if (word == "void")
 			createVoid(split_line);
+		else if (word == "platform")
+			createPlatform(split_line);
+		else if (word == "barrel")
+			createBarrel(split_line);
 		else 
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -243,4 +249,24 @@ void Scene::createVoid(std::istringstream& split_line)
 	collision_size *= m_tilemap->getTileSize();
 
 	m_entities.emplace_back(std::make_shared<Void>(upleft_corner_pos, collision_size));
+}
+
+void Scene::createPlatform(std::istringstream& split_line) 
+{
+	glm::ivec2 upleft_corner_pos;
+	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y;
+
+	upleft_corner_pos *= m_tilemap->getTileSize();
+
+	m_entities.emplace_back(std::make_shared<Platform>(upleft_corner_pos, m_tilemap->getTilesheet(), m_tilemap->getTileSize(), m_tex_program, m_tilemap));
+}
+
+void Scene::createBarrel(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+
+	m_entities.emplace_back(std::make_shared<Barrel>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
 }

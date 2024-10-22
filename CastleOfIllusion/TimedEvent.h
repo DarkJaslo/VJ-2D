@@ -4,6 +4,7 @@
 #include <functional>
 #include <type_traits>
 #include <memory>
+#include <list>
 
 // Represents an event that will execute when a certain amount of time (in milliseconds) has passed from its creation
 // Move-only
@@ -56,29 +57,39 @@ class TimedEvents
 {
 public:
 	// Pushes an event to the system
-	static void pushEvent(std::unique_ptr<TimedEvent> event)
+	static void pushEvent(std::unique_ptr<TimedEvent>&& event)
 	{
 		auto& m_events = instance().m_events;
-
-		std::size_t i = 0;
-		for (; i < m_events.size(); ++i)
-		{
-			if (!m_events[i])
-				break;
-		}
-
-		if (i < m_events.size())
-			m_events[i] = std::move(event);
-		else
-			m_events.emplace_back(std::move(event));
+		m_events.emplace_back(std::move(event));
 	}
 
 	// Ticks all events, deleting fulfilled ones
 	static void updateEvents(int delta_time)
 	{
-		for (auto& event : instance().m_events)
-			if (event && event->update(delta_time))
-				event.reset();
+		auto& m_events = instance().m_events;
+
+		auto it = m_events.begin();
+		while (it != m_events.end()) 
+		{
+			if ((*it)->update(delta_time))
+			{
+				if (it != m_events.begin())
+				{
+					auto it2 = it;
+					it--;
+					m_events.erase(it2);
+					it++;
+				}
+				else 
+				{
+					auto it2 = it;
+					m_events.erase(it2);
+					it = m_events.begin();
+				}
+			}
+			else
+				it++;
+		}
 	}
 
 private:
@@ -90,7 +101,7 @@ private:
 	TimedEvents() = default;
 
 	// Stores the events
-	std::vector<std::unique_ptr<TimedEvent>> m_events;
+	std::list<std::unique_ptr<TimedEvent>> m_events;
 };
 
 #endif // _TIMED_EVENT_INCLUDE

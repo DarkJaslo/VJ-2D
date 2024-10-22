@@ -25,6 +25,18 @@ ThrowableTile::ThrowableTile(glm::ivec2 pos,
 	m_collision_box_size = { tilemap->getTileSize(), tilemap->getTileSize() };
 	setPosition(pos);
 	m_destroyed_on_impact = destroyed_on_impact;
+
+	// Idle "animation" and destroy animation
+	m_sprite->setNumberAnimations(2);
+
+	m_sprite->setAnimationSpeed(0, 1);
+	m_sprite->addKeyframe(0, position_in_texture / size_in_texture);
+	
+	m_sprite->setAnimationSpeed(1, 6);
+	m_sprite->addKeyframe(1, { 7.0f, 0.0f });
+	m_sprite->addKeyframe(1, { 7.0f, 1.0f });
+
+	m_sprite->changeAnimation(0);
 }
 
 void ThrowableTile::update(int delta_time)
@@ -32,14 +44,16 @@ void ThrowableTile::update(int delta_time)
 	if (!m_enabled)
 		return;
 
-	Entity::update(delta_time);
-
+	// We check collision with the tilemap on Y first to be able to update the attribute
 	if (m_thrown) 
 	{
-		// Check collision with tilemap
-			// If destructible, destroy
-			// Else, bounce
+		auto offset_position = getMinMaxCollisionCoords().first + glm::ivec2(0, m_collision_box_size.y);
+		auto collision = m_tilemap->yCollision(offset_position, m_collision_box_size, m_vel);
+		if (collision) 
+			m_thrown = false;
 	}
+
+	Entity::update(delta_time);
 }
 
 void ThrowableTile::collideWithEntity(Collision collision) 
@@ -66,7 +80,6 @@ void ThrowableTile::onPickUp()
 	m_picked_up = true;
 	m_affected_by_gravity = false;
 	m_affected_by_x_drag = false;
-	// Probably change position so that it matches the player's animation
 }
 
 void ThrowableTile::onThrow(bool looking_right, bool moving) 
@@ -76,30 +89,27 @@ void ThrowableTile::onThrow(bool looking_right, bool moving)
 	m_thrown = true;
 	m_affected_by_gravity = true;
 	m_affected_by_x_drag = true;
-	// Add some force/speed to it
+	
 	if (m_destroyed_on_impact || moving)
 	{
 		if (looking_right)
-			changeVelocity(glm::vec2(4.f, 0.f));
+			changeVelocity(glm::vec2(1.5f, -0.6f));
 		else
-			changeVelocity(glm::vec2(-4.f, 0.f));
+			changeVelocity(glm::vec2(-1.5f, -0.6f));
 	}
 }
 
 void ThrowableTile::onDestroy()
 {
-	// Destroy myself, play animation and sound
-	// Respawn at original position
-	// Probably disable gravity too
-
 	m_can_collide = false;
 	m_affected_by_gravity = false;
 	setVelocity({ 0.f, 0.f });
-	std::cout << "Throwable entity broken!" << std::endl;
+	m_sprite->changeAnimation(1);
 
 	auto Destroy = [this]() 
 	{
 		m_enabled = false;
+		m_sprite->changeAnimation(0);
 	};
-	TimedEvents::pushEvent(std::make_unique<TimedEvent>(50, Destroy));
+	TimedEvents::pushEvent(std::make_unique<TimedEvent>(350, Destroy));
 }

@@ -8,6 +8,13 @@
 class Platform : public Entity
 {
 public:
+    // Assumes the position is the upleft corner
+    Platform(glm::ivec2 pos, 
+        std::shared_ptr<Texture> tilesheet, 
+        int tile_size, 
+        std::shared_ptr<ShaderProgram> shader_program, 
+        std::shared_ptr<TileMap> tilemap);
+
     virtual void update(int delta_time) override;
 
     // Gets the entity's type
@@ -17,7 +24,11 @@ public:
     virtual void collideWithEntity(Collision collision) override;
 
 private:
+    // All entities on top of the platform each frame
     std::vector<Entity*> m_entities_on_top;
+
+    // True iff the player has stoop on top of it; starts falling
+    bool m_started_falling = false;
 };
 
 #endif

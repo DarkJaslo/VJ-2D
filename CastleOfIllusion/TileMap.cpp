@@ -19,6 +19,8 @@ TileMap::TileMap(std::string const& level_file, glm::vec2 const& min_coords, Sha
 {
 	loadLevel(level_file);
 	prepareArrays(min_coords, program);
+
+	m_tilesheet_ptr.reset(const_cast<Texture*>(&m_tilesheet));
 }
 
 TileMap::~TileMap()
@@ -258,4 +260,9 @@ bool TileMap::isGrounded(glm::ivec2 const& pos, glm::ivec2 const& size) const
 		}
 	}
 	return false;
+}
+
+std::shared_ptr<Texture> TileMap::getTilesheet() const 
+{
+	return m_tilesheet_ptr;
 }
