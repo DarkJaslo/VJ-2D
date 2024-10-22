@@ -98,11 +98,11 @@ void Scene::render()
 	m_tex_program->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_tilemap->render();
 
-	// This includes the player, which is the first of all
-	for (auto& entity : m_entities) 
-	{	
-		if (entity->isEnabled())
-			entity->render();
+	// This includes the player, which last one rendered
+	for (int i = m_entities.size() - 1; i >= 0; --i)
+	{
+		if (m_entities[i]->isEnabled())
+			m_entities[i]->render();
 	}
 }
 

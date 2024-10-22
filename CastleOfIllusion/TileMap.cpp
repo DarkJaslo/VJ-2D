@@ -173,9 +173,6 @@ void TileMap::prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program)
 	m_texcoord_location = program.bindVertexAttribute("texCoord", 2, 4*sizeof(float), (void *)(2*sizeof(float)));
 }
 
-// Collision tests for axis aligned bounding boxes.
-// Method collisionMoveDown also corrects Y coordinate if the box is
-// already intersecting a tile below.
 
 std::optional<glm::ivec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const
 {
