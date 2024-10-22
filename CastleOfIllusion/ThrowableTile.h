@@ -26,7 +26,14 @@ public:
 
 	virtual EntityType getType() const override { return EntityType::ThrowableTile; }
 
+	// Returns true iff it's on the ground without moving
 	bool isStatic() const { return !m_picked_up && !m_thrown; }
+
+	// Returns true iff it has been thrown (and hasn't touched ground)
+	bool isBeingThrown() const { return m_thrown; }
+
+	// Returns true iff this is destroyed on impact
+	bool isDestroyedOnImpact() const { return m_destroyed_on_impact; }
 
 	// To be called when being picked up by the player
 	void onPickUp();

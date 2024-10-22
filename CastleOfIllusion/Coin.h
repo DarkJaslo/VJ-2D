@@ -23,6 +23,9 @@ public:
     // Gets the entity's type
     virtual EntityType getType() const override { return EntityType::Coin; }
 
+    // Sets whether the coin is enabled or not
+    virtual void setEnabled(bool enabled) override; 
+
     // Returns the points gained from collecting this coin
     unsigned int getPoints() const;
 

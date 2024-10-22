@@ -4,12 +4,15 @@
 #include <sstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <memory>
+#include <algorithm>
 
 #include "Scene.h"
 #include "Game.h"
 #include "Coin.h"
 #include "Cake.h"
 #include "Chest.h"
+#include "TimedEvent.h"
+#include "Void.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -18,7 +21,6 @@
 // coordinates of the tile where the player appears 
 #define INIT_PLAYER_X_TILES 4
 #define INIT_PLAYER_Y_TILES 8
-
 
 Scene::Scene()
 {
@@ -49,6 +51,9 @@ void Scene::update(int delta_time)
 {
 	m_current_time += delta_time;
 
+	// Updates scheduled events, if any
+	TimedEvents::updateEvents(delta_time);
+
 	// This includes the player, which is first of all
 	for (auto& entity : m_entities) 
 	{
@@ -62,13 +67,11 @@ void Scene::update(int delta_time)
 		if (!m_entities[i]->canCollide())
 			continue;
 
-		// TODO: skip non-visible
 		for (std::size_t j = i+1; j < m_entities.size(); ++j)
 		{
 			if (!m_entities[j]->canCollide())
 				continue;
 
-			// TODO: skip non-visible
 			if (*m_entities[i] & *m_entities[j])
 			{
 				std::cout << "Detected collision between entities" << std::endl;
@@ -153,6 +156,8 @@ void Scene::readSceneFile(std::string&& path)
 
 		if (word == "chest")
 			createChest(split_line);
+		else if (word == "void")
+			createVoid(split_line);
 		else 
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -225,4 +230,17 @@ std::shared_ptr<Cake> Scene::createCake(std::istringstream& split_line)
 	m_entities.push_back(cake);
 
 	return cake;
+}
+
+void Scene::createVoid(std::istringstream& split_line) 
+{
+	glm::ivec2 upleft_corner_pos;
+	glm::ivec2 collision_size;
+
+	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y >> collision_size.x >> collision_size.y;
+
+	upleft_corner_pos *= m_tilemap->getTileSize();
+	collision_size *= m_tilemap->getTileSize();
+
+	m_entities.emplace_back(std::make_shared<Void>(upleft_corner_pos, collision_size));
 }

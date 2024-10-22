@@ -1,0 +1,11 @@
+To spawn an entity, use the following format. All positions are in tilemap coords unless otherwise specified
+
+Chest:
+chest <posX> <posY> <cake|coin> <big|small> 
+
+Void:
+void <upleft_corner_posX> <upleft_corner_posY> <sizeX> <sizeY>
+*sizes are also in tiles
+
+Probably chests are being put "between" tiles because the position (not the corner position) is given. 
+Correct this later if needed

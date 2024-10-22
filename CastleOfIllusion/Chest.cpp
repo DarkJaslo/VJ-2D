@@ -1,4 +1,6 @@
 #include "Chest.h"
+#include "TimedEvent.h"
+#include "Player.h"
 
 Chest::Chest(glm::ivec2 pos,
 	std::shared_ptr<TileMap> tilemap,
@@ -20,12 +22,27 @@ Chest::Chest(glm::ivec2 pos,
 	
 }
 
+void Chest::collideWithEntity(Collision collision) 
+{
+	switch (collision.entity->getType())
+	{
+	case EntityType::Player: 
+	{
+		auto player = static_cast<Player*>(collision.entity);
+		if (player->isAttacking())
+			onDestroy();
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 void Chest::onDestroy() 
 {
 	ThrowableTile::onDestroy();
 
 	m_content->setPosition(m_pos);
-	m_content->setVelocity({ 0.0f, 3.0f });
+	m_content->setVelocity({ 0.0f, -2.0f });
 	m_content->setEnabled(true);
-	m_content->setCollisions(true);
 }

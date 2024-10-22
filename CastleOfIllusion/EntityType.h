@@ -15,6 +15,7 @@ enum class EntityType
 	Cake,
 	Platform,
 	ThrowableTile,
+	Void
 };
 
 inline std::string toString(EntityType type) 
@@ -25,6 +26,18 @@ inline std::string toString(EntityType type)
 		return "Player";
 	case EntityType::Enemy:
 		return "Enemy";
+	case EntityType::Boss:
+		return "Boss";
+	case EntityType::Projectile:
+		return "Projectile";
+	case EntityType::Coin:
+		return "Coin";
+	case EntityType::Platform:
+		return "Platform";
+	case EntityType::ThrowableTile:
+		return "ThrowableTile";
+	case EntityType::Void:
+		return "Void";
 	default:
 		return "Unknown";
 	}

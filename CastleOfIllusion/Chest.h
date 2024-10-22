@@ -13,6 +13,8 @@ public:
 		 std::shared_ptr<ShaderProgram> shader_program,
 		 std::shared_ptr<Entity> content);
 
+	virtual void collideWithEntity(Collision collision) override;
+
 	virtual void onDestroy() override;
 
 private:
