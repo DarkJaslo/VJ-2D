@@ -187,7 +187,8 @@ std::optional<glm::ivec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 
 	{
 		for (int y=top; y<=bottom; y++)
 		{
-			if (m_map[y*m_map_size.x+right] != -1)
+			int accessPos = y * m_map_size.x + right;
+			if (accessPos < m_map.size() && m_map[accessPos] != -1)
 			{
 				return glm::vec2(m_tile_size * right - size.x, pos.y);
 			}
@@ -196,7 +197,8 @@ std::optional<glm::ivec2> TileMap::xCollision(glm::ivec2 const& pos, glm::ivec2 
 	else { // Moving left
 		for (int y=top; y<=bottom; y++)
 		{
-			if (m_map[y*m_map_size.x+left] != -1)
+			int accessPos = y * m_map_size.x + left;
+			if (accessPos < m_map.size() && m_map[accessPos] != -1)
 			{
 				return glm::vec2(m_tile_size * (left+1), pos.y);
 			}
@@ -219,7 +221,8 @@ std::optional<glm::ivec2> TileMap::yCollision(glm::ivec2 const& pos, glm::ivec2 
 	{
 		for (int x=left; x<=right; x++)
 		{
-			if (m_map[bottom*m_map_size.x+x] != -1)
+			int accessPos = bottom * m_map_size.x + x;
+			if (accessPos < m_map.size() && m_map[accessPos] != -1)
 			{
 				return glm::vec2(pos.x, m_tile_size * bottom - size.y);
 			}
@@ -229,7 +232,8 @@ std::optional<glm::ivec2> TileMap::yCollision(glm::ivec2 const& pos, glm::ivec2 
 	{
 		for (int x=left; x<=right; x++)
 		{
-			if (m_map[top*m_map_size.x+x] != -1)
+			int accessPos = top * m_map_size.x + x;
+			if (accessPos < m_map.size() && m_map[accessPos] != -1)
 			{
 				return glm::vec2(pos.x, m_tile_size * (top+1));
 			}
@@ -247,7 +251,8 @@ bool TileMap::isGrounded(glm::ivec2 const& pos, glm::ivec2 const& size) const
 	y = (pos.y + size.y) / m_tile_size;
 	for (int x=left; x<=right; x++)
 	{
-		if (m_map[y*m_map_size.x+x] != -1)
+		int accessPos = y * m_map_size.x + x;
+		if (accessPos < m_map.size() && m_map[accessPos] != -1)
 		{
 			return true;
 		}

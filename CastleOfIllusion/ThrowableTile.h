@@ -39,7 +39,7 @@ public:
 	void onPickUp();
 
 	// To be called when being thrown by the player
-	void onThrow(glm::vec2 velocity);
+	void onThrow(bool looking_right, bool moving);
 
 	// To be called when destroyed
 	virtual void onDestroy();

@@ -9,6 +9,7 @@
 #include "Coin.h"
 #include "Cake.h"
 #include "ThrowableTile.h"
+#include "TimedEvent.h"
 
 #define JUMP_HEIGHT 4*16*4
 #define MAX_X_VELOCITY 0.6f // Maximum velocity on the x axis
@@ -44,8 +45,6 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	m_vel = glm::vec2(0.f,0.f);
 	m_acc = glm::vec2(0.f,0.f);
 	m_throwable_obj = NULL;
-	m_has_object = false;
-	m_looking_right = true;
 
 	m_spritesheet->loadFromFile("images/MickeyMouse.png", TEXTURE_PIXEL_FORMAT_RGBA);
 
@@ -67,18 +66,35 @@ void Player::update(int delta_time)
 
 
 	// Handle grab interaction
-	if (Game::getKey(KEY_GRAB) && (m_throwable_obj != NULL))
+	if (Game::getKey(KEY_GRAB) && (m_throwable_obj != NULL) && m_can_grab)
 	{
 		m_has_object = !m_has_object;
+		m_can_grab = false;
+
 		if (m_has_object)
 		{
 			m_throwable_obj->onPickUp();
 		}
 		else
 		{
-			m_throwable_obj->onThrow(m_vel);
+			m_throwable_obj->onThrow(m_looking_right, (m_vel != glm::vec2(0.f,0.f)));
+
+			if (!m_throwable_obj->isDestroyedOnImpact())
+			{
+				if (m_looking_right)
+					m_throwable_obj->setPosition(m_pos + glm::ivec2(16.f * 4.f, -24.f * 4));
+				else
+					m_throwable_obj->setPosition(m_pos + glm::ivec2(-16.f * 4.f, -24.f * 4));
+			}
+
 			m_throwable_obj = NULL;
 		}
+	}
+
+	if (!m_can_grab && !Game::getKey(KEY_GRAB))
+	{
+		m_can_grab = true;
+		
 	}
 
 	//////// X AXIS
@@ -339,7 +355,10 @@ void Player::update(int delta_time)
 	// Update holding object position
 	if (m_has_object)
 	{
-		m_throwable_obj->setPosition(m_pos + glm::ivec2(0.f,-24.f*4));
+		if (m_looking_right)
+			m_throwable_obj->setPosition(m_pos + glm::ivec2(4.f,-24.f*4));
+		else
+			m_throwable_obj->setPosition(m_pos + glm::ivec2(-4.f,-24.f*4));
 	}
 }
 
@@ -371,7 +390,9 @@ void Player::collideWithEntity(Collision collision)
 		auto throwable = static_cast<ThrowableTile*>(collision.entity);
 		if (throwable->isStatic()) 
 		{
-			m_throwable_obj = throwable;
+			// Player can only grab one object at a time
+			if (!m_throwable_obj)
+				m_throwable_obj = throwable;
 
 			// If I'm attacking, bounce on it
 			if (isAttacking() && throwable->isDestroyedOnImpact())
