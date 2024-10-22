@@ -68,6 +68,9 @@ private:
 
     // Creates and configures the player animations
     void configureAnimations();
+
+    // Updates the player's position according to the collision box of the solid
+    void computeCollisionAgainstSolid(Entity* solid);
     
     // The player's state
     PlayerState m_state;
@@ -90,7 +93,7 @@ private:
     int m_max_power = 3;
 
     // The speed at which the player bounces up after attacking some entities like enemies
-    static constexpr float S_BOUNCE_SPEED = -1.5f;
+    static constexpr float S_BOUNCE_SPEED = -1.8f;
     
     // Pointer to the object the player is holding
     ThrowableTile* m_throwable_obj;

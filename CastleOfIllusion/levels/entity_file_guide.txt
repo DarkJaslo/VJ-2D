@@ -7,5 +7,11 @@ Void:
 void <upleft_corner_posX> <upleft_corner_posY> <sizeX> <sizeY>
 *sizes are also in tiles
 
+Platform:
+platform <upleft_corner_posX> <upleft_corner_posY>
+
+Barrel:
+barrel <pos_x> <pos_y>
+
 Probably chests are being put "between" tiles because the position (not the corner position) is given. 
 Correct this later if needed

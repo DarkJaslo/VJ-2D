@@ -109,10 +109,7 @@ protected:
     bool m_bounces = false;
 
     // The x drag coefficient
-    static constexpr float S_X_DRAG = 0.05f;
-
-    // The minimum speed (in absolute value) in the X axis for entities affected by drag
-    static constexpr float S_MIN_X_SPEED = 0.25f;
+    static constexpr float S_X_DRAG = 0.003f;
 
     // True iff the entity is affected by drag on the X axis
     bool m_affected_by_x_drag = false;

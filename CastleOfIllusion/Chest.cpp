@@ -19,7 +19,7 @@ Chest::Chest(glm::ivec2 pos,
 		),
 		m_content(content)
 {
-	m_affected_by_x_drag = false;
+	
 }
 
 void Chest::collideWithEntity(Collision collision) 
@@ -33,6 +33,9 @@ void Chest::collideWithEntity(Collision collision)
 			onDestroy();
 		break;
 	}
+	case EntityType::ThrowableTile:
+		onDestroy();
+		break;
 	default:
 		break;
 	}
@@ -42,7 +45,11 @@ void Chest::onDestroy()
 {
 	ThrowableTile::onDestroy();
 
-	m_content->setPosition(m_pos);
-	m_content->setVelocity({ 0.0f, -2.0f });
-	m_content->setEnabled(true);
+	auto SpawnContent = [this]() 
+	{
+		m_content->setPosition(m_pos);
+		m_content->setVelocity({ 0.0f, -1.5f });
+		m_content->setEnabled(true);
+	};
+	TimedEvents::pushEvent(std::make_unique<TimedEvent>(350, SpawnContent));
 }

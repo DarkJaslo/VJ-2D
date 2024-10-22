@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <memory>
 #include <glm/glm.hpp>
 #include "Texture.h"
 #include "ShaderProgram.h"
@@ -42,6 +43,8 @@ public:
 	std::optional<glm::ivec2> yCollision(glm::ivec2 const& pos, glm::ivec2 const& size, glm::vec2 const& velocity) const;
 	
 	bool isGrounded(glm::ivec2 const& pos, glm::ivec2 const& size) const;
+
+	std::shared_ptr<Texture> getTilesheet() const;
 	
 private:
 	// Private constructor for the factory pattern
@@ -84,6 +87,9 @@ private:
 
 	// The tilesheet
 	Texture m_tilesheet;
+
+	// A pointer to the tilesheet
+	std::shared_ptr<Texture> m_tilesheet_ptr;
 
 	// The size of the texture of the tiles
 	glm::vec2 m_tile_tex_size;
