@@ -52,6 +52,8 @@ void Entity::update(int delta_time)
             m_vel.x = std::min(m_vel.x + S_X_DRAG * static_cast<float>(delta_time), 0.0f);
     }
 
+    m_pos.x += m_vel.x * static_cast<float>(delta_time);
+
     if (m_can_collide) 
     {
         auto x_collision = m_tilemap->xCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);

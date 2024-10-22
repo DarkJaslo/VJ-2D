@@ -77,7 +77,16 @@ void Player::update(int delta_time)
 		}
 		else
 		{
-			m_throwable_obj->onThrow(m_vel);
+			m_throwable_obj->onThrow(m_looking_right, (m_vel != glm::vec2(0.f,0.f)));
+
+			if (!m_throwable_obj->isDestroyedOnImpact())
+			{
+				if (m_looking_right)
+					m_throwable_obj->setPosition(m_pos + glm::ivec2(16.f * 4.f, -24.f * 4));
+				else
+					m_throwable_obj->setPosition(m_pos + glm::ivec2(-16.f * 4.f, -24.f * 4));
+			}
+
 			m_throwable_obj = NULL;
 		}
 	}
@@ -346,7 +355,10 @@ void Player::update(int delta_time)
 	// Update holding object position
 	if (m_has_object)
 	{
-		m_throwable_obj->setPosition(m_pos + glm::ivec2(0.f,-24.f*4));
+		if (m_looking_right)
+			m_throwable_obj->setPosition(m_pos + glm::ivec2(4.f,-24.f*4));
+		else
+			m_throwable_obj->setPosition(m_pos + glm::ivec2(-4.f,-24.f*4));
 	}
 }
 
