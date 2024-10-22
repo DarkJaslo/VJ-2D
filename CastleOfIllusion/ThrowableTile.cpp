@@ -69,7 +69,7 @@ void ThrowableTile::onPickUp()
 	// Probably change position so that it matches the player's animation
 }
 
-void ThrowableTile::onThrow(glm::vec2 velocity) 
+void ThrowableTile::onThrow(bool looking_right, bool moving) 
 {
 	m_can_collide = true;
 	m_picked_up = false;
@@ -77,6 +77,13 @@ void ThrowableTile::onThrow(glm::vec2 velocity)
 	m_affected_by_gravity = true;
 	m_affected_by_x_drag = true;
 	// Add some force/speed to it
+	if (m_destroyed_on_impact || moving)
+	{
+		if (looking_right)
+			changeVelocity(glm::vec2(4.f, 0.f));
+		else
+			changeVelocity(glm::vec2(-4.f, 0.f));
+	}
 }
 
 void ThrowableTile::onDestroy()

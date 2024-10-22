@@ -19,7 +19,7 @@ Chest::Chest(glm::ivec2 pos,
 		),
 		m_content(content)
 {
-	
+	m_affected_by_x_drag = false;
 }
 
 void Chest::collideWithEntity(Collision collision) 

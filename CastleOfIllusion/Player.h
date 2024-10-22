@@ -98,7 +98,9 @@ private:
     // Returns true iff the player is holding an object
     bool m_has_object = false;
 
-    bool m_looking_right;
+    bool m_looking_right = true;
+
+    bool m_can_grab = true;
 };
 
 #endif // _PLAYER_INCLUDE
