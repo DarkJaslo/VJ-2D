@@ -29,10 +29,12 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="Sprite.h" />
+    <ClInclude Include="Text.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="ThrowableTile.h" />
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="TimedEvent.h" />
+    <ClInclude Include="UI.h" />
     <ClInclude Include="Void.h" />
   </ItemGroup>
   <ItemGroup>
@@ -52,9 +54,11 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Text.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="ThrowableTile.cpp" />
     <ClCompile Include="TileMap.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="Void.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

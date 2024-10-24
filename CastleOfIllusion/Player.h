@@ -5,6 +5,7 @@
 #include "TileMap.h"
 #include "Entity.h"
 #include "ThrowableTile.h"
+#include "UI.h"
 
 enum class PlayerState
 {
@@ -30,7 +31,8 @@ class Player : public Entity
 public:
     Player(glm::vec2 const& pos, 
            std::shared_ptr<TileMap> tilemap, 
-           glm::ivec2 const& tilemap_pos, 
+           std::shared_ptr<UI> ui,
+           glm::ivec2 const& tilemap_pos,
            glm::ivec2 const& sprite_size,
            glm::ivec2 const& collision_box_size,
            std::shared_ptr<ShaderProgram> shader_program);
@@ -92,6 +94,9 @@ private:
     // The maximum (and initial) amount of power. In the original game, can be increased up to 5
     int m_max_power = 3;
 
+    // The number of tries the player currently has
+    int m_tries = 3;
+
     // The speed at which the player bounces up after attacking some entities like enemies
     static constexpr float S_BOUNCE_SPEED = -1.8f;
     
@@ -101,9 +106,14 @@ private:
     // Returns true iff the player is holding an object
     bool m_has_object = false;
 
+    // True iff the player is looking to the right
     bool m_looking_right = true;
 
+    // true iff the player can currently grab an object
     bool m_can_grab = true;
+
+    // Pointer to the game's UI
+    std::shared_ptr<UI> m_ui;
 };
 
 #endif // _PLAYER_INCLUDE
