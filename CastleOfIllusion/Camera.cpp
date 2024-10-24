@@ -2,11 +2,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 
-Camera::Camera(float width, float height, std::shared_ptr<Player> player)
+Camera::Camera(float width, float height, std::shared_ptr<Player> player, std::shared_ptr<UI> ui)
 {
     m_size.x = width;
     m_size.y = height;
     m_player = player;
+	m_ui = ui;
 	m_update_speed = glm::vec2(1.4f,1.4f);
 }
 
@@ -92,4 +93,7 @@ void Camera::update(int delta_time)
 	m_pos.x = std::min(m_pos.x, pos_player.x - m_size.x/3.f); // Ensures the camera does not move too far to the right
 	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
 	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
+
+	// Move the UI as well so that it stays in the same position relative to the camera
+	m_ui->setPosition(m_pos + glm::vec2(m_size.x / 2.f, m_size.y));
 }
