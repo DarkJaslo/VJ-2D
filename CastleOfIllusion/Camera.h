@@ -24,6 +24,9 @@ public:
 	// Gets the camera's projection matrix
 	glm::mat4 getProjectionMatrix() const;    
 
+	// Returns true iff an object located at pos (center of base) with the given size is visible
+	bool isVisible(glm::ivec2 pos, glm::ivec2 size) const;
+
 private:
 	// The game's player
 	std::shared_ptr<Player> m_player;

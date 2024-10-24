@@ -68,15 +68,9 @@ private:
 
     // Creates and configures the player animations
     void configureAnimations();
-
-    // Updates the player's position according to the collision box of the solid
-    void computeCollisionAgainstSolid(Entity* solid);
     
     // The player's state
     PlayerState m_state;
-
-    // True iff the player's feet are on the floor
-    bool m_grounded = false;
 
     glm::ivec2 m_tilemap_displ;
       

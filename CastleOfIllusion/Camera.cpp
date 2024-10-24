@@ -93,3 +93,14 @@ void Camera::update(int delta_time)
 	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
 	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
 }
+
+bool Camera::isVisible(glm::ivec2 pos, glm::ivec2 size) const 
+{
+	glm::ivec2 camera_min = m_pos;
+	glm::ivec2 camera_max = m_pos + m_size;
+
+	glm::ivec2 min = { pos.x - size.x / 2, pos.y - size.y };
+	glm::ivec2 max = { pos.x + size.x / 2, pos.y };
+
+	return max.x >= camera_min.x && min.x <= camera_max.x && max.y >= camera_min.y && min.y <= camera_max.y;
+}

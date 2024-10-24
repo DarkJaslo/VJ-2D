@@ -86,10 +86,7 @@ private:
 	int m_block_size;
 
 	// The tilesheet
-	Texture m_tilesheet;
-
-	// A pointer to the tilesheet
-	std::shared_ptr<Texture> m_tilesheet_ptr;
+	std::shared_ptr<Texture> m_tilesheet;
 
 	// The size of the texture of the tiles
 	glm::vec2 m_tile_tex_size;

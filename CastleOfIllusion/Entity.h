@@ -70,6 +70,9 @@ public:
     virtual void setEnabled (bool enabled) { m_enabled = enabled; }
 
 protected:
+    // Updates the position according to the collision box of the solid
+    void computeCollisionAgainstSolid(Entity* solid);
+
     // The spritesheet
     std::shared_ptr<Texture> m_spritesheet;
 	
@@ -113,6 +116,9 @@ protected:
 
     // True iff the entity is affected by drag on the X axis
     bool m_affected_by_x_drag = false;
+
+    // True iff the entity's "feet" are on the floor
+    bool m_grounded = false;
 };
 
 #endif // _ENTITY_INCLUDE

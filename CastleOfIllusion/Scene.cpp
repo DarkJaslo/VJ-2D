@@ -15,6 +15,7 @@
 #include "Void.h"
 #include "Platform.h"
 #include "Barrel.h"
+#include "Enemy.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -59,8 +60,7 @@ void Scene::update(int delta_time)
 	// This includes the player, which is first of all
 	for (auto& entity : m_entities) 
 	{
-		if (entity->isEnabled())
-			entity->update(delta_time);
+		entity->update(delta_time);
 	}
 
 	// Check collisions between entities (each pair once)
@@ -100,7 +100,7 @@ void Scene::render()
 	m_tex_program->setUniform2f("texCoordDispl", 0.f, 0.f);
 	m_tilemap->render();
 
-	// This includes the player, which last one rendered
+	// The player is rendered the last
 	for (int i = m_entities.size() - 1; i >= 0; --i)
 	{
 		if (m_entities[i]->isEnabled())
@@ -164,6 +164,8 @@ void Scene::readSceneFile(std::string&& path)
 			createPlatform(split_line);
 		else if (word == "barrel")
 			createBarrel(split_line);
+		else if (word == "horse")
+			createHorse(split_line);
 		else 
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -269,4 +271,22 @@ void Scene::createBarrel(std::istringstream& split_line)
 	pos *= m_tilemap->getTileSize();
 
 	m_entities.emplace_back(std::make_shared<Barrel>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
+}
+
+void Scene::createHorse(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+
+	m_entities.emplace_back(
+		std::make_shared<SpringHorse>(
+			pos, 
+			m_tilemap, 
+			m_tex_program, 
+			"images/Horse.png", 
+			glm::vec2(0.25f, 1.0f), 
+			m_camera,
+			m_player));
 }

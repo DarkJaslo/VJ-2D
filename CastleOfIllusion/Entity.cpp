@@ -33,6 +33,8 @@ void Entity::update(int delta_time)
             }
             else
                 m_vel.y = 0.0f;
+
+            m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
         }
     }
 
@@ -139,4 +141,70 @@ std::pair<Collision, Collision> Entity::operator|(Entity const& other) const
 {
     return std::make_pair(Collision(other.m_pos - m_pos, const_cast<Entity*>(&other)), 
                           Collision(m_pos - other.m_pos, const_cast<Entity*>(this)));
+}
+
+void Entity::computeCollisionAgainstSolid(Entity* solid)
+{
+    // Physically collide with it: in this case it's a bit more difficult because we already have the
+    // updated X,Y coordinates of the player instead of being able to update them one by one.
+    //
+    // However, if we assume certain things about the game, there is a solution that works
+    auto [min, max] = solid->getMinMaxCollisionCoords();
+
+    // If the amount of the player that is inside the box exceeds these values, then the player is 
+    // actually not inside in that axis
+    int const Y_MAX_MARGIN = m_collision_box_size.y / 2;
+    int const X_MAX_MARGIN = m_collision_box_size.x / 4;
+
+    auto player_max_y = m_pos.y;
+    auto player_min_y = m_pos.y - m_collision_box_size.y;
+    auto player_max_x = m_pos.x + m_collision_box_size.x / 2.0f;
+    auto player_min_x = m_pos.x - m_collision_box_size.x / 2.0f;
+
+    int y_inside_up = player_max_y - min.y;
+    int y_inside_down = max.y - player_min_y;
+    int x_inside_left = player_max_x - min.x;
+    int x_inside_right = max.x - player_min_x + 1;
+
+    bool actually_inside_y = y_inside_up < Y_MAX_MARGIN || y_inside_down < Y_MAX_MARGIN;
+    bool actually_inside_x = x_inside_left < X_MAX_MARGIN || x_inside_right < X_MAX_MARGIN;
+
+    auto CorrectX = [&]()
+    {
+        if (x_inside_left < X_MAX_MARGIN)
+            m_pos.x -= x_inside_left;
+        else
+            m_pos.x += x_inside_right;
+
+        m_vel.x = 0.0f;
+    };
+
+    auto CorrectY = [&]()
+    {
+        if (y_inside_up < Y_MAX_MARGIN)
+        {
+            m_pos.y -= y_inside_up;
+            m_grounded = true;
+        }
+        else
+            m_pos.y += y_inside_down;
+
+        m_vel.y = 0.0f;
+    };
+
+    if (actually_inside_x && actually_inside_y)
+    {
+        // Inside in both axes, correct the smallest ("less inside")
+        int x_inside = x_inside_left < X_MAX_MARGIN ? x_inside_left : x_inside_right;
+        int y_inside = y_inside_up < Y_MAX_MARGIN ? y_inside_up : y_inside_down;
+
+        if (y_inside_up < x_inside)
+            CorrectY();
+        else
+            CorrectX();
+    }
+    else if (actually_inside_y)
+        CorrectY();
+    else if (actually_inside_x)
+        CorrectX();
 }

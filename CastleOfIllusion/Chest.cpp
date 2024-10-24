@@ -36,6 +36,12 @@ void Chest::collideWithEntity(Collision collision)
 	case EntityType::ThrowableTile:
 		onDestroy();
 		break;
+	case EntityType::Enemy: 
+	{
+		if (m_thrown)
+			onDestroy();
+		break;
+	}
 	default:
 		break;
 	}
