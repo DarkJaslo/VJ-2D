@@ -29,7 +29,7 @@
 enum PlayerAnims
 {
 	IDLE, MOVE, CROUCH, JUMP, FALL,	SLIDE, ATTACK_UP, ATTACK_DOWN,
-	HOLD_IDLE, HOLD_MOVE, HOLD_JUMP, HOLD_FALL,
+	HOLD_IDLE, HOLD_MOVE, HOLD_JUMP, HOLD_FALL, HURT
 };
 
 Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shared_ptr<UI> ui,
@@ -46,6 +46,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shar
 	m_vel = glm::vec2(0.f,0.f);
 	m_acc = glm::vec2(0.f,0.f);
 	m_throwable_obj = nullptr;
+	m_power = m_max_power;
 
 	m_ui->setPower(m_max_power);
 	m_ui->setTries(m_tries);
@@ -69,8 +70,16 @@ void Player::update(int delta_time)
 	PlayerState prev_state = m_state;
 
 
+	// The hurt state has priority over all the others
+	// It has to be updated here and not on takeHit(), otherwise the states 
+	// and animations don't update correctly
+	if (m_hurt)
+		m_state = PlayerState::Hurt;
+	if (!m_hurt && m_state == PlayerState::Hurt)
+		m_state = PlayerState::Idle;
+
 	// Handle grab interaction
-	if (Game::getKey(KEY_GRAB) && (m_throwable_obj != nullptr) && m_can_grab)
+	if (Game::getKey(KEY_GRAB) && (m_throwable_obj != nullptr) && m_can_grab && m_state != PlayerState::Hurt)
 	{
 		m_has_object = !m_has_object;
 		m_can_grab = false;
@@ -110,7 +119,7 @@ void Player::update(int delta_time)
 		// Don't move if crouching
 		if (!Game::getKey(KEY_MOVE_DOWN))
 		{
-			if (m_grounded)
+			if (m_grounded && m_state != PlayerState::Hurt)
 			{
 				if (m_has_object)
 				{
@@ -132,7 +141,7 @@ void Player::update(int delta_time)
 		//Don't move if crouching
 		if (!Game::getKey(KEY_MOVE_DOWN))
 		{
-			if (m_grounded)
+			if (m_grounded && m_state != PlayerState::Hurt)
 			{
 				if (m_has_object)
 				{
@@ -146,31 +155,28 @@ void Player::update(int delta_time)
 			m_acc.x = ACCELERATION;
 		}
 	}
-	else
+	else if (m_grounded && m_state != PlayerState::Hurt)
 	{
-		if (m_grounded)
+		if (m_has_object)
 		{
-			if (m_has_object)
+			if (abs(m_vel.x) > 0)
 			{
-				if (abs(m_vel.x) > 0)
-				{
-					m_state = PlayerState::HoldMoving;
-				}
-				else
-				{
-					m_state = PlayerState::HoldIdle;
-				}
+				m_state = PlayerState::HoldMoving;
 			}
 			else
 			{
-				if (abs(m_vel.x) > 0)
-				{
-					m_state = PlayerState::Sliding;
-				}
-				else
-				{
-					m_state = PlayerState::Idle;
-				}
+				m_state = PlayerState::HoldIdle;
+			}
+		}
+		else
+		{
+			if (abs(m_vel.x) > 0)
+			{
+				m_state = PlayerState::Sliding;
+			}
+			else
+			{
+				m_state = PlayerState::Idle;
 			}
 		}
 	}
@@ -191,7 +197,7 @@ void Player::update(int delta_time)
 	
 	// Crouch/attack
 	// The player can't do neither of those actions while holding an object
-	if (Game::getKey(KEY_MOVE_DOWN) && !m_has_object)
+	if (Game::getKey(KEY_MOVE_DOWN) && !m_has_object && m_state != PlayerState::Hurt)
 	{
 		if (m_grounded)
 		{
@@ -238,7 +244,7 @@ void Player::update(int delta_time)
 	if (m_grounded)
 	{
 		// Jump
-		if (Game::getKey(KEY_JUMP))
+		if (Game::getKey(KEY_JUMP) && m_state != PlayerState::Hurt)
 		{
 			if (m_has_object && m_state != PlayerState::HoldJumping)
 			{
@@ -255,7 +261,7 @@ void Player::update(int delta_time)
 	else
 	{
 		// Update from going up to going down
-		if (m_vel.y > 0)
+		if (m_vel.y > 0 && m_state != PlayerState::Hurt)
 		{
 			if (m_has_object)
 			{
@@ -350,6 +356,10 @@ void Player::update(int delta_time)
 				std::cout << "hold fall" << std::endl;
 				m_sprite->changeAnimation(HOLD_FALL);
 				break;
+			case PlayerState::Hurt:
+				std::cout << "hurt" << std::endl;
+				m_sprite->changeAnimation(HURT);
+				break;
 		}
 	}
 
@@ -431,34 +441,51 @@ void Player::collideWithEntity(Collision collision)
 void Player::takeHit() 
 {
 	// Check vulnerability
-
-	--m_power;
-
-	// Debug
-	std::cout << "Power left: " << m_power << "\n";
-
-	m_ui->setPower(m_power);
-
-	if (m_power <= 0) 
+	if (!m_invulnerable)
 	{
-		--m_tries;
-		m_ui->setTries(m_tries);
-		if (m_tries <= 0)
+		--m_power;
+
+		// Debug
+		std::cout << "Power left: " << m_power << "\n";
+
+		m_ui->setPower(m_power);
+
+		if (m_power <= 0)
 		{
-			// Lose game
+			--m_tries;
+			m_ui->setTries(m_tries);
+			if (m_tries <= 0)
+			{
+				// Lose game
+			}
+			else
+			{
+				m_power = 3;
+				m_ui->setPower(m_power);
+			}
 		}
-		else
-		{
-			m_power = 3;
-			m_ui->setPower(m_power);
-		}
+		// The hurt animation is different from all the other ones in the sense that it only plays
+		// for a specific time and it has to finish, so we set a timer to turn it off after that time
+		m_hurt = true;
+		auto stopHurtAnimation = [this]()
+			{
+				m_hurt = false;
+			};
+		TimedEvents::pushEvent(std::make_unique<TimedEvent>(400, stopHurtAnimation));
+
+		// Trigger invulnerability for a while
+		m_invulnerable = true;
+		m_sprite->startFlickering();
+
+		auto stopInvulnerability = [this]()
+			{
+				m_invulnerable = false;
+				m_sprite->stopFlickering();
+			};
+		TimedEvents::pushEvent(std::make_unique<TimedEvent>(m_invulnerability_time, stopInvulnerability));
+
+		// Play sound
 	}
-
-	// Trigger invulnerability for a while
-
-	// Flicker animation
-
-	// Play sound
 }
 
 void Player::gainPower(unsigned int gain) 
@@ -504,7 +531,7 @@ void Player::onFallOff()
 
 void Player::configureAnimations()
 {
-	m_sprite->setNumberAnimations(12);
+	m_sprite->setNumberAnimations(13);
 
 	// Idle
 	m_sprite->setAnimationSpeed(IDLE, 3);
@@ -598,6 +625,15 @@ void Player::configureAnimations()
 	// Falling
 	m_sprite->setAnimationSpeed(HOLD_FALL, 1);
 	m_sprite->addKeyframe(HOLD_FALL, glm::vec2(9.f, 2.f));
+
+	// Hurt
+	// Extra frames at the end to make sure the animation doesn't loop if the timer arrives a bit late
+	m_sprite->setAnimationSpeed(HURT, 8);
+	m_sprite->addKeyframe(HURT, glm::vec2(4.f, 3.f));
+	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
+	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
+	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
+	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
 }
 
 void Player::computeCollisionAgainstSolid(Entity* solid) 

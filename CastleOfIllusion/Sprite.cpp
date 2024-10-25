@@ -51,20 +51,25 @@ void Sprite::update(int delta_time)
 		}
 		m_texcoord_displ = m_animations[m_current_animation].keyframeDispl[m_current_keyframe];
 	}
+	if (m_flicker)
+		m_flicker_counter++;
 }
 
 void Sprite::render() const
 {
-	glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(m_position.x, m_position.y, 0.f));
-	m_shader_program->setUniformMatrix4f("modelview", modelview);
-	m_shader_program->setUniform2f("texCoordDispl", m_texcoord_displ.x, m_texcoord_displ.y);
-	glEnable(GL_TEXTURE_2D);
-	m_texture->use();
-	glBindVertexArray(m_vao);
-	glEnableVertexAttribArray(m_pos_location);
-	glEnableVertexAttribArray(m_texcoord_location);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glDisable(GL_TEXTURE_2D);
+	if (!m_flicker || (m_flicker_counter % 4) < 2) // flicker 2 consecutive frames every 4 frames
+	{
+		glm::mat4 modelview = glm::translate(glm::mat4(1.0f), glm::vec3(m_position.x, m_position.y, 0.f));
+		m_shader_program->setUniformMatrix4f("modelview", modelview);
+		m_shader_program->setUniform2f("texCoordDispl", m_texcoord_displ.x, m_texcoord_displ.y);
+		glEnable(GL_TEXTURE_2D);
+		m_texture->use();
+		glBindVertexArray(m_vao);
+		glEnableVertexAttribArray(m_pos_location);
+		glEnableVertexAttribArray(m_texcoord_location);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDisable(GL_TEXTURE_2D);
+	}
 }
 
 void Sprite::free()
@@ -144,4 +149,15 @@ void Sprite::turnLeft()
 
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
 	glBufferData(GL_ARRAY_BUFFER, 24 * sizeof(float), vertices, GL_STATIC_DRAW);
+}
+
+void Sprite::startFlickering()
+{
+	m_flicker = true;
+}
+
+void Sprite::stopFlickering()
+{
+	m_flicker = false;
+	m_flicker_counter = 0;
 }
