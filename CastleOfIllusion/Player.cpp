@@ -108,7 +108,7 @@ void Player::update(int delta_time)
 		m_looking_right = false;
 
 		// Don't move if crouching
-		if (!(m_state == PlayerState::Crouching))
+		if (!Game::getKey(KEY_MOVE_DOWN))
 		{
 			if (m_grounded)
 			{
@@ -130,7 +130,7 @@ void Player::update(int delta_time)
 		m_looking_right = true;
 
 		//Don't move if crouching
-		if (!(m_state == PlayerState::Crouching))
+		if (!Game::getKey(KEY_MOVE_DOWN))
 		{
 			if (m_grounded)
 			{
