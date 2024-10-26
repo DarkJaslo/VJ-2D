@@ -56,6 +56,12 @@ public:
 	// Flips the sprite so that it looks to the left
 	void turnLeft();
 
+	// Makes the sprite flicker until it is told to stop
+	void startFlickering();
+
+	// Makes the sprite stop flickering
+	void stopFlickering();
+
 private:
 	// Private constructor for the factory pattern
 	Sprite(glm::ivec2 quad_size, glm::vec2 size_in_spritesheet, std::shared_ptr<Texture> spritesheet, 
@@ -97,7 +103,8 @@ private:
 	// The time of the animation
 	float m_time_animation;
 
-	// The texture coordinates offset, ie. the position of the top left corner of the miniquad inside the texture
+	// The texture coordinates offset, ie. the position of the top left corner of the miniquad
+	// inside the texture
 	glm::vec2 m_texcoord_displ;
 
 	// The size of a single sprite in the spritesheet
@@ -105,6 +112,13 @@ private:
 
 	// The different animations the sprite may have
 	std::vector<AnimKeyframes> m_animations;
+
+	// True iff the sprite should currently be flickering
+	bool m_flicker = false;
+
+	// Used to count frames so that we can determine when the sprite should be visible and when not
+	// when flickering
+	int m_flicker_counter = 0;
 };
 
 
