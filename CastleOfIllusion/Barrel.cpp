@@ -20,5 +20,5 @@ Barrel::Barrel(glm::ivec2 pos,
 
 void Barrel::collideWithEntity(Collision collision) 
 {
-	
+	ThrowableTile::collideWithEntity(collision);
 }

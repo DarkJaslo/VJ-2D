@@ -54,6 +54,9 @@ private:
 	// Creates a barrel and adds it to the scene
 	void createBarrel(std::istringstream& split_line);
 
+	// Creates a horse and adds it to the scene
+	void createHorse(std::istringstream& split_line);
+
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
 	
