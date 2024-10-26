@@ -118,7 +118,7 @@ private:
 
     // True iff the player is currently invulnerable
     // it can't take damage from enemies, but it can still die if it falls oustide the level
-    bool m_invulnerable = false;
+    bool m_invulnerable = true;
 
     // The time (ms) the player is invulnerable after being hit
     int m_invulnerability_time = 2000;

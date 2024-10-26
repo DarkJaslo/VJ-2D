@@ -500,6 +500,7 @@ void Player::gainPower(unsigned int gain)
 
 void Player::gainPoints(unsigned int gain) 
 {
+	takeHit();
 	m_points += gain;
 
 	// Update UI
