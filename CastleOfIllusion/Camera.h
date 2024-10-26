@@ -4,13 +4,14 @@
 
 #include <glm/glm.hpp>
 #include "Player.h"
+#include "UI.h"
 
 // The camera used to render the scene
 
 class Camera
 {
 public:
-    Camera(float width, float height, std::shared_ptr<Player> player);
+    Camera(float width, float height, std::shared_ptr<Player> player, std::shared_ptr<UI> ui);
 
 	// Updates the camera
     void update(int delta_time);
@@ -30,6 +31,9 @@ public:
 private:
 	// The game's player
 	std::shared_ptr<Player> m_player;
+
+	// The game's UI
+	std::shared_ptr<UI> m_ui;
 
 	// The size of the window the camera renders
     glm::vec2 m_size;

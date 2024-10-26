@@ -32,9 +32,9 @@ enum PlayerAnims
 	HOLD_IDLE, HOLD_MOVE, HOLD_JUMP, HOLD_FALL,
 };
 
-Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec2 const& tilemap_pos, 
-			   glm::ivec2 const& sprite_size, glm::ivec2 const& collision_box_size,
-	           std::shared_ptr<ShaderProgram> shader_program)
+Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shared_ptr<UI> ui,
+			   glm::ivec2 const& tilemap_pos, glm::ivec2 const& sprite_size, 
+			   glm::ivec2 const& collision_box_size, std::shared_ptr<ShaderProgram> shader_program)
 { 
 	std::cout << "Creating player at position " << pos.x << "," << pos.y << std::endl;
 
@@ -44,12 +44,16 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, glm::ivec
 	M_MAX_X_VELOCITY = MAX_X_VELOCITY;
 
 	m_tilemap = tilemap;
+	m_ui = ui;
 	m_collision_box_size = collision_box_size;
 	m_spritesheet.reset(new Texture());
 	m_grounded = false;
 	m_vel = glm::vec2(0.f,0.f);
 	m_acc = glm::vec2(0.f,0.f);
 	m_throwable_obj = nullptr;
+
+	m_ui->setPower(m_max_power);
+	m_ui->setTries(m_tries);
 
 	m_spritesheet->loadFromFile("images/MickeyMouse.png", TEXTURE_PIXEL_FORMAT_RGBA);
 
@@ -415,22 +419,35 @@ void Player::takeHit()
 	// Debug
 	std::cout << "Power left: " << m_power << "\n";
 
-	if (--m_power <= 0) 
+	m_ui->setPower(m_power);
+
+	if (m_power <= 0) 
 	{
-		// Lose game
+		--m_tries;
+		m_ui->setTries(m_tries);
+		if (m_tries <= 0)
+		{
+			// Lose game
+		}
+		else
+		{
+			m_power = 3;
+			m_ui->setPower(m_power);
+		}
 	}
 
 	// Trigger invulnerability for a while
 
 	// Flicker animation
 
-	// Update UI, play sound
+	// Play sound
 }
 
 void Player::gainPower(unsigned int gain) 
 {
 	m_power = std::min(static_cast<unsigned int>(m_max_power), m_power + gain);
 	// Update UI, play sound
+	m_ui->setPower(m_power);
 
 	// Debug
 	std::cout << "Power: " << m_power << "\n";
@@ -441,6 +458,7 @@ void Player::gainPoints(unsigned int gain)
 	m_points += gain;
 
 	// Update UI
+	m_ui->setScore(m_points);
 
 	// Debug
 	std::cout << "Points: " << m_points << "\n";

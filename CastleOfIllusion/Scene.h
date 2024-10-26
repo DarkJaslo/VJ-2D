@@ -6,6 +6,7 @@
 #include "TileMap.h"
 #include "Player.h"
 #include "Camera.h"
+#include "UI.h"
 
 
 #define PLAYER_SPRITE_SIZE_X 32*4
@@ -67,7 +68,9 @@ private:
 	
 	// The texture shading program
 	std::shared_ptr<ShaderProgram> m_tex_program;
+
 	std::shared_ptr<Camera> m_camera;
+	std::shared_ptr<UI> m_ui;
 	float m_current_time;
 
 	glm::ivec2 const m_player_sprite_size {PLAYER_SPRITE_SIZE_X, PLAYER_SPRITE_SIZE_Y};

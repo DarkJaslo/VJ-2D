@@ -31,6 +31,7 @@ Scene::Scene()
 	m_player.reset();
 	m_tex_program.reset(new ShaderProgram());
 	m_camera.reset();
+	m_ui.reset();
 }
 
 void Scene::init()
@@ -38,10 +39,12 @@ void Scene::init()
 	initShaders();
 	m_tilemap.reset(TileMap::createTileMap("levels/level1.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
-	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
-		                      m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_player_sprite_size, m_player_collision_size, m_tex_program));
+	m_ui.reset(new UI(m_tex_program));
 
-  m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player));
+	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
+		                      m_tilemap, m_ui, glm::ivec2(SCREEN_X, SCREEN_Y), m_player_sprite_size, m_player_collision_size, m_tex_program));
+
+	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player, m_ui));
 
 	m_entities.push_back(m_player);
 
@@ -86,6 +89,7 @@ void Scene::update(int delta_time)
 	}
 
 	m_camera->update(delta_time);
+	m_ui->update(delta_time);
 }
 
 void Scene::render()
@@ -106,6 +110,7 @@ void Scene::render()
 		if (m_entities[i]->isEnabled())
 			m_entities[i]->render();
 	}
+	m_ui->render();
 }
 
 void Scene::initShaders()
