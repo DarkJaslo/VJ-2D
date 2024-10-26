@@ -1,4 +1,5 @@
 #include "Entity.h"
+#include "ThrowableTile.h"
 
 #include <iostream>
 #include <algorithm>
@@ -34,6 +35,19 @@ void Entity::update(int delta_time)
             else
                 m_vel.y = 0.0f;
 
+            // This is a bit of a hack, but it is way more comfortable to check for this here since
+            // we progressively update the position
+            if (auto throwable = dynamic_cast<ThrowableTile*>(this)) 
+            {
+                if (throwable->isBeingThrown()) 
+                {
+                    if (throwable->isDestroyedOnImpact())
+                        throwable->onDestroy();
+                    else
+                        throwable->m_thrown = false;
+                }
+            }
+
             m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
         }
     }
@@ -68,6 +82,14 @@ void Entity::update(int delta_time)
                 m_vel.x *= S_BOUNCE_COEFF;
                 if (abs(m_vel.x) <= S_MIN_BOUNCE_SPEED)
                     m_vel.x = 0.0f;
+            }
+
+            // This is a bit of a hack, but it is way more comfortable to check for this here since
+            // we progressively update the position
+            if (auto throwable = dynamic_cast<ThrowableTile*>(this))
+            {
+                if (throwable->isBeingThrown() && throwable->isDestroyedOnImpact())
+                    throwable->onDestroy();
             }
         }
     }

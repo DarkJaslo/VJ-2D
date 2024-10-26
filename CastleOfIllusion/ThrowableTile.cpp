@@ -44,15 +44,6 @@ void ThrowableTile::update(int delta_time)
 	if (!m_enabled)
 		return;
 
-	// We check collision with the tilemap on Y first to be able to update the attribute
-	if (m_thrown) 
-	{
-		auto offset_position = getMinMaxCollisionCoords().first + glm::ivec2(0, m_collision_box_size.y);
-		auto collision = m_tilemap->yCollision(offset_position, m_collision_box_size, m_vel);
-		if (collision) 
-			m_thrown = false;
-	}
-
 	Entity::update(delta_time);
 }
 

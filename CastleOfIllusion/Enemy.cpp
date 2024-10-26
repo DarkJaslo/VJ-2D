@@ -168,8 +168,6 @@ void SpringHorse::update(int delta_time)
 		};
 		TimedEvents::pushEvent(std::make_unique<TimedEvent>(1000, StillJumping));
 	}
-
-	// If jumping, schedule change to fall animation
 }
 
 void SpringHorse::enable() 

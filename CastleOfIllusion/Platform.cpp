@@ -59,7 +59,7 @@ void Platform::collideWithEntity(Collision collision)
 
             // If it is up enough,
             // It is at least a bit inside on the X axis
-            // And it is less 
+            // And less of it is inside on the Y axis than on the X axis
             if (pos_y_difference > ((3 * m_collision_box_size.y) / 4) && x_of_player_inside > 0 && y_of_player_inside < x_of_player_inside) 
             {
                 m_started_falling = true;
