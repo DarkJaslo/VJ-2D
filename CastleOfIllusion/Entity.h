@@ -70,6 +70,9 @@ public:
     virtual void setEnabled (bool enabled) { m_enabled = enabled; }
 
 protected:
+    // Updates the position according to the collision box of the solid
+    void computeCollisionAgainstSolid(Entity* solid);
+
     // The spritesheet
     std::shared_ptr<Texture> m_spritesheet;
 	
@@ -87,6 +90,9 @@ protected:
   
     // The velocity
     glm::vec2 m_vel;
+
+    // The acceleration
+    glm::vec2 m_acc {0.0f, 0.0f};
 
     constexpr static float S_GRAVITY = 0.006f;
 
@@ -113,6 +119,15 @@ protected:
 
     // True iff the entity is affected by drag on the X axis
     bool m_affected_by_x_drag = false;
+
+    // True iff the entity's "feet" are on the floor
+    bool m_grounded = false;
+
+    // The maximum |velocity| on the X axis
+    float M_MAX_X_VELOCITY = 10.0f;
+
+    // The maximum fall velocity (ie. maximum velocity on the Y axis)
+    float M_MAX_FALL_VELOCITY = 10.0f;
 };
 
 #endif // _ENTITY_INCLUDE

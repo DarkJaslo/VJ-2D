@@ -45,6 +45,8 @@ public:
 	virtual void onDestroy();
 
 protected:
+	friend class Entity;
+
 	// True if this throwable tile is destroyed on impact with some other throwable tile or an attacking player
 	bool m_destroyed_on_impact;
 

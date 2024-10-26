@@ -19,8 +19,6 @@ TileMap::TileMap(std::string const& level_file, glm::vec2 const& min_coords, Sha
 {
 	loadLevel(level_file);
 	prepareArrays(min_coords, program);
-
-	m_tilesheet_ptr.reset(const_cast<Texture*>(&m_tilesheet));
 }
 
 TileMap::~TileMap()
@@ -32,7 +30,7 @@ TileMap::~TileMap()
 void TileMap::render() const
 {
 	glEnable(GL_TEXTURE_2D);
-	m_tilesheet.use();
+	m_tilesheet->use();
 	glBindVertexArray(m_vao);
 	glEnableVertexAttribArray(m_pos_location);
 	glEnableVertexAttribArray(m_texcoord_location);
@@ -79,11 +77,12 @@ bool TileMap::loadLevel(std::string const& level_file)
 	sstream >> tilesheet_file;
 
 	// Load and configure the tilesheet texture
-	m_tilesheet.loadFromFile(tilesheet_file, TEXTURE_PIXEL_FORMAT_RGBA);
-	m_tilesheet.setWrapS(GL_CLAMP_TO_EDGE);
-	m_tilesheet.setWrapT(GL_CLAMP_TO_EDGE);
-	m_tilesheet.setMinFilter(GL_NEAREST);
-	m_tilesheet.setMagFilter(GL_NEAREST);
+	m_tilesheet.reset(new Texture());
+	m_tilesheet->loadFromFile(tilesheet_file, TEXTURE_PIXEL_FORMAT_RGBA);
+	m_tilesheet->setWrapS(GL_CLAMP_TO_EDGE);
+	m_tilesheet->setWrapT(GL_CLAMP_TO_EDGE);
+	m_tilesheet->setMinFilter(GL_NEAREST);
+	m_tilesheet->setMagFilter(GL_NEAREST);
 
 	// Read the tilesheet size (in tiles)
 	getline(fin, line);
@@ -132,7 +131,7 @@ void TileMap::prepareArrays(glm::vec2 const& min_coords, ShaderProgram& program)
 	vector<float> vertices;
 	
 	m_num_tiles = 0;
-	half_texel = glm::vec2(0.5f / m_tilesheet.width(), 0.5f / m_tilesheet.height());
+	half_texel = glm::vec2(0.5f / m_tilesheet->width(), 0.5f / m_tilesheet->height());
 	for (int j=0; j<m_map_size.y; j++)
 	{
 		for (int i=0; i<m_map_size.x; i++)
@@ -264,5 +263,5 @@ bool TileMap::isGrounded(glm::ivec2 const& pos, glm::ivec2 const& size) const
 
 std::shared_ptr<Texture> TileMap::getTilesheet() const 
 {
-	return m_tilesheet_ptr;
+	return m_tilesheet;
 }

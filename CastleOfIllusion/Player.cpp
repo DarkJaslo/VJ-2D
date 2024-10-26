@@ -38,6 +38,11 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shar
 { 
 	std::cout << "Creating player at position " << pos.x << "," << pos.y << std::endl;
 
+	m_affected_by_x_drag = false;
+	m_affected_by_gravity = true;
+	M_MAX_FALL_VELOCITY = MAX_FALL_VELOCITY;
+	M_MAX_X_VELOCITY = MAX_X_VELOCITY;
+
 	m_tilemap = tilemap;
 	m_ui = ui;
 	m_collision_box_size = collision_box_size;
@@ -62,11 +67,12 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shar
 	m_tilemap_displ = tilemap_pos;
 
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
+
+	m_power = 3;
 }
 
 void Player::update(int delta_time)
 {
-	m_sprite->update(delta_time);
 	PlayerState prev_state = m_state;
 
 
@@ -107,7 +113,6 @@ void Player::update(int delta_time)
 	if (!m_can_grab && !Game::getKey(KEY_GRAB))
 	{
 		m_can_grab = true;
-		
 	}
 
 	//////// X AXIS
@@ -225,20 +230,6 @@ void Player::update(int delta_time)
 		}
 	}
 
-	// Update x position
-	float new_vel = m_vel.x + m_acc.x * static_cast<float>(delta_time);
-	if (abs(new_vel) < MAX_X_VELOCITY)
-	{
-		m_vel.x = new_vel;
-	}
-	m_pos.x += m_vel.x*static_cast<float>(delta_time);
-	
-	auto collision = m_tilemap->xCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);
-	if (collision)
-	{
-		m_pos.x = collision->x + m_collision_box_size.x/2;
-	}
-
 	//////// Y AXIS
 
 	if (m_grounded)
@@ -283,25 +274,8 @@ void Player::update(int delta_time)
 		}
 	}
 
-	// Update y position
-	new_vel = m_vel.y + S_GRAVITY*static_cast<float>(delta_time);
-	if (new_vel < MAX_FALL_VELOCITY)
-	{
-		m_vel.y = new_vel;
-	}
-	m_pos.y += m_vel.y*static_cast<float>(delta_time);
-	
-	collision = m_tilemap->yCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);
-	if (collision)
-	{
-		m_pos.y = collision->y + m_collision_box_size.y;
-		m_acc.y = 0.f;
-		m_vel.y = 0.f;
-	}
-
-
-	// Update grounded
-	m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
+	// This updates the position and velocity
+	Entity::update(delta_time);
 
 	// Change animation if necessary
 	if (prev_state != m_state)
@@ -365,7 +339,7 @@ void Player::update(int delta_time)
 
 	// Update sprite position
 	m_sprite->setPosition(glm::vec2(static_cast<float>(m_tilemap_displ.x + m_pos.x), static_cast<float>(m_tilemap_displ.y + m_pos.y)));
-	
+
 	// Update holding object position
 	if (m_has_object)
 	{
@@ -384,7 +358,16 @@ void Player::collideWithEntity(Collision collision)
 {
 	switch (collision.entity->getType()) 
 	{
-	case EntityType::Enemy:
+	case EntityType::Enemy: 
+	{
+		if (!isAttacking())
+			takeHit();
+		else 
+		{
+			m_vel.y = S_BOUNCE_SPEED;
+		}
+		return;
+	}
 	case EntityType::Projectile:
 	case EntityType::Boss:
 	{
@@ -635,70 +618,4 @@ void Player::configureAnimations()
 	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
 	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
 	m_sprite->addKeyframe(HURT, glm::vec2(5.f, 3.f));
-}
-
-void Player::computeCollisionAgainstSolid(Entity* solid) 
-{
-	// Physically collide with it: in this case it's a bit more difficult because we already have the
-	// updated X,Y coordinates of the player instead of being able to update them one by one.
-	//
-	// However, if we assume certain things about the game, there is a solution that works
-	auto [min, max] = solid->getMinMaxCollisionCoords();
-
-	// If the amount of the player that is inside the box exceeds these values, then the player is 
-	// actually not inside in that axis
-	int const Y_MAX_MARGIN = m_collision_box_size.y / 2;
-	int const X_MAX_MARGIN = m_collision_box_size.x / 4;
-
-	auto player_max_y = m_pos.y;
-	auto player_min_y = m_pos.y - m_collision_box_size.y;
-	auto player_max_x = m_pos.x + m_collision_box_size.x / 2.0f;
-	auto player_min_x = m_pos.x - m_collision_box_size.x / 2.0f;
-
-	int y_inside_up = player_max_y - min.y;
-	int y_inside_down = max.y - player_min_y;
-	int x_inside_left = player_max_x - min.x;
-	int x_inside_right = max.x - player_min_x + 1;
-
-	bool actually_inside_y = y_inside_up < Y_MAX_MARGIN || y_inside_down < Y_MAX_MARGIN;
-	bool actually_inside_x = x_inside_left < X_MAX_MARGIN || x_inside_right < X_MAX_MARGIN;
-
-	auto CorrectX = [&]()
-	{
-		if (x_inside_left < X_MAX_MARGIN)
-			m_pos.x -= x_inside_left;
-		else
-			m_pos.x += x_inside_right;
-
-		m_vel.x = 0.0f;
-	};
-
-	auto CorrectY = [&]()
-	{
-		if (y_inside_up < Y_MAX_MARGIN) 
-		{
-			m_pos.y -= y_inside_up;
-			m_grounded = true;
-		}
-		else
-			m_pos.y += y_inside_down;
-
-		m_vel.y = 0.0f;
-	};
-
-	if (actually_inside_x && actually_inside_y)
-	{
-		// Inside in both axes, correct the smallest ("less inside")
-		int x_inside = x_inside_left < X_MAX_MARGIN ? x_inside_left : x_inside_right;
-		int y_inside = y_inside_up < Y_MAX_MARGIN ? y_inside_up : y_inside_down;
-
-		if (y_inside_up < x_inside)
-			CorrectY();
-		else
-			CorrectX();
-	}
-	else if (actually_inside_y)
-		CorrectY();
-	else if (actually_inside_x)
-		CorrectX();
 }
