@@ -38,9 +38,9 @@ void Camera::update(int delta_time)
 	{
 		// If the player has more than 1/3 of the camera to its left,
 		// move the camera faster than the player so that it can catch up
-		if ((pos_player.x - m_pos.x) > (m_size.x/3.f))
+		if ((pos_player.x - m_pos.x) > (m_size.x / 3.f))
 		{
-			m_vel.x = m_update_speed.x*vel_player.x;
+			m_vel.x = m_update_speed.x * vel_player.x;
 		}
 		else
 		{
@@ -51,9 +51,9 @@ void Camera::update(int delta_time)
 	{
 		// If the player has more than 1/3 of the camera to its right
 		// move the camera faster than the player so that it can catch up
-		if ((pos_player.x + size_player.x - m_pos.x) < (2*m_size.x/3.f))
+		if ((pos_player.x + size_player.x - m_pos.x) < (2 * m_size.x / 3.f))
 		{
-			m_vel.x = m_update_speed.x*vel_player.x;
+			m_vel.x = m_update_speed.x * vel_player.x;
 		}
 		else
 		{
@@ -89,13 +89,14 @@ void Camera::update(int delta_time)
 		}
 	}*/
 	m_pos += m_vel * static_cast<float>(delta_time);
-	m_pos.x = std::max(m_pos.x, pos_player.x + size_player.x - 2.f*m_size.x/3.f); // Ensures the camera does not move too far to the left
-	m_pos.x = std::min(m_pos.x, pos_player.x - m_size.x/3.f); // Ensures the camera does not move too far to the right
+	m_pos.x = std::max(m_pos.x, pos_player.x + size_player.x - 2.f * m_size.x / 3.f); // Ensures the camera does not move too far to the left
+	m_pos.x = std::min(m_pos.x, pos_player.x - m_size.x / 3.f); // Ensures the camera does not move too far to the right
 	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
 	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
-  
+
   // Move the UI as well so that it stays in the same position relative to the camera
 	m_ui->setPosition(m_pos + glm::vec2(m_size.x / 2.f, m_size.y));
+}
 
 bool Camera::isVisible(glm::ivec2 pos, glm::ivec2 size) const 
 {
