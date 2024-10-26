@@ -73,9 +73,6 @@ private:
     PlayerState m_state;
 
     glm::ivec2 m_tilemap_displ;
-      
-    // Player's movement acceleration
-    glm::vec2 m_acc;
 
     // The points the player currently has
     int m_points = 0;

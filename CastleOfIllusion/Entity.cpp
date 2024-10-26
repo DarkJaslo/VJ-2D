@@ -14,7 +14,16 @@ void Entity::update(int delta_time)
     // Update Y position
     if (m_affected_by_gravity) 
     {
-        m_vel.y += S_GRAVITY * static_cast<float>(delta_time);
+        // Only apply max velocity when falling, gravity will do the other case for us
+        if (m_vel.y > 0)
+        {
+            float new_vel = m_vel.y + S_GRAVITY * static_cast<float>(delta_time);
+            if (abs(new_vel) < M_MAX_FALL_VELOCITY)
+                m_vel.y = new_vel;
+        }
+        else
+            m_vel.y += S_GRAVITY * static_cast<float>(delta_time);
+
         m_pos.y += static_cast<int>(m_vel.y * static_cast<float>(delta_time));
     }
 
@@ -24,6 +33,7 @@ void Entity::update(int delta_time)
         if (y_collision)
         {
             m_pos.y = y_collision->y + m_collision_box_size.y;
+            m_acc.y = 0.0f;
 
             if (m_bounces)
             {
@@ -52,14 +62,11 @@ void Entity::update(int delta_time)
         }
     }
 
-    // Saves work if the object is not moving (common case)
-    if (m_vel == glm::vec2(0.0f, 0.0f))
-    {
-        m_sprite->setPosition(m_pos);
-        return;
-    }
-
     // Update X position
+    float new_vel = m_vel.x + m_acc.x * static_cast<float>(delta_time);
+    if (abs(new_vel) < M_MAX_X_VELOCITY)
+        m_vel.x = new_vel;
+
     if (m_affected_by_x_drag) 
     {
         if (m_vel.x > 0) 

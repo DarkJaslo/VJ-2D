@@ -24,27 +24,7 @@ Chest::Chest(glm::ivec2 pos,
 
 void Chest::collideWithEntity(Collision collision) 
 {
-	switch (collision.entity->getType())
-	{
-	case EntityType::Player: 
-	{
-		auto player = static_cast<Player*>(collision.entity);
-		if (player->isAttacking())
-			onDestroy();
-		break;
-	}
-	case EntityType::ThrowableTile:
-		onDestroy();
-		break;
-	case EntityType::Enemy: 
-	{
-		if (m_thrown)
-			onDestroy();
-		break;
-	}
-	default:
-		break;
-	}
+	ThrowableTile::collideWithEntity(collision);
 }
 
 void Chest::onDestroy() 

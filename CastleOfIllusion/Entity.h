@@ -91,6 +91,9 @@ protected:
     // The velocity
     glm::vec2 m_vel;
 
+    // The acceleration
+    glm::vec2 m_acc {0.0f, 0.0f};
+
     constexpr static float S_GRAVITY = 0.006f;
 
     // True iff this entity can collide with other entities. Disable for destroy or fading animations, for instance
@@ -119,6 +122,12 @@ protected:
 
     // True iff the entity's "feet" are on the floor
     bool m_grounded = false;
+
+    // The maximum |velocity| on the X axis
+    float M_MAX_X_VELOCITY = 10.0f;
+
+    // The maximum fall velocity (ie. maximum velocity on the Y axis)
+    float M_MAX_FALL_VELOCITY = 10.0f;
 };
 
 #endif // _ENTITY_INCLUDE

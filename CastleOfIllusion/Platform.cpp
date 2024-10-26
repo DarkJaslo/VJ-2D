@@ -16,6 +16,7 @@ Platform::Platform(glm::ivec2 pos, std::shared_ptr<Texture> tilesheet, int tile_
     m_affected_by_gravity = false;
     m_affected_by_x_drag = false;
     m_bounces = false;
+    M_MAX_FALL_VELOCITY = 0.4f;
     
     m_sprite.reset(Sprite::createSprite(size, { 3.0f / 16.0f, 1.0f / 16.0f } /* quad_size */, tilesheet, shader_program));
     m_sprite->setTextureCoordsOffset({ 3.0f/16.0f, 2.0f/16.0f });

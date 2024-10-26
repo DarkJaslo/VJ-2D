@@ -1,5 +1,6 @@
 #include "ThrowableTile.h"
 #include "TimedEvent.h"
+#include "Player.h"
 
 #include <iostream>
 
@@ -49,17 +50,37 @@ void ThrowableTile::update(int delta_time)
 
 void ThrowableTile::collideWithEntity(Collision collision) 
 {
-	if (!m_destroyed_on_impact)
-		return;
-
 	switch (collision.entity->getType())
 	{
+	case EntityType::ThrowableTile: 
+	{
+		auto throwable = static_cast<ThrowableTile*>(collision.entity);
+		if (throwable->isStatic() && !m_destroyed_on_impact)
+			computeCollisionAgainstSolid(throwable);
+		else if (m_thrown && m_destroyed_on_impact)
+			onDestroy();
+		break;
+	}
+	case EntityType::Platform: 
+	{
+		if (!m_destroyed_on_impact)
+			computeCollisionAgainstSolid(collision.entity);
+	}
 	case EntityType::Enemy:
 	case EntityType::Boss:
-	case EntityType::Platform:
-	case EntityType::ThrowableTile:
-		onDestroy();
+	{
+		if (m_thrown && m_destroyed_on_impact)
+			onDestroy();
 		break;
+	}
+	case EntityType::Player:
+	{
+		auto player = static_cast<Player*>(collision.entity);
+		if (m_destroyed_on_impact && player->isAttacking())
+			onDestroy();
+
+		break;
+	}
 	default:
 		break;
 	}

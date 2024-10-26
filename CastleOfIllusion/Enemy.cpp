@@ -70,8 +70,13 @@ void Enemy::collideWithEntity(Collision collision)
 		auto throwable = static_cast<ThrowableTile*>(collision.entity);
 		if (throwable->isBeingThrown())
 			onDeath();
+		else
+			computeCollisionAgainstSolid(throwable);
 		break;
 	}
+	case EntityType::Platform:
+		computeCollisionAgainstSolid(collision.entity);
+		break;
 	default:
 		break;
 	}
