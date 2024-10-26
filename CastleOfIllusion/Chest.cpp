@@ -12,9 +12,9 @@ Chest::Chest(glm::ivec2 pos,
 			tilemap,
 			tilemap_pos,
 			shader_program,
-			"images/Items.png",
+			"images/Blocks2.png",
 			{ 0.125f, 0.5f }, /* size_in_texture */
-			{ 0.75f, 0.0f }, /* pos_in_texture */
+			{ 0.0f, 0.0f }, /* pos_in_texture */
 			true /* destroyed_on_impact */
 		),
 		m_content(content)

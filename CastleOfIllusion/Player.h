@@ -20,7 +20,8 @@ enum class PlayerState
     HoldIdle,
     HoldMoving,
     HoldJumping,
-    HoldFalling
+    HoldFalling,
+    Hurt,
 };
 
 // Represents a player.
@@ -105,6 +106,16 @@ private:
 
     // Pointer to the game's UI
     std::shared_ptr<UI> m_ui;
+
+    // True iff the player is currently invulnerable
+    // it can't take damage from enemies, but it can still die if it falls oustide the level
+    bool m_invulnerable = true;
+
+    // The time (ms) the player is invulnerable after being hit
+    int m_invulnerability_time = 2000;
+
+    // True iff the player has to play the animation for being hurt
+    bool m_hurt = false;
 };
 
 #endif // _PLAYER_INCLUDE

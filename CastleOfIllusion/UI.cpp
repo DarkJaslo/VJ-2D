@@ -20,7 +20,7 @@ UI::UI(std::shared_ptr<ShaderProgram> shader_program)
 
 	// Power sprites
 	m_power_spritesheet.reset(new Texture());
-	m_power_spritesheet->loadFromFile("images/Blocks2.png", TEXTURE_PIXEL_FORMAT_RGBA);
+	m_power_spritesheet->loadFromFile("images/Items.png", TEXTURE_PIXEL_FORMAT_RGBA);
 	m_power_sprite = std::vector<std::shared_ptr<Sprite>>(3);
 	for (int i = 0; i < m_power_sprite.size(); ++i)
 	{
@@ -29,10 +29,10 @@ UI::UI(std::shared_ptr<ShaderProgram> shader_program)
 		m_power_sprite[i]->setNumberAnimations(2);
 		// Full star
 		m_power_sprite[i]->setAnimationSpeed(FULL, 1);
-		m_power_sprite[i]->addKeyframe(FULL, glm::vec2(6.f, 0.f));
+		m_power_sprite[i]->addKeyframe(FULL, glm::vec2(5.f, 0.f));
 		// Empty star
 		m_power_sprite[i]->setAnimationSpeed(EMPTY, 1);
-		m_power_sprite[i]->addKeyframe(EMPTY, glm::vec2(7.f, 0.f));
+		m_power_sprite[i]->addKeyframe(EMPTY, glm::vec2(6.f, 0.f));
 
 		m_power_sprite[i]->changeAnimation(FULL);
 	}
