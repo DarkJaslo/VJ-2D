@@ -23,8 +23,12 @@ void createTranslation(std::fstream& translation_file, std::map<std::string, std
     translation_file >> origin;
     translation[origin] = " ";
 
-    while (translation_file >> origin && translation_file >> mapped)
+    while (translation_file >> origin)
     {
+        if (origin[0] == '#')
+            continue;
+        translation_file >> mapped;
+
         if (translation.contains(origin))
         {
             std::cerr << "A translation for " << origin << " was provided more than once!";
