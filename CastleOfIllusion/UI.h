@@ -32,6 +32,8 @@ public:
 	// Sets the time displayed in the UI
 	void setTime(int time);
 
+	glm::ivec2 getSize() const { return m_base_sprite->getQuadSize(); }
+
 private:
 	// The coordinates of the midpoint in the base the UI
 	glm::vec2 m_pos;

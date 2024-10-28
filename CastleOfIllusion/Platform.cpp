@@ -78,7 +78,7 @@ void Platform::collideWithEntity(Collision collision)
         break;
     }
     case EntityType::Void:
-        // Reappear or something, disable gravity
+        setEnabled(false);
         break;
     default:
         break;
