@@ -60,8 +60,9 @@ void Camera::update(int delta_time)
 			m_vel.x = 0;
 		}
 	}
-	/*
+	
 	// Y Axis
+	/* 
 	if (vel_player.y > 0) // Going down
 	{
 		// If the player has more than 1/3 of the camera above them
@@ -87,10 +88,12 @@ void Camera::update(int delta_time)
 		{
 			m_vel.y = 0;
 		}
-	}*/
+	}
+	*/
 	m_pos += m_vel * static_cast<float>(delta_time);
 	m_pos.x = std::max(m_pos.x, pos_player.x + size_player.x - 2.f * m_size.x / 3.f); // Ensures the camera does not move too far to the left
 	m_pos.x = std::min(m_pos.x, pos_player.x - m_size.x / 3.f); // Ensures the camera does not move too far to the right
+	m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 128;
 	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
 	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
 

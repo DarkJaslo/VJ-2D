@@ -21,34 +21,19 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-// coordinates of the tile where the player appears 
-#define INIT_PLAYER_X_TILES 4
-#define INIT_PLAYER_Y_TILES 8
-
-Scene::Scene()
+void Scene::init(std::string const& level_file, std::string const& entity_file)
 {
 	m_tilemap.reset();
 	m_player.reset();
 	m_tex_program.reset(new ShaderProgram());
 	m_camera.reset();
-	m_ui.reset();
-}
 
-void Scene::init()
-{
 	initShaders();
-	m_tilemap.reset(TileMap::createTileMap("levels/level1.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+	m_tilemap.reset(TileMap::createTileMap(level_file, glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
 	m_ui.reset(new UI(m_tex_program));
 
-	m_player.reset(new Player(glm::vec2(INIT_PLAYER_X_TILES * m_tilemap->getTileSize(), INIT_PLAYER_Y_TILES * m_tilemap->getTileSize()), 
-		                      m_tilemap, m_ui, glm::ivec2(SCREEN_X, SCREEN_Y), m_player_sprite_size, m_player_collision_size, m_tex_program));
-
-	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player, m_ui));
-
-	m_entities.push_back(m_player);
-
-	readSceneFile("levels/testTiles.entities");
+	readSceneFile(entity_file);
 
 	m_current_time = 0.0f;
 }
@@ -79,7 +64,7 @@ void Scene::update(int delta_time)
 
 			if (*m_entities[i] & *m_entities[j])
 			{
-				std::cout << "Detected collision between entities" << std::endl;
+				//std::cout << "Detected collision between entities" << std::endl;
 
 				auto&& [i_collision, j_collision] = *m_entities[i] | *m_entities[j];
 				m_entities[i]->collideWithEntity(i_collision);
@@ -144,7 +129,7 @@ void Scene::initShaders()
 	m_tex_program->bindFragmentOutput("outColor");
 }
 
-void Scene::readSceneFile(std::string&& path)
+void Scene::readSceneFile(std::string const& path)
 {
 	std::fstream file(path);
 
@@ -161,7 +146,9 @@ void Scene::readSceneFile(std::string&& path)
 		// Get entity type
 		split_line >> word;
 
-		if (word == "chest")
+		if (word == "player")
+			createPlayer(split_line);
+		else if (word == "chest")
 			createChest(split_line);
 		else if (word == "void")
 			createVoid(split_line);
@@ -171,12 +158,38 @@ void Scene::readSceneFile(std::string&& path)
 			createBarrel(split_line);
 		else if (word == "horse")
 			createHorse(split_line);
-		else 
+		else if (word == "monkey")
+			createMonkey(split_line);
+		else if (word != "") // Empty lines cause this
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
 			throw std::runtime_error("");
 		}
 	}
+}
+
+void Scene::createPlayer(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+
+	std::cout << "Creating player at " << pos.x << "," << pos.y << std::endl;
+
+	m_player.reset(
+		new Player(
+			pos,
+			m_tilemap, 
+			m_ui, 
+			glm::ivec2(SCREEN_X, SCREEN_Y), 
+			m_player_sprite_size, 
+			m_player_collision_size, 
+			m_tex_program));
+
+	m_entities.push_back(m_player);
+
+	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player, m_ui));
 }
 
 void Scene::createChest(std::istringstream& split_line) 
@@ -294,4 +307,26 @@ void Scene::createHorse(std::istringstream& split_line)
 			glm::vec2(0.25f, 1.0f), 
 			m_camera,
 			m_player));
+}
+
+void Scene::createMonkey(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+
+	auto monkey = std::make_shared<CymbalMonkey>(
+		pos,
+		m_tilemap,
+		m_tex_program,
+		"images/Monkey.png",
+		glm::vec2(0.25f, 1.0f),
+		m_camera,
+		m_player);
+
+	m_entities.emplace_back(monkey);
+	m_entities.emplace_back(monkey->getProjectile());
+
+	std::cout << "Creating monkey at " << monkey->getPosition().x << "," << monkey->getPosition().y << std::endl;
 }

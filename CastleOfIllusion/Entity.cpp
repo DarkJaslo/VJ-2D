@@ -200,12 +200,22 @@ void Entity::computeCollisionAgainstSolid(Entity* solid)
 
     auto CorrectX = [&]()
     {
-        if (x_inside_left < X_MAX_MARGIN)
+        if (x_inside_left < X_MAX_MARGIN) 
+        {
             m_pos.x -= x_inside_left;
-        else
+
+            // Only if we are actually walking against it
+            if (m_vel.x > 0)
+                m_vel.x = 0.0f;
+        }
+        else 
+        {
             m_pos.x += x_inside_right;
 
-        m_vel.x = 0.0f;
+            // Only if we are actually walking against it
+            if (m_vel.x < 0)
+                m_vel.x = 0.0f;
+        }
     };
 
     auto CorrectY = [&]()

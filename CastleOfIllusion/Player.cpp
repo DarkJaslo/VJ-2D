@@ -28,8 +28,9 @@
 
 enum PlayerAnims
 {
-	IDLE, MOVE, CROUCH, JUMP, FALL,	SLIDE, ATTACK_UP, ATTACK_DOWN,
-	HOLD_IDLE, HOLD_MOVE, HOLD_JUMP, HOLD_FALL, HURT
+	IDLE = 0, MOVE, CROUCH, JUMP, FALL,	SLIDE, ATTACK_UP, ATTACK_DOWN,
+	HOLD_IDLE, HOLD_MOVE, HOLD_JUMP, HOLD_FALL, HURT,
+	COUNT // Always keep this one last
 };
 
 Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shared_ptr<UI> ui,
@@ -515,7 +516,7 @@ void Player::onFallOff()
 
 void Player::configureAnimations()
 {
-	m_sprite->setNumberAnimations(13);
+	m_sprite->setNumberAnimations(COUNT);
 
 	// Idle
 	m_sprite->setAnimationSpeed(IDLE, 3);
