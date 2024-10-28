@@ -1,4 +1,25 @@
-n
-asterisco a
-barco b
-casa c
+....
+
+# Plataforma marron
+plle cd
+plmi ce
+plri cf
+
+# Verde fuerte estrellas
+veee dc
+veST ec
+vesR dd
+ves2 ed
+
+# Borde verde claro
+bomi ab
+bori ac
+bole aa
+
+# Tierra suelo
+tile ja
+timi jb 
+tiri jc
+
+# Tierra relleno
+tino kb

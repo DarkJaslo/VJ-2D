@@ -1,6 +1,9 @@
+player 4 8
+
 chest 19 8 cake small
 void 27 10 5 8
 platform 28 8
 platform 38 3
 barrel 12 8
 horse 15 8
+monkey 42 6

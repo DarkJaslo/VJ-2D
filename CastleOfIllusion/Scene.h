@@ -24,17 +24,25 @@ class Scene
 {
 
 public:
-	Scene();
+	Scene() = default;
 
-	void init();
-	void update(int deltaTime);
+	// Initializes the scene with an entity file and a level file
+	void init(std::string const& level_file, std::string const& entity_file);
+
+	// Updates the scene
+	void update(int delta_time);
+
+	// Renders the scene
 	void render();
 
 private:
 	void initShaders();
 
 	// Reads from a file which entities will be on the level, with information on how to create them
-	void readSceneFile(std::string&& path);
+	void readSceneFile(std::string const& path);
+
+	// Creates a player and adds it to the scene
+	void createPlayer(std::istringstream& split_line);
 
 	// Creates a chest and adds it to the scene
 	void createChest(std::istringstream& split_line);
@@ -56,6 +64,9 @@ private:
 
 	// Creates a horse and adds it to the scene
 	void createHorse(std::istringstream& split_line);
+
+	// Creates a monkey and adds it to the scene
+	void createMonkey(std::istringstream& split_line);
 
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
