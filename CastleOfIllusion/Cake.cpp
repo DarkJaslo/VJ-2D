@@ -47,12 +47,8 @@ void Cake::collideWithEntity(Collision collision)
     {
     case EntityType::Player:
     {
-        // Disappear, stop being collectable
         m_can_collide = false;
         m_enabled = false;
-
-        // Collect animation
-        // Collect sound
         break;
     }
     default:
@@ -74,6 +70,12 @@ void Cake::setEnabled(bool enabled)
             m_can_collide = true;
         };
         TimedEvents::pushEvent(std::make_unique<TimedEvent>(200, NoCollideAtStart));
+
+        auto Flicker = [this]() 
+        {
+            m_sprite->startFlickering();
+        };
+        TimedEvents::pushEvent(std::make_unique<TimedEvent>(s_timeout/2, Flicker));
 
         auto Destroy = [this]()
         {

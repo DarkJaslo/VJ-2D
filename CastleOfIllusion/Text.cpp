@@ -9,15 +9,21 @@ Text::Text(glm::vec2 const& pos, glm::ivec2 const& char_size, std::shared_ptr<Sh
 
 	m_spritesheet.reset(new Texture());
 	m_spritesheet->loadFromFile("images/Numbers.png", TEXTURE_PIXEL_FORMAT_RGBA);
+
+	int num_digits = 6;
+	m_sprites.resize(num_digits);
+	for (int i = 0; i < num_digits; ++i)
+		m_sprites[i].reset(Sprite::createSprite(m_char_sprite_size, glm::vec2(0.0625f, 1.0f), m_spritesheet, m_shader_program));
 }
 
 void Text::writeNumber(int number, int num_digits, glm::vec2 const& pos)
 {
 	m_pos = pos;
-	m_sprites = std::vector<std::shared_ptr<Sprite>>(num_digits);
+	//m_sprites.clear();
+	//m_sprites.resize(num_digits); // = std::vector<std::shared_ptr<Sprite>>(num_digits);
 	for (int i = 0; i < num_digits; ++i)
 	{
-		m_sprites[i].reset(Sprite::createSprite(m_char_sprite_size, glm::vec2(0.0625f, 1.0f), m_spritesheet, m_shader_program));
+		//m_sprites[i].reset(Sprite::createSprite(m_char_sprite_size, glm::vec2(0.0625f, 1.0f), m_spritesheet, m_shader_program));
 
 		int digit = (number / static_cast<int>(std::pow(10, num_digits - i - 1))) % 10;
 

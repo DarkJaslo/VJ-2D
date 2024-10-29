@@ -28,7 +28,7 @@ private:
     std::shared_ptr<Texture> m_spritesheet;
 
     // A pointer to the sprite
-    std::vector<std::shared_ptr<Sprite>> m_sprites;
+    std::vector<std::unique_ptr<Sprite>> m_sprites;
 
     // The coordinates of the start of the text
     glm::vec2 m_pos;
