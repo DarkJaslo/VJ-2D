@@ -50,6 +50,9 @@ public:
 
 	glm::ivec2 getQuadSize() const;
 
+	// Returns the shader program
+	std::shared_ptr<ShaderProgram> getShaderProgram() const { return m_shader_program; }
+
 	// Flips the sprite so that it looks to the right (default)
 	void turnRight();
 

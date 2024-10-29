@@ -30,14 +30,14 @@ class Player : public Entity
 {
 
 public:
-    Player(glm::vec2 const& pos, 
-           std::shared_ptr<TileMap> tilemap, 
-           std::shared_ptr<UI> ui,
-           glm::ivec2 const& tilemap_pos,
-           glm::ivec2 const& sprite_size,
-           glm::ivec2 const& collision_box_size,
-           std::shared_ptr<ShaderProgram> shader_program);
-    
+    Player(glm::vec2 const& pos,
+        std::shared_ptr<TileMap> tilemap,
+        std::shared_ptr<UI> ui,
+        glm::ivec2 const& tilemap_pos,
+        glm::ivec2 const& sprite_size,
+        glm::ivec2 const& collision_box_size,
+        std::shared_ptr<ShaderProgram> shader_program);
+
     // Updates the player
     virtual void update(int delta_time) final override;
 
@@ -52,17 +52,17 @@ public:
 
     // Returns the type of entity the player is
     virtual EntityType getType() const override { return EntityType::Player; }
-    	
+
 private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
-	void takeHit();
+    void takeHit();
 
-	// Gains power from eating cake
-	void gainPower(unsigned int gain);
+    // Gains power from eating cake
+    void gainPower(unsigned int gain);
 
     // Gains points from coins or defeating enemies
     void gainPoints(unsigned int gain);
-      
+
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
 
@@ -71,7 +71,7 @@ private:
 
     // Creates and configures the player animations
     void configureAnimations();
-    
+
     // The player's state
     PlayerState m_state;
 
@@ -91,7 +91,7 @@ private:
 
     // The speed at which the player bounces up after attacking some entities like enemies
     static constexpr float S_BOUNCE_SPEED = -1.8f;
-    
+
     // Pointer to the object the player is holding
     ThrowableTile* m_throwable_obj;
 
@@ -109,13 +109,18 @@ private:
 
     // True iff the player is currently invulnerable
     // it can't take damage from enemies, but it can still die if it falls oustide the level
-    bool m_invulnerable = true;
+    bool m_invulnerable = false;
 
     // The time (ms) the player is invulnerable after being hit
     int m_invulnerability_time = 2000;
 
     // True iff the player has to play the animation for being hurt
     bool m_hurt = false;
+
+    // Time jumping
+    int m_jump_counter = 0;
+
+    bool m_jumped = false;
 };
 
 #endif // _PLAYER_INCLUDE

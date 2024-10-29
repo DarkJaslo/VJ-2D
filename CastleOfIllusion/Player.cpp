@@ -10,6 +10,7 @@
 #include "Cake.h"
 #include "ThrowableTile.h"
 #include "TimedEvent.h"
+#include "Enemy.h"
 
 #define JUMP_HEIGHT 4*16*4
 #define MAX_X_VELOCITY 0.6f // Maximum velocity on the x axis
@@ -235,6 +236,9 @@ void Player::update(int delta_time)
 
 	if (m_grounded)
 	{
+		if (m_jumped)
+			m_jumped = false;
+
 		// Jump
 		if (Game::getKey(KEY_JUMP) && m_state != PlayerState::Hurt)
 		{
@@ -247,11 +251,29 @@ void Player::update(int delta_time)
 				m_state = PlayerState::Jumping;
 			}
 			m_grounded = false;
-			m_vel.y = calculateJumpVelocity(JUMP_HEIGHT, S_GRAVITY);
+			m_vel.y = calculateJumpVelocity(JUMP_HEIGHT/2, S_GRAVITY);
+			m_jump_counter = 0;
+			m_jumped = true;
 		}
+		else
+			m_affected_by_gravity = true;
 	}
 	else
 	{
+		if (m_jumped && m_state != PlayerState::Hurt) 
+		{
+			if (Game::getKey(KEY_JUMP))
+			{
+				m_jump_counter += delta_time;
+				if (m_jump_counter < 150)
+				{
+					m_vel.y = std::min(m_vel.y, calculateJumpVelocity(JUMP_HEIGHT/2, S_GRAVITY));
+				}
+			}
+			else
+				m_jump_counter = 1000;
+		}
+
 		// Update from going up to going down
 		if (m_vel.y > 0 && m_state != PlayerState::Hurt)
 		{
@@ -353,6 +375,13 @@ void Player::update(int delta_time)
 	{
 		m_throwable_obj = nullptr;
 	}
+
+	// Debug purposes
+	if (Game::getKey(GLFW_KEY_M)) 
+	{
+		std::cout << "Pos: " << m_pos.x/64 << ", " << m_pos.y/64 << std::endl;
+		std::cout << "Vel: " << m_vel.x << ", " << m_vel.y << std::endl;
+	}
 }
 
 void Player::collideWithEntity(Collision collision) 
@@ -365,12 +394,13 @@ void Player::collideWithEntity(Collision collision)
 			takeHit();
 		else 
 		{
+			auto enemy = static_cast<Enemy*>(collision.entity);
+			gainPoints(enemy->getPoints());
 			m_vel.y = S_BOUNCE_SPEED;
 		}
 		return;
 	}
 	case EntityType::Projectile:
-	case EntityType::Boss:
 	{
 		takeHit();
 		return;
@@ -475,23 +505,13 @@ void Player::takeHit()
 void Player::gainPower(unsigned int gain) 
 {
 	m_power = std::min(static_cast<unsigned int>(m_max_power), m_power + gain);
-	// Update UI, play sound
 	m_ui->setPower(m_power);
-
-	// Debug
-	std::cout << "Power: " << m_power << "\n";
 }
 
 void Player::gainPoints(unsigned int gain) 
 {
-	takeHit();
 	m_points += gain;
-
-	// Update UI
 	m_ui->setScore(m_points);
-
-	// Debug
-	std::cout << "Points: " << m_points << "\n";
 }
 
 float Player::calculateJumpVelocity(float height, float gravity) const

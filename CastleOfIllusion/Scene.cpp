@@ -16,6 +16,7 @@
 #include "Platform.h"
 #include "Barrel.h"
 #include "Enemy.h"
+#include "Boss.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -160,6 +161,8 @@ void Scene::readSceneFile(std::string const& path)
 			createHorse(split_line);
 		else if (word == "monkey")
 			createMonkey(split_line);
+		else if (word == "boss")
+			createBoss(split_line);
 		else if (word != "") // Empty lines cause this
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -174,6 +177,7 @@ void Scene::createPlayer(std::istringstream& split_line)
 	split_line >> pos.x >> pos.y;
 
 	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
 	std::cout << "Creating player at " << pos.x << "," << pos.y << std::endl;
 
@@ -210,6 +214,7 @@ void Scene::createChest(std::istringstream& split_line)
 		throw std::runtime_error("Scene::createChest: Bad content type");
 
 	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
 	std::cout << "Creating chest at " << pos.x << "," << pos.y << std::endl;
 
@@ -277,6 +282,7 @@ void Scene::createPlatform(std::istringstream& split_line)
 	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y;
 
 	upleft_corner_pos *= m_tilemap->getTileSize();
+	upleft_corner_pos.x += 1;
 
 	m_entities.emplace_back(std::make_shared<Platform>(upleft_corner_pos, m_tilemap->getTilesheet(), m_tilemap->getTileSize(), m_tex_program, m_tilemap));
 }
@@ -287,6 +293,7 @@ void Scene::createBarrel(std::istringstream& split_line)
 	split_line >> pos.x >> pos.y;
 
 	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
 	m_entities.emplace_back(std::make_shared<Barrel>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
 }
@@ -297,6 +304,7 @@ void Scene::createHorse(std::istringstream& split_line)
 	split_line >> pos.x >> pos.y;
 
 	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
 	m_entities.emplace_back(
 		std::make_shared<SpringHorse>(
@@ -315,6 +323,7 @@ void Scene::createMonkey(std::istringstream& split_line)
 	split_line >> pos.x >> pos.y;
 
 	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
 	auto monkey = std::make_shared<CymbalMonkey>(
 		pos,
@@ -329,4 +338,38 @@ void Scene::createMonkey(std::istringstream& split_line)
 	m_entities.emplace_back(monkey->getProjectile());
 
 	std::cout << "Creating monkey at " << monkey->getPosition().x << "," << monkey->getPosition().y << std::endl;
+}
+
+void Scene::createBoss(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	glm::ivec2 other_pos;
+	split_line >> pos.x >> pos.y >> other_pos.x >> other_pos.y;
+
+	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
+	other_pos *= m_tilemap->getTileSize();
+	other_pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
+
+	std::cout << "Creating boss at " << pos.x << "," << pos.y << std::endl;
+
+	auto boss =
+		std::make_shared<Boss>(
+			pos, 
+			other_pos, 
+			glm::ivec2(2*m_tilemap->getTileSize(), 2*m_tilemap->getTileSize()),
+			m_tilemap,
+			m_tex_program,
+			"images/Boss.png",
+			"images/Blocks2.png",
+			m_camera
+			);
+
+	auto blocks = boss->getBlocks();
+
+	// We want it rendered last -> put in first
+	m_entities.push_back(boss);
+
+	for (auto const& block : blocks)
+		m_entities.push_back(block);
 }

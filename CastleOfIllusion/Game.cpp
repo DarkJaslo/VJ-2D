@@ -6,7 +6,7 @@ void Game::init()
 {
 	instance().m_is_playing = true;
 	glClearColor(0.53f, 0.77f, 1.0f, 1.0f);
-	instance().m_scene.init("levels/normal.txt", "levels/testTiles.entities");
+	instance().m_scene.init("levels/normal.txt", "levels/normal.entities");
 }
 
 bool Game::update(int delta_time)

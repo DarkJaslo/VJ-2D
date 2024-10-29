@@ -23,11 +23,10 @@ void Entity::update(int delta_time)
         }
         else
             m_vel.y += S_GRAVITY * static_cast<float>(delta_time);
-
-        m_pos.y += static_cast<int>(m_vel.y * static_cast<float>(delta_time));
     }
+    m_pos.y += static_cast<int>(m_vel.y * static_cast<float>(delta_time));
 
-    if (m_can_collide) 
+    if (m_can_collide_with_tiles)
     {
         auto y_collision = m_tilemap->yCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);
         if (y_collision)
@@ -56,10 +55,10 @@ void Entity::update(int delta_time)
                     else
                         throwable->m_thrown = false;
                 }
-            }
-
-            m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
+            }   
         }
+
+        m_grounded = m_tilemap->isGrounded(getMinMaxCollisionCoords().first, m_collision_box_size);
     }
 
     // Update X position
@@ -77,7 +76,7 @@ void Entity::update(int delta_time)
 
     m_pos.x += m_vel.x * static_cast<float>(delta_time);
 
-    if (m_can_collide) 
+    if (m_can_collide_with_tiles)
     {
         auto x_collision = m_tilemap->xCollision(getMinMaxCollisionCoords().first, m_collision_box_size, m_vel);
         if (x_collision)
@@ -224,6 +223,19 @@ void Entity::computeCollisionAgainstSolid(Entity* solid)
         {
             m_pos.y -= y_inside_up;
             m_grounded = true;
+
+            // This is a bit of a hack, but it is way more comfortable to check for this here since
+            // we progressively update the position
+            if (auto throwable = dynamic_cast<ThrowableTile*>(this))
+            {
+                if (throwable->isBeingThrown())
+                {
+                    if (throwable->isDestroyedOnImpact())
+                        throwable->onDestroy();
+                    else
+                        throwable->m_thrown = false;
+                }
+            }
         }
         else
             m_pos.y += y_inside_down;
