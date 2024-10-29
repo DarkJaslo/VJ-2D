@@ -1,0 +1,15 @@
+player 10 48
+
+chest 22 8 coin small
+platform 28 8
+barrel 20 8
+boss 20 48 12 48
+chest 14 48 coin small
+chest 15 48 coin small
+platform 44 7
+horse 65 8
+platform 72 8
+chest 53 8 coin small
+chest 84 8 coin big
+chest 85 8 cake small
+barrel 89 8

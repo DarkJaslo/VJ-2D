@@ -99,6 +99,9 @@ protected:
 
     constexpr static float S_GRAVITY = 0.006f;
 
+    // True iff this entity can collide with the tilemap
+    bool m_can_collide_with_tiles = true;
+
     // True iff this entity can collide with other entities. Disable for destroy or fading animations, for instance
     bool m_can_collide = true;
 

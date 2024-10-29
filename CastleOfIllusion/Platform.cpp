@@ -12,6 +12,7 @@ Platform::Platform(glm::ivec2 pos, std::shared_ptr<Texture> tilesheet, int tile_
     m_pos = pos + glm::ivec2(tile_size + tile_size / 2, tile_size);
     glm::ivec2 const size { 3 * tile_size, tile_size };
     m_collision_box_size = size;
+    m_collision_box_size.x -= 4;
 
     m_affected_by_gravity = false;
     m_affected_by_x_drag = false;

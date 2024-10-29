@@ -23,7 +23,7 @@ ThrowableTile::ThrowableTile(glm::ivec2 pos,
 		shader_program));
 	m_sprite->setTextureCoordsOffset(position_in_texture);
 
-	m_collision_box_size = { tilemap->getTileSize(), tilemap->getTileSize() };
+	m_collision_box_size = { tilemap->getTileSize()-2, tilemap->getTileSize() };
 	setPosition(pos);
 	m_destroyed_on_impact = destroyed_on_impact;
 
@@ -59,6 +59,8 @@ void ThrowableTile::collideWithEntity(Collision collision)
 			computeCollisionAgainstSolid(throwable);
 		else if (m_thrown && m_destroyed_on_impact)
 			onDestroy();
+		else if (throwable->isBeingThrown() && m_destroyed_on_impact)
+			onDestroy();
 		break;
 	}
 	case EntityType::Platform: 
@@ -89,6 +91,7 @@ void ThrowableTile::collideWithEntity(Collision collision)
 void ThrowableTile::onPickUp() 
 {
 	m_can_collide = false;
+	m_can_collide_with_tiles = false;
 	m_picked_up = true;
 	m_affected_by_gravity = false;
 	m_affected_by_x_drag = false;
@@ -97,6 +100,7 @@ void ThrowableTile::onPickUp()
 void ThrowableTile::onThrow(bool looking_right, bool moving) 
 {
 	m_can_collide = true;
+	m_can_collide_with_tiles = true;
 	m_picked_up = false;
 	m_thrown = true;
 	m_affected_by_gravity = true;
@@ -114,6 +118,7 @@ void ThrowableTile::onThrow(bool looking_right, bool moving)
 void ThrowableTile::onDestroy()
 {
 	m_can_collide = false;
+	m_can_collide_with_tiles = false;
 	m_affected_by_gravity = false;
 	setVelocity({ 0.f, 0.f });
 	m_sprite->changeAnimation(1);

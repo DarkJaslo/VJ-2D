@@ -26,6 +26,8 @@ public:
 
 	virtual EntityType getType() const override { return EntityType::Enemy; }
 
+	unsigned int getPoints() const { return m_points_given; }
+
 protected:
 	// Called when the enemy is enabled (visible, etc)
 	virtual void enable();
@@ -47,6 +49,9 @@ protected:
 
 	// True iff the enemy has been attacked, reset when respawned
 	bool m_dying = false;
+
+	// Points this enemy gives when killed
+	unsigned int m_points_given = 10;
 };
 
 // A horse that has a spring in its base and jumps
