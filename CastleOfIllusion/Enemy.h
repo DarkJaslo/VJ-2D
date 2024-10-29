@@ -35,9 +35,6 @@ protected:
 	// Called when the enemy is disabled (non-visible, defeated)
 	virtual void disable();
 
-	// (re)spawn position
-	glm::ivec2 m_original_pos;
-
 	// The camera
 	std::shared_ptr<Camera> m_camera;
 

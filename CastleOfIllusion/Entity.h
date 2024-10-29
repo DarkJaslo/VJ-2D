@@ -84,6 +84,9 @@ protected:
 
     // The coordinates of the midpoint in the base of the Entity
     glm::ivec2 m_pos;
+
+    // (re)spawn position
+    glm::ivec2 m_original_pos;
   
     // The x and y sizes of the collision box
     glm::ivec2 m_collision_box_size;
