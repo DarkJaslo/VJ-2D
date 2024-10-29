@@ -44,6 +44,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shar
 	M_MAX_FALL_VELOCITY = MAX_FALL_VELOCITY;
 	M_MAX_X_VELOCITY = MAX_X_VELOCITY;
 
+	m_original_pos = pos;
 	m_tilemap = tilemap;
 	m_ui = ui;
 	m_collision_box_size = collision_box_size;
@@ -76,6 +77,15 @@ void Player::update(int delta_time)
 {
 	PlayerState prev_state = m_state;
 
+	// Check if hacks have been used
+	if (Game::getKey(GLFW_KEY_H))
+	{
+		gainPower(m_max_power);
+	}
+	if (Game::getKey(GLFW_KEY_G))
+	{
+		m_invulnerable = true;
+	}
 
 	// The hurt state has priority over all the others
 	// It has to be updated here and not on takeHit(), otherwise the states 
@@ -436,18 +446,9 @@ void Player::takeHit()
 
 		if (m_power <= 0)
 		{
-			--m_tries;
-			m_ui->setTries(m_tries);
-			if (m_tries <= 0)
-			{
-				// Lose game
-			}
-			else
-			{
-				m_power = 3;
-				m_ui->setPower(m_power);
-			}
+			loseTry();
 		}
+
 		// The hurt animation is different from all the other ones in the sense that it only plays
 		// for a specific time and it has to finish, so we set a timer to turn it off after that time
 		m_hurt = true;
@@ -469,6 +470,23 @@ void Player::takeHit()
 		TimedEvents::pushEvent(std::make_unique<TimedEvent>(m_invulnerability_time, stopInvulnerability));
 
 		// Play sound
+	}
+}
+
+void Player::loseTry()
+{
+	--m_tries;
+	m_ui->setTries(m_tries);
+	if (m_tries <= 0)
+	{
+		// Lose game
+	}
+	else
+	{
+		m_power = 3;
+		m_ui->setPower(m_power);
+		// Losing one try makes the player respawn at the start of the level (at least for now)
+		setPosition(m_original_pos);
 	}
 }
 
@@ -512,6 +530,7 @@ bool Player::isAttacking() const
 void Player::onFallOff() 
 {
 	std::cout << "Collided with void! Dying..." << std::endl;
+	loseTry();
 }
 
 void Player::configureAnimations()

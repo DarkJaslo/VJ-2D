@@ -57,6 +57,9 @@ private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
 	void takeHit();
 
+    // Loses one try. Loses the game if the number of tries was 0
+    void loseTry();
+
 	// Gains power from eating cake
 	void gainPower(unsigned int gain);
 
@@ -109,7 +112,7 @@ private:
 
     // True iff the player is currently invulnerable
     // it can't take damage from enemies, but it can still die if it falls oustide the level
-    bool m_invulnerable = true;
+    bool m_invulnerable = false;
 
     // The time (ms) the player is invulnerable after being hit
     int m_invulnerability_time = 2000;
