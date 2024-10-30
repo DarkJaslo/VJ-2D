@@ -8,8 +8,6 @@ void Camera::init(float width, float height, std::shared_ptr<UI> ui)
     m_size.y = height;
 	m_ui = ui;
 	m_update_speed = glm::vec2(1.4f,1.4f);
-
-	m_pos.y = player->getPosition().y - m_size.y + m_ui->getSize().y + 128;
 }
 
 glm::vec2 Camera::getSize() const
