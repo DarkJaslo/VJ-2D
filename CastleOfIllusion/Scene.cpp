@@ -45,7 +45,6 @@ void Scene::init()
 	m_current_screen = Screen::StrartScreen;
 	m_next_screen = Screen::StrartScreen;
 
-
 	m_current_time = 0.0f;
 }
 
@@ -130,7 +129,6 @@ void Scene::render()
 	m_tex_program->setUniform2f("texCoordDispl", 0.f, 0.f);
 
 
-
 	switch (m_current_screen)
 	{
 	case Screen::StrartScreen:
@@ -138,6 +136,17 @@ void Scene::render()
 		break;
 	}
 	case Screen::Tutorial:
+	{
+		m_tilemap->render();
+
+		// The player is rendered the last
+		for (int i = m_entities.size() - 1; i >= 0; --i)
+		{
+			if (m_entities[i]->isEnabled())
+				m_entities[i]->render();
+		}
+		break;
+	}
 	case Screen::Level:
 	{
 		m_tilemap->render();

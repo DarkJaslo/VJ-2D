@@ -41,7 +41,11 @@ void Camera::update(int delta_time)
 	if (m_scrolling_to_point)
 	{
 		if ((m_scroll_to_point_speed > 0 && m_pos.y >= m_target_pos_y) || (m_scroll_to_point_speed < 0 && m_pos.y <= m_target_pos_y))
+		{
 			m_scrolling_to_point = false;
+			m_pos.y = m_target_pos_y;
+			m_scroll_to_point_speed = 0;
+		}
 		else
 		{
 			m_pos.y += m_scroll_to_point_speed*delta_time;
