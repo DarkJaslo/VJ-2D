@@ -21,19 +21,25 @@
 #define SCREEN_X 0
 #define SCREEN_Y 0
 
-void Scene::init(std::string const& level_file, std::string const& entity_file)
+void Scene::init()
 {
 	m_tilemap.reset();
 	m_player.reset();
 	m_tex_program.reset(new ShaderProgram());
-	m_camera.reset();
 
 	initShaders();
-	m_tilemap.reset(TileMap::createTileMap(level_file, glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 
-	m_ui.reset(new UI(m_tex_program));
+	m_ui.reset(new UI());
+	m_ui->init(m_tex_program, Screen::StrartScreen);
+	m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
 
-	readSceneFile(entity_file);
+	m_camera.reset(new Camera());
+	m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
+	m_camera->setStatic(true);
+
+	m_current_screen = Screen::StrartScreen;
+	m_next_screen = Screen::StrartScreen;
+
 
 	m_current_time = 0.0f;
 }
@@ -45,33 +51,63 @@ void Scene::update(int delta_time)
 	// Updates scheduled events, if any
 	TimedEvents::updateEvents(delta_time);
 
-	// This includes the player, which is first of all
-	for (auto& entity : m_entities) 
+	// Change screen if necessary
+	if (m_current_screen != m_next_screen)
 	{
-		entity->update(delta_time);
+		changeScreen(m_next_screen);
 	}
 
-	// Check collisions between entities (each pair once)
-	for (std::size_t i = 0; i < m_entities.size(); ++i)
-	{
-		if (!m_entities[i]->canCollide())
-			continue;
 
-		for (std::size_t j = i+1; j < m_entities.size(); ++j)
+	switch (m_current_screen)
+	{
+	case Screen::StrartScreen:
+	{
+		break;
+	}
+	case Screen::Tutorial:
+	case Screen::Level:
+	{
+		// This includes the player, which is first of all
+		for (auto& entity : m_entities)
 		{
-			if (!m_entities[j]->canCollide())
+			entity->update(delta_time);
+		}
+
+		// Check collisions between entities (each pair once)
+		for (std::size_t i = 0; i < m_entities.size(); ++i)
+		{
+			if (!m_entities[i]->canCollide())
 				continue;
 
-			if (*m_entities[i] & *m_entities[j])
+			for (std::size_t j = i + 1; j < m_entities.size(); ++j)
 			{
-				//std::cout << "Detected collision between entities" << std::endl;
+				if (!m_entities[j]->canCollide())
+					continue;
 
-				auto&& [i_collision, j_collision] = *m_entities[i] | *m_entities[j];
-				m_entities[i]->collideWithEntity(i_collision);
-				m_entities[j]->collideWithEntity(j_collision);
+				if (*m_entities[i] & *m_entities[j])
+				{
+					//std::cout << "Detected collision between entities" << std::endl;
+
+					auto&& [i_collision, j_collision] = *m_entities[i] | *m_entities[j];
+					m_entities[i]->collideWithEntity(i_collision);
+					m_entities[j]->collideWithEntity(j_collision);
+				}
 			}
 		}
+		break;
 	}
+	case Screen::Options:
+	{
+		break;
+	}
+	case Screen::Credits:
+	{
+		break;
+	}
+
+	}
+
+	
 
 	m_camera->update(delta_time);
 	m_ui->update(delta_time);
@@ -87,14 +123,39 @@ void Scene::render()
 	modelview = glm::mat4(1.0f);
 	m_tex_program->setUniformMatrix4f("modelview", modelview);
 	m_tex_program->setUniform2f("texCoordDispl", 0.f, 0.f);
-	m_tilemap->render();
 
-	// The player is rendered the last
-	for (int i = m_entities.size() - 1; i >= 0; --i)
+
+
+	switch (m_current_screen)
 	{
-		if (m_entities[i]->isEnabled())
-			m_entities[i]->render();
+	case Screen::StrartScreen:
+	{
+		break;
 	}
+	case Screen::Tutorial:
+	case Screen::Level:
+	{
+		m_tilemap->render();
+
+		// The player is rendered the last
+		for (int i = m_entities.size() - 1; i >= 0; --i)
+		{
+			if (m_entities[i]->isEnabled())
+				m_entities[i]->render();
+		}
+		break;
+	}
+	case Screen::Options:
+	{
+		break;
+	}
+	case Screen::Credits:
+	{
+		break;
+	}
+
+	}
+
 	m_ui->render();
 }
 
@@ -127,6 +188,81 @@ void Scene::initShaders()
 	}
 
 	m_tex_program->bindFragmentOutput("outColor");
+}
+
+void Scene::setScreen(Screen new_screen)
+{
+	m_next_screen = new_screen;
+}
+
+void Scene::changeScreen(Screen new_screen)
+{
+	m_current_screen = new_screen;
+	switch (new_screen)
+	{
+	case Screen::StrartScreen:
+	{
+		m_ui.reset(new UI());
+		m_ui->init(m_tex_program, new_screen);
+		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+
+		m_camera.reset(new Camera());
+		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
+		m_camera->setStatic(true);
+		break;
+	}
+	case Screen::Tutorial:
+	{
+		m_ui.reset(new UI());
+		m_ui->init(m_tex_program, new_screen);
+		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+
+		m_camera.reset(new Camera());
+		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
+		m_camera->setStatic(false);
+
+		m_tilemap.reset(TileMap::createTileMap("levels/level1.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+		readSceneFile("levels/testTiles.entities");
+		break;
+	}
+	case Screen::Level:
+	{
+		m_ui.reset(new UI());
+		m_ui->init(m_tex_program, new_screen);
+		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+
+		m_camera.reset(new Camera());
+		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
+		m_camera->setStatic(false);
+
+		m_tilemap.reset(TileMap::createTileMap("levels/level1.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+		readSceneFile("levels/testTiles.entities");
+		break;
+	}
+	case Screen::Options:
+	{
+		m_ui.reset(new UI());
+		m_ui->init(m_tex_program, new_screen);
+		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+
+		m_camera.reset(new Camera());
+		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
+		m_camera->setStatic(true);
+		break;
+	}
+	case Screen::Credits:
+	{
+		m_ui.reset(new UI());
+		m_ui->init(m_tex_program, new_screen);
+		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+
+		m_camera.reset(new Camera());
+		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
+		m_camera->setStatic(true);
+		break;
+	}
+			
+	}
 }
 
 void Scene::readSceneFile(std::string const& path)
@@ -189,7 +325,10 @@ void Scene::createPlayer(std::istringstream& split_line)
 
 	m_entities.push_back(m_player);
 
-	m_camera.reset(new Camera(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_player, m_ui));
+	m_camera->setPlayer(m_player);
+
+	// Callbacks to change the scene
+	m_player->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
 }
 
 void Scene::createChest(std::istringstream& split_line) 
@@ -330,3 +469,4 @@ void Scene::createMonkey(std::istringstream& split_line)
 
 	std::cout << "Creating monkey at " << monkey->getPosition().x << "," << monkey->getPosition().y << std::endl;
 }
+

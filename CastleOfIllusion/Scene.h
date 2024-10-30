@@ -12,13 +12,18 @@
 #define PLAYER_SPRITE_SIZE_X 32*4
 #define PLAYER_SPRITE_SIZE_Y 48*4
 #define PLAYER_COLLISION_SIZE_X 16*4
-#define PLAYER_COLLISION_SIZE_Y 32*4
+#define PLAYER_COLLISION_SIZE_Y 32*4 - 1
 
 class Coin;
 class Cake;
 
 // Scene contains all the entities of our game.
 // It is responsible for updating and render them.
+
+enum class Screen
+{
+	StrartScreen, Tutorial, Level, Options, Credits
+};
 
 class Scene
 {
@@ -27,7 +32,7 @@ public:
 	Scene() = default;
 
 	// Initializes the scene with an entity file and a level file
-	void init(std::string const& level_file, std::string const& entity_file);
+	void init();
 
 	// Updates the scene
 	void update(int delta_time);
@@ -35,8 +40,14 @@ public:
 	// Renders the scene
 	void render();
 
+	// Changes the screen, it will be updated in the next frame
+	void setScreen(Screen new_screen);
+
 private:
 	void initShaders();
+
+	// Actually changes the screen and takes care of the changes
+	void changeScreen(Screen new_screen);
 
 	// Reads from a file which entities will be on the level, with information on how to create them
 	void readSceneFile(std::string const& path);
@@ -83,6 +94,9 @@ private:
 	std::shared_ptr<Camera> m_camera;
 	std::shared_ptr<UI> m_ui;
 	float m_current_time;
+
+	Screen m_current_screen;
+	Screen m_next_screen;
 
 	glm::ivec2 const m_player_sprite_size {PLAYER_SPRITE_SIZE_X, PLAYER_SPRITE_SIZE_Y};
 	glm::ivec2 const m_player_collision_size{PLAYER_COLLISION_SIZE_X, PLAYER_COLLISION_SIZE_Y};
