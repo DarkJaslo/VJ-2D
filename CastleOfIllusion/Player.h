@@ -1,11 +1,15 @@
 #ifndef _PLAYER_INCLUDE
 #define _PLAYER_INCLUDE
 
+#include <functional>
+
 #include "Sprite.h"
 #include "TileMap.h"
 #include "Entity.h"
 #include "ThrowableTile.h"
 #include "UI.h"
+
+enum class Screen;
 
 enum class PlayerState
 {
@@ -53,6 +57,10 @@ public:
     // Returns the type of entity the player is
     virtual EntityType getType() const override { return EntityType::Player; }
 
+    void setChangeScreenCallback(std::function<void(Screen)> callback);
+
+    void changeScreen(Screen scene_id);
+    
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
     void takeHit();
 
@@ -68,6 +76,8 @@ private:
 
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
+    
+    std::function<void(Screen)> m_change_scene_callback;
 
     // Called when the player falls off the level
     void onFallOff();
@@ -119,7 +129,7 @@ private:
 
     // True iff the player has to play the animation for being hurt
     bool m_hurt = false;
-
+    
     // Time jumping
     int m_jump_counter = 0;
 

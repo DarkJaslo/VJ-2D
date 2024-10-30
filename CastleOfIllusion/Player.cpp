@@ -509,7 +509,7 @@ void Player::loseTry()
 	m_ui->setTries(m_tries);
 	if (m_tries <= 0)
 	{
-		// Lose game
+		changeScreen(Screen::StrartScreen);
 	}
 	else
 	{
@@ -551,6 +551,16 @@ void Player::onFallOff()
 {
 	std::cout << "Collided with void! Dying..." << std::endl;
 	loseTry();
+}
+
+void Player::setChangeScreenCallback(std::function<void(Screen)> callback) {
+	m_change_scene_callback = callback;
+}
+
+void Player::changeScreen(Screen scene_id) {
+	if (m_change_scene_callback) {
+		m_change_scene_callback(scene_id);
+	}
 }
 
 void Player::configureAnimations()

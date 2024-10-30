@@ -11,7 +11,9 @@
 class Camera
 {
 public:
-    Camera(float width, float height, std::shared_ptr<Player> player, std::shared_ptr<UI> ui);
+    Camera() = default;
+
+	void init(float width, float height, std::shared_ptr<UI> ui);
 
 	// Updates the camera
     void update(int delta_time);
@@ -28,7 +30,14 @@ public:
 	// Returns true iff an object located at pos (center of base) with the given size is visible
 	bool isVisible(glm::ivec2 pos, glm::ivec2 size) const;
 
+	void setPlayer(std::shared_ptr<Player> player);
+
+	void setStatic(bool can_move);
+
 private:
+
+	void followPlayer(int delta_time);
+
 	// The game's player
 	std::shared_ptr<Player> m_player;
 
@@ -47,6 +56,9 @@ private:
 	// The speed in which the camera catches the player when the player changes direction
 	// Both values have to be greater than 1
 	glm::vec2 m_update_speed;
+
+
+	bool m_can_move = false;
 };
 
 #endif
