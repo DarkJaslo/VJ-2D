@@ -15,7 +15,8 @@ enum class EntityType
 	Cake,
 	Platform,
 	ThrowableTile,
-	Void
+	Void,
+	Gem
 };
 
 inline std::string toString(EntityType type) 

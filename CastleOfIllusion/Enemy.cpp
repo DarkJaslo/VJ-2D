@@ -68,7 +68,7 @@ void Enemy::collideWithEntity(Collision collision)
 	case EntityType::ThrowableTile:
 	{
 		auto throwable = static_cast<ThrowableTile*>(collision.entity);
-		if (throwable->isBeingThrown())
+		if (throwable->isBeingThrown() || abs(throwable->getVelocity().x) > 0)
 			onDeath();
 		else
 			computeCollisionAgainstSolid(throwable);
@@ -87,6 +87,7 @@ void Enemy::enable()
 	setEnabled(true);
 	m_pos = m_original_pos;
 	m_can_collide = true;
+	m_can_collide_with_tiles = true;
 	m_vel = { 0.0f, 0.0f };
 }
 
@@ -195,6 +196,7 @@ void SpringHorse::onDeath()
 	m_sprite->changeAnimation(DEATH);
 	m_vel.y = -1.2f;
 	m_can_collide = false;
+	m_can_collide_with_tiles = false;
 	m_grounded = false;
 }
 
@@ -375,5 +377,6 @@ void CymbalMonkey::onDeath()
 	m_sprite->changeAnimation(DEATH);
 	m_vel.y = -1.2f;
 	m_can_collide = false;
+	m_can_collide_with_tiles = false;
 	m_affected_by_gravity = true;
 }

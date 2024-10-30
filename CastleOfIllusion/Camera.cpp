@@ -8,6 +8,8 @@ void Camera::init(float width, float height, std::shared_ptr<UI> ui)
     m_size.y = height;
 	m_ui = ui;
 	m_update_speed = glm::vec2(1.4f,1.4f);
+
+	m_pos.y = player->getPosition().y - m_size.y + m_ui->getSize().y + 128;
 }
 
 glm::vec2 Camera::getSize() const
@@ -121,7 +123,7 @@ void Camera::followPlayer(int delta_time)
 	m_pos += m_vel * static_cast<float>(delta_time);
 	m_pos.x = std::max(m_pos.x, pos_player.x + size_player.x - 2.f * m_size.x / 3.f); // Ensures the camera does not move too far to the left
 	m_pos.x = std::min(m_pos.x, pos_player.x - m_size.x / 3.f); // Ensures the camera does not move too far to the right
-	m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 128;
+	//m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 128;
 	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
 	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
 
