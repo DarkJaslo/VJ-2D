@@ -71,6 +71,8 @@ public:
 
     virtual void setSpawnPosition(glm::ivec2 position) { /*m_original_pos = position;*/ }
 
+    void moveToOriginalPosition() { setPosition(m_original_pos); }
+
 protected:
     // Updates the position according to the collision box of the solid
     void computeCollisionAgainstSolid(Entity* solid);

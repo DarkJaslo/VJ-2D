@@ -37,7 +37,6 @@ void Entity::update(int delta_time)
             if (m_bounces)
             {
                 m_vel.y *= S_BOUNCE_COEFF;
-                std::cout << "Vel y: " << m_vel.y << "\n";
                 if (abs(m_vel.y) <= S_MIN_BOUNCE_SPEED)
                     m_vel.y = 0.0f;
             }
@@ -123,7 +122,8 @@ void Entity::changeVelocity(glm::vec2 change)
 void Entity::setPosition(glm::ivec2 new_position)
 {
     m_pos = new_position;
-    m_sprite->setPosition(new_position);
+    if (m_sprite)
+        m_sprite->setPosition(new_position);
 }
 
 void Entity::setVelocity(glm::vec2 new_velocity)

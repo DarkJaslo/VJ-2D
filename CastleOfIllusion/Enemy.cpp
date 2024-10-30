@@ -379,4 +379,5 @@ void CymbalMonkey::onDeath()
 	m_can_collide = false;
 	m_can_collide_with_tiles = false;
 	m_affected_by_gravity = true;
+	m_projectile->setEnabled(false);
 }

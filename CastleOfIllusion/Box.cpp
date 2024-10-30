@@ -20,9 +20,10 @@ Box::Box(glm::ivec2 pos,
 	m_affected_by_x_drag = false;
 	m_bounces = false;
 
-	// Temporal
 	m_affected_by_gravity = true;
-	m_enabled = true;
+	m_enabled = false;
+
+	M_MAX_FALL_VELOCITY = 0.5f;
 }
 
 void Box::collideWithEntity(Collision collision) 

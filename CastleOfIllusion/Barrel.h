@@ -12,6 +12,8 @@ public:
 		std::shared_ptr<ShaderProgram> shader_program);
 
 	virtual void collideWithEntity(Collision collision) override;
+
+	virtual void setEnabled(bool enabled) override;
 };
 
 #endif // _BARREL_INCLUDE

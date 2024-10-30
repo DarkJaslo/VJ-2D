@@ -1,5 +1,7 @@
 #include "Barrel.h"
 
+#include <iostream>
+
 Barrel::Barrel(glm::ivec2 pos,
 	std::shared_ptr<TileMap> tilemap,
 	glm::ivec2 tilemap_pos,
@@ -15,10 +17,21 @@ Barrel::Barrel(glm::ivec2 pos,
 			false /* destroyed_on_impact */
 		)
 {
-	
+	m_original_pos = pos;
 }
 
 void Barrel::collideWithEntity(Collision collision) 
 {
 	ThrowableTile::collideWithEntity(collision);
+}
+
+void Barrel::setEnabled(bool enabled)
+{
+	Entity::setEnabled(enabled);
+
+	if (enabled) 
+	{
+		m_vel = { 0.0f, 0.0f };
+		m_thrown = false;
+	}
 }

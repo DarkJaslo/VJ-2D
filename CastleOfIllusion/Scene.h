@@ -8,6 +8,10 @@
 #include "Camera.h"
 #include "UI.h"
 
+class Boss;
+class Rock;
+class Gem;
+class Box;
 
 #define PLAYER_SPRITE_SIZE_X 32*4
 #define PLAYER_SPRITE_SIZE_Y 48*4
@@ -86,19 +90,21 @@ private:
 	void createBoss(std::istringstream& split_line);
 
 	// Creates a gem and adds it to the scene
-	void createGem(std::istringstream& split_line);
+	[[nodiscard]] std::shared_ptr<Gem> createGem(std::istringstream& split_line);
 
 	// Creates a rock and adds it to the scene
-	void createRock(std::istringstream& split_line);
+	[[nodiscard]] std::shared_ptr<Rock> createRock(std::istringstream& split_line);
 
 	// Creates a box and adds it to the scene
-	void createBox(std::istringstream& split_line);
+	[[nodiscard]] std::shared_ptr<Box> createBox(std::istringstream& split_line);
 
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
 	
 	// The player
 	std::shared_ptr<Player> m_player;
+
+	std::shared_ptr<Boss> m_boss;
 
 	std::vector<glm::ivec2> m_player_spawnpoints;
 

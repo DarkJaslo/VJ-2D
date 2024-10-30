@@ -3,6 +3,7 @@
 
 #include "Entity.h"
 #include "Camera.h"
+#include "Gem.h"
 
 class BossBlock : public Entity 
 {
@@ -71,6 +72,12 @@ public:
 
 	virtual void collideWithEntity(Collision collision) override;
 
+	virtual void setEnabled(bool enabled) override;
+
+	void addObject(std::shared_ptr<ThrowableTile> object) { m_objects.push_back(object); }
+
+	void setGem(std::shared_ptr<Gem> gem) { m_gem = gem; }
+
 	// Returns the boss' blocks
 	std::vector<std::shared_ptr<BossBlock>> getBlocks() const { return m_blocks; }
 
@@ -123,6 +130,10 @@ private:
 	// 3 4 5
 	// 6 7 8
 	std::vector<glm::ivec2> m_block_offsets;
+
+	std::vector<std::shared_ptr<ThrowableTile>> m_objects;
+
+	std::shared_ptr<Gem> m_gem;
 
 	// True iff hits with objects can hurt the boss
 	bool m_vulnerable = true;

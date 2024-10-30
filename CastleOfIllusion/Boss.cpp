@@ -16,7 +16,7 @@ Boss::Boss(glm::ivec2 spawn_pos,
 	std::string const& blocks_texture_path,
 	std::shared_ptr<Camera> camera)
 {
-	//m_enabled = false;
+	m_enabled = false;
 
 	m_pos = spawn_pos;
 	m_first_pos = spawn_pos;
@@ -113,6 +113,12 @@ void Boss::update(int delta_time)
 				if (m_state == State::TakeHit || m_state == State::Dying)
 					return;
 
+				for (auto& object : m_objects)
+				{
+					if (object->isEnabled())
+						object->setEnabled(false);
+				}
+
 				m_state = State::Jump;
 				m_sent_event = false;
 
@@ -129,6 +135,12 @@ void Boss::update(int delta_time)
 		if (m_grounded && !m_sent_event) 
 		{
 			m_sent_event = true;
+
+			for (auto& object : m_objects) 
+			{
+				object->moveToOriginalPosition();
+				object->setEnabled(true);
+			}
 
 			auto ChangeToWait = [this]() 
 			{
@@ -257,6 +269,13 @@ void Boss::collideWithEntity(Collision collision)
 	}
 }
 
+void Boss::setEnabled(bool enabled) 
+{
+	Entity::setEnabled(enabled);
+
+	for (auto& block : m_blocks)
+		block->setEnabled(enabled);
+}
 
 void Boss::setPosition(glm::ivec2 new_position) 
 {
@@ -279,7 +298,6 @@ void Boss::initBlock(int i)
 	));
 
 	block->setPosition(m_pos + m_block_offsets[i]);
-	//block->setEnabled(false);
 }
 
 void Boss::takeHit() 
@@ -306,6 +324,12 @@ void Boss::takeHit()
 				velocity *= 0.03;
 				block->setVelocity(velocity);
 			}
+
+			auto SpawnGem = [this]() 
+			{
+				m_gem->setEnabled(true);
+			};
+			TimedEvents::pushEvent(std::make_unique<TimedEvent>(500, SpawnGem));
 
 			auto Disable = [this]() 
 			{
@@ -369,7 +393,7 @@ BossBlock::BossBlock(std::shared_ptr<TileMap> tilemap,
 	m_affected_by_x_drag = false;
 	m_can_collide = false;
 	m_can_collide_with_tiles = false;
-	m_enabled = true;
+	m_enabled = false;
 }
 
 void BossBlock::update(int delta_time) 

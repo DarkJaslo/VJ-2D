@@ -23,6 +23,8 @@ public:
     // Called when the entity collides with something
     virtual void collideWithEntity(Collision collision) override;
 
+    virtual void setEnabled(bool enabled) override;
+
 private:
     // All entities on top of the platform each frame
     std::vector<Entity*> m_entities_on_top;

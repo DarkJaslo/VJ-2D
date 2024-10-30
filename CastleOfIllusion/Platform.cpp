@@ -2,6 +2,8 @@
 #include "TimedEvent.h"
 #include "Player.h"
 
+#include <iostream>
+
 Platform::Platform(glm::ivec2 pos, std::shared_ptr<Texture> tilesheet, int tile_size, std::shared_ptr<ShaderProgram> shader_program, std::shared_ptr<TileMap> tilemap)
 {
     if (tile_size % 2 != 0)
@@ -10,6 +12,7 @@ Platform::Platform(glm::ivec2 pos, std::shared_ptr<Texture> tilesheet, int tile_
     m_tilemap = tilemap;
 
     m_pos = pos + glm::ivec2(tile_size + tile_size / 2, tile_size);
+    m_original_pos = m_pos;
     glm::ivec2 const size { 3 * tile_size, tile_size };
     m_collision_box_size = size;
     m_collision_box_size.x -= 4;
@@ -26,6 +29,9 @@ Platform::Platform(glm::ivec2 pos, std::shared_ptr<Texture> tilesheet, int tile_
 
 void Platform::update(int delta_time)
 {
+    if (!m_enabled)
+        return;
+
     glm::ivec2 previous_pos = m_pos;
     Entity::update(delta_time);
 
@@ -83,5 +89,20 @@ void Platform::collideWithEntity(Collision collision)
         break;
     default:
         break;
+    }
+}
+
+void Platform::setEnabled(bool enabled) 
+{
+    Entity::setEnabled(enabled);
+
+    m_started_falling = false;
+    m_affected_by_gravity = false;
+    m_vel.y = 0.0f;
+
+    if (enabled) 
+    {
+        m_can_collide = true;
+        m_can_collide_with_tiles = true;
     }
 }

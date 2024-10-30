@@ -1,4 +1,4 @@
-player 75 8
+player 10 7
 
 rock 13 5
 box 11 5
@@ -40,6 +40,6 @@ void 0 10 70 1
 void 0 25 8 1
 void 14 25 86 1
 void 0 55 100 1
-cameraPoint 72 10 4 2 75 8 15
-cameraPoint 9 25 4 2 12 20 12
-cameraPoint 81 38 4 2 12 20 12
+cameraPoint 72 10 4 2 75 8 15 0
+cameraPoint 9 25 4 2 12 20 13 1
+cameraPoint 81 39 4 2 12 20 16 2
