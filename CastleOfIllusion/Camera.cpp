@@ -10,6 +10,17 @@ void Camera::init(float width, float height, std::shared_ptr<UI> ui)
 	m_update_speed = glm::vec2(1.4f,1.4f);
 }
 
+void Camera::setPosition(glm::vec2 pos)
+{
+	m_pos.x = pos.x;
+	m_pos.y = pos.y - m_size.y + 128;
+}
+
+void Camera::setOffset(int offset)
+{
+	m_pos.y += 64*offset;
+}
+
 glm::vec2 Camera::getSize() const
 {
 	return m_size;
@@ -20,7 +31,6 @@ glm::vec2 Camera::getPosition() const
 	return m_pos;
 }
 
-
 glm::mat4 Camera::getProjectionMatrix() const
 {
 	return glm::ortho(m_pos.x, m_pos.x + m_size.x, m_pos.y + m_size.y, m_pos.y);
@@ -28,6 +38,15 @@ glm::mat4 Camera::getProjectionMatrix() const
 
 void Camera::update(int delta_time)
 {
+	if (m_scrolling_to_point)
+	{
+		if ((m_scroll_to_point_speed > 0 && m_pos.y >= m_target_pos_y) || (m_scroll_to_point_speed < 0 && m_pos.y <= m_target_pos_y))
+			m_scrolling_to_point = false;
+		else
+		{
+			m_pos.y += m_scroll_to_point_speed*delta_time;
+		}
+	}
 	if (m_can_move)
 	{
 		followPlayer(delta_time);
@@ -48,6 +67,13 @@ bool Camera::isVisible(glm::ivec2 pos, glm::ivec2 size) const
 void Camera::setStatic(bool can_move)
 {
 	m_can_move = !can_move;
+}
+
+void Camera::scrollToPoint(glm::vec2 point, float duration)
+{
+	m_scrolling_to_point = true;
+	m_target_pos_y = point.y;
+	m_scroll_to_point_speed = (m_target_pos_y - m_pos.y) / duration;
 }
 
 void Camera::setPlayer(std::shared_ptr<Player> player)
@@ -124,7 +150,7 @@ void Camera::followPlayer(int delta_time)
 	//m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 128;
 	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
 	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
-
-  // Move the UI as well so that it stays in the same position relative to the camera
+	//m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 256;
+	// Move the UI as well so that it stays in the same position relative to the camera
 	m_ui->setPosition(m_pos + glm::vec2(m_size.x / 2.f, m_size.y));
 }

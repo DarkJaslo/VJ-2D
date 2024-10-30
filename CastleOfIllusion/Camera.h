@@ -18,6 +18,10 @@ public:
 	// Updates the camera
     void update(int delta_time);
 
+	void setPosition(glm::vec2 pos);
+
+	void setOffset(int offset);
+
 	// Gets the camera's size
     glm::vec2 getSize() const;
 
@@ -33,6 +37,8 @@ public:
 	void setPlayer(std::shared_ptr<Player> player);
 
 	void setStatic(bool can_move);
+
+	void scrollToPoint(glm::vec2 point, float duration);
 
 private:
 
@@ -57,8 +63,13 @@ private:
 	// Both values have to be greater than 1
 	glm::vec2 m_update_speed;
 
-
 	bool m_can_move = false;
+
+	bool m_scrolling_to_point = false;
+
+	float m_target_pos_y;
+
+	float m_scroll_to_point_speed;
 };
 
 #endif

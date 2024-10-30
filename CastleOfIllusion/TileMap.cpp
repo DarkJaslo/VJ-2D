@@ -79,10 +79,10 @@ bool TileMap::loadLevel(std::string const& level_file)
 	// Load and configure the tilesheet texture
 	m_tilesheet.reset(new Texture());
 	m_tilesheet->loadFromFile(tilesheet_file, TEXTURE_PIXEL_FORMAT_RGBA);
-	m_tilesheet->setWrapS(GL_CLAMP_TO_EDGE);
+	/*m_tilesheet->setWrapS(GL_CLAMP_TO_EDGE);
 	m_tilesheet->setWrapT(GL_CLAMP_TO_EDGE);
 	m_tilesheet->setMinFilter(GL_NEAREST);
-	m_tilesheet->setMagFilter(GL_NEAREST);
+	m_tilesheet->setMagFilter(GL_NEAREST);*/
 
 	// Read the tilesheet size (in tiles)
 	getline(fin, line);

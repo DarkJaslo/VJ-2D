@@ -20,6 +20,7 @@
 #include "Gem.h"
 #include "Rock.h"
 #include "Box.h"
+#include "CameraPoint.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -226,8 +227,8 @@ void Scene::changeScreen(Screen new_screen)
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
 		m_camera->setStatic(false);
 
-		m_tilemap.reset(TileMap::createTileMap("levels/normal.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
-		readSceneFile("levels/normal.entities");
+		m_tilemap.reset(TileMap::createTileMap("levels/tutorial.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+		readSceneFile("levels/tutorial.entities");
 		break;
 	}
 	case Screen::Level:
@@ -295,6 +296,8 @@ void Scene::readSceneFile(std::string const& path)
 			createChest(split_line);
 		else if (word == "void")
 			createVoid(split_line);
+		else if (word == "cameraPoint")
+			createCameraPoint(split_line);
 		else if (word == "platform")
 			createPlatform(split_line);
 		else if (word == "barrel")
@@ -323,7 +326,6 @@ void Scene::createPlayer(std::istringstream& split_line)
 {
 	glm::ivec2 pos;
 	split_line >> pos.x >> pos.y;
-
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
@@ -337,7 +339,8 @@ void Scene::createPlayer(std::istringstream& split_line)
 			glm::ivec2(SCREEN_X, SCREEN_Y), 
 			m_player_sprite_size, 
 			m_player_collision_size, 
-			m_tex_program));
+			m_tex_program,
+			m_camera));
 
 	m_entities.push_back(m_player);
 
@@ -424,7 +427,22 @@ void Scene::createVoid(std::istringstream& split_line)
 	upleft_corner_pos *= m_tilemap->getTileSize();
 	collision_size *= m_tilemap->getTileSize();
 
-	m_entities.emplace_back(std::make_shared<Void>(upleft_corner_pos, collision_size));
+	m_entities.emplace_back(std::make_shared<Void>(upleft_corner_pos, collision_size, m_tex_program));
+}
+
+void Scene::createCameraPoint(std::istringstream& split_line) 
+{
+	glm::ivec2 upleft_corner_pos;
+	glm::ivec2 collision_size;
+	glm::ivec2 player_spawn_point;
+	int camera_offset;
+
+	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y >> collision_size.x >> collision_size.y >> player_spawn_point.x >> player_spawn_point.y >> camera_offset;
+
+	upleft_corner_pos *= m_tilemap->getTileSize();
+	collision_size *= m_tilemap->getTileSize();
+
+	m_entities.emplace_back(std::make_shared<CameraPoint>(upleft_corner_pos, collision_size, m_camera, m_player, player_spawn_point, camera_offset, m_tex_program));
 }
 
 void Scene::createPlatform(std::istringstream& split_line) 

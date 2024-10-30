@@ -64,6 +64,9 @@ private:
 	// Creates a cake and adds it to the scene
 	[[nodiscard]] std::shared_ptr<Cake> createCake(std::istringstream& split_line);
 
+	// Creates a camera point and adds it to the scene
+	void createCameraPoint(std::istringstream& split_line);
+
 	// Creates a void and adds it to the scene
 	void createVoid(std::istringstream& split_line);
 
@@ -96,6 +99,8 @@ private:
 	
 	// The player
 	std::shared_ptr<Player> m_player;
+
+	std::vector<glm::ivec2> m_player_spawnpoints;
 
 	// All entities in the scene, including the player
 	std::vector<std::shared_ptr<Entity>> m_entities;
