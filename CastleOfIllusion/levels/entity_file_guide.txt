@@ -7,6 +7,10 @@ Void:
 void <upleft_corner_posX> <upleft_corner_posY> <sizeX> <sizeY>
 *sizes are also in tiles
 
+CameraPoint:
+void <upleft_corner_posX> <upleft_corner_posY> <sizeX> <sizeY> <respawnX> <respawnY> <scrollY>
+*sizes are also in tiles
+
 Platform:
 platform <upleft_corner_posX> <upleft_corner_posY>
 
