@@ -115,6 +115,9 @@ private:
 	std::shared_ptr<ShaderProgram> m_tex_program;
 
 	std::shared_ptr<Camera> m_camera;
+
+	std::shared_ptr<Gem> m_gem;
+
 	std::shared_ptr<UI> m_ui;
 	float m_current_time;
 

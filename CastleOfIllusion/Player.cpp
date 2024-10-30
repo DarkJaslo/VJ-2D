@@ -570,6 +570,7 @@ void Player::setChangeScreenCallback(std::function<void(Screen)> callback) {
 void Player::changeScreen(Screen scene_id) {
 	if (m_change_scene_callback) {
 		m_change_scene_callback(scene_id);
+		glClearColor(0.53f, 0.77f, 1.0f, 1.0f);
 	}
 }
 

@@ -236,6 +236,8 @@ void Scene::changeScreen(Screen new_screen)
 
 		m_tilemap.reset(TileMap::createTileMap("levels/tutorial.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
 		readSceneFile("levels/tutorial.entities");
+
+		m_gem->setEnabled(true);
 		break;
 	}
 	case Screen::Level:
@@ -584,6 +586,8 @@ std::shared_ptr<Gem> Scene::createGem(std::istringstream& split_line)
 
 	auto gem = std::make_shared<Gem>(pos, m_tilemap, m_tex_program);
 	m_entities.emplace_back(gem);
+
+	m_gem = gem;
 
 	return gem;
 }
