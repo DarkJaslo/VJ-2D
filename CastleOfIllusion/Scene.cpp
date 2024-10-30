@@ -202,6 +202,7 @@ void Scene::setScreen(Screen new_screen)
 void Scene::changeScreen(Screen new_screen)
 {
 	m_current_screen = new_screen;
+	TimedEvents::clearEvents();
 	switch (new_screen)
 	{
 	case Screen::StrartScreen:
@@ -225,8 +226,8 @@ void Scene::changeScreen(Screen new_screen)
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
 		m_camera->setStatic(false);
 
-		m_tilemap.reset(TileMap::createTileMap("levels/level1.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
-		readSceneFile("levels/testTiles.entities");
+		m_tilemap.reset(TileMap::createTileMap("levels/normal.txt", glm::vec2(SCREEN_X, SCREEN_Y), *m_tex_program));
+		readSceneFile("levels/normal.entities");
 		break;
 	}
 	case Screen::Level:
@@ -277,6 +278,8 @@ void Scene::readSceneFile(std::string const& path)
 		throw std::runtime_error("Could not read scene file!");
 
 	std::string line;
+
+	m_entities.clear();
 
 	while (getline(file, line))
 	{
