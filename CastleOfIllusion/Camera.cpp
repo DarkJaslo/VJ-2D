@@ -40,7 +40,7 @@ void Camera::update(int delta_time)
 {
 	if (m_scrolling_to_point)
 	{
-		if ((m_scroll_to_point_speed > 0 && m_pos.y >= m_target_pos_y) || (m_scroll_to_point_speed < 0 && m_pos.y <= m_target_pos_y))
+		if ((m_scroll_to_point_speed > 0 && m_pos.y >= m_target_pos_y) || (m_scroll_to_point_speed < 0 && m_pos.y <= m_target_pos_y)) 
 		{
 			m_scrolling_to_point = false;
 			m_pos.y = m_target_pos_y;
@@ -55,6 +55,7 @@ void Camera::update(int delta_time)
 	{
 		followPlayer(delta_time);
 	}
+	m_ui->setPosition(m_pos + glm::vec2(m_size.x / 2.f, m_size.y));
 }
 
 bool Camera::isVisible(glm::ivec2 pos, glm::ivec2 size) const 
@@ -119,42 +120,7 @@ void Camera::followPlayer(int delta_time)
 		}
 	}
 
-	// Y Axis
-	/*
-	if (vel_player.y > 0) // Going down
-	{
-		// If the player has more than 1/3 of the camera above them
-		// move the camera faster than the player so that it can catch up
-		if ((pos_player.y - m_pos.y) > (m_size.y/3.f))
-		{
-			m_vel.y = m_update_speed.y*vel_player.y;
-		}
-		else
-		{
-			m_vel.y = 0;
-		}
-	}
-	else // Going up
-	{
-		// If the player has more than 1/3 of the camera below them
-		// move the camera faster than the player so that it can catch up
-		if ((pos_player.y + size_player.y - m_pos.y) < (2*m_size.y/3.f))
-		{
-			m_vel.y = m_update_speed.y*vel_player.y;
-		}
-		else
-		{
-			m_vel.y = 0;
-		}
-	}
-	*/
 	m_pos += m_vel * static_cast<float>(delta_time);
 	m_pos.x = std::max(m_pos.x, pos_player.x + size_player.x - 2.f * m_size.x / 3.f); // Ensures the camera does not move too far to the left
 	m_pos.x = std::min(m_pos.x, pos_player.x - m_size.x / 3.f); // Ensures the camera does not move too far to the right
-	//m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 128;
-	//m_pos.y = std::max(m_pos.y, pos_player.y + size_player.y - 2*m_size.y/3.f); // Ensures the camera does not move too far to the top
-	//m_pos.y = std::min(m_pos.y, pos_player.y - m_size.y/3.f); // Ensures the camera does not move too far to the bottom
-	//m_pos.y = pos_player.y - m_size.y + m_ui->getSize().y + 256;
-	// Move the UI as well so that it stays in the same position relative to the camera
-	m_ui->setPosition(m_pos + glm::vec2(m_size.x / 2.f, m_size.y));
 }

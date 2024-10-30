@@ -1,0 +1,43 @@
+Sandra Vázquez Rodríguez
+Jon Campillo Navarro-Soto
+
+Funcionalitats implementades:
+
+- Moviment del Mickey, accelerat en X i, en part, en salt
+- Salt d'altura variable segons quant es prem W
+- Funció d'ajupir-se amb la S
+- Agafar i deixar/llançar alguns objectes
+- Animacions pel Mickey, enemics i boss
+- Animacions pels objectes destructibles i recollibles
+- Boss basat en el boss de xocolata del joc original
+    És vulnerable quan surt la cara gran
+- Enemic 1: cavall "d'escacs". Canviat de color, però funciona gairebé igual
+- Enemic 2: mico amb plats. Mateixa idea que al joc original
+- Plataformes que cauen quan són trepitjades
+- Scroll de càmera en X amb look-ahead de 2/3
+- Scroll de càmera en Y a punts específics, Y bloquejada sinó
+- Cofres, amb monedes petites, grans i pastissos petits i grans
+- Objecte no destructible
+- 2 objectes destructibles: roca i "capsa" (es veuen al boss)
+
+- Les interaccions entre objectes haurien de ser com les del joc: llançar blocs contra cofres o destructibles els destrueix,
+- contra enemics els mata, igual que atacant-los amb el jugador...
+
+- Els enemics reapareixen quan la càmera torna a on eren, i desapareixen quan surten de la càmera
+- El God mode fa que no et puguin fer mal (però es pot caure)
+
+Funcionalitats NO implementades:
+
+- So
+
+
+Instruccions del joc:
+
+Per moure's: WASD
+Per agafar/llançar objectes: K
+Moure's pel menú: fletxes (UP/DOWN/LEFT/RIGHT)
+Seleccionar al menú: ENTER
+
+God mode: G
+Heal: H
+Sortir del joc: Escape

@@ -38,9 +38,7 @@ enum PlayerAnims
 Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shared_ptr<UI> ui,
 			   glm::ivec2 const& tilemap_pos, glm::ivec2 const& sprite_size, 
 			   glm::ivec2 const& collision_box_size, std::shared_ptr<ShaderProgram> shader_program, std::shared_ptr<Camera> camera)
-{ 
-	std::cout << "Creating player at position " << pos.x << "," << pos.y << std::endl;
-
+{
 	m_affected_by_x_drag = false;
 	m_affected_by_gravity = true;
 	M_MAX_FALL_VELOCITY = MAX_FALL_VELOCITY;
@@ -320,54 +318,41 @@ void Player::update(int delta_time)
 		{
 			case PlayerState::Idle:
 				m_sprite->changeAnimation(IDLE);
-				std::cout << "idle" << std::endl;
 				break;
 			case PlayerState::Moving:
-				std::cout << "move" << std::endl;
 				m_sprite->changeAnimation(MOVE);
 				break;
 			case PlayerState::Crouching:
-				std::cout << "crouch" << std::endl;
 				m_sprite->changeAnimation(CROUCH);
 				break;
 			case PlayerState::Jumping:
-				std::cout << "jump" << std::endl;
 				m_sprite->changeAnimation(JUMP);
 				break;
 			case PlayerState::Falling:
-				std::cout << "jump" << std::endl;
 				m_sprite->changeAnimation(FALL);
 				break;
 			case PlayerState::Sliding:
-				std::cout << "slide" << std::endl;
 				m_sprite->changeAnimation(SLIDE);
 				break;
 			case PlayerState::AttackingUp:
-				std::cout << "attack up" << std::endl;
 				m_sprite->changeAnimation(ATTACK_UP);
 				break;
 			case PlayerState::AttackingDown:
-				std::cout << "attack down" << std::endl;
 				m_sprite->changeAnimation(ATTACK_DOWN);
 				break;
 			case PlayerState::HoldIdle:
-				std::cout << "hold idle" << std::endl;
 				m_sprite->changeAnimation(HOLD_IDLE);
 				break;
 			case PlayerState::HoldMoving:
-				std::cout << "hold move" << std::endl;
 				m_sprite->changeAnimation(HOLD_MOVE);
 				break;
 			case PlayerState::HoldJumping:
-				std::cout << "hold jump" << std::endl;
 				m_sprite->changeAnimation(HOLD_JUMP);
 				break;
 			case PlayerState::HoldFalling:
-				std::cout << "hold fall" << std::endl;
 				m_sprite->changeAnimation(HOLD_FALL);
 				break;
 			case PlayerState::Hurt:
-				std::cout << "hurt" << std::endl;
 				m_sprite->changeAnimation(HURT);
 				break;
 		}
@@ -387,13 +372,6 @@ void Player::update(int delta_time)
 	else 
 	{
 		m_throwable_obj = nullptr;
-	}
-
-	// Debug purposes
-	if (Game::getKey(GLFW_KEY_M)) 
-	{
-		std::cout << "Pos: " << m_pos.x/64 << ", " << m_pos.y/64 << std::endl;
-		std::cout << "Vel: " << m_vel.x << ", " << m_vel.y << std::endl;
 	}
 }
 
@@ -477,9 +455,6 @@ void Player::takeHit()
 	{
 		--m_power;
 
-		// Debug
-		std::cout << "Power left: " << m_power << "\n";
-
 		m_ui->setPower(m_power);
 
 		if (m_power <= 0)
@@ -513,11 +488,31 @@ void Player::takeHit()
 
 void Player::loseTry()
 {
-	if (m_invulnerable || m_god_mode)
+	auto OnDie = [this]()
 	{
+		if (m_throwable_obj && m_has_object)
+			m_throwable_obj->onThrow(true, true);
+		m_throwable_obj = nullptr;
+		m_has_object = false;
+		m_sprite->changeAnimation(IDLE);
+
 		setPosition(m_original_pos);
 		m_camera->setPosition(m_original_pos);
 		m_camera->setOffset(3);
+		m_camera->setStatic(false);
+		glClearColor(0.53f, 0.77f, 1.0f, 1.0f);
+
+		for (auto& reactivable : m_reactivate_on_respawn)
+		{
+			reactivable->setEnabled(true);
+			reactivable->moveToOriginalPosition();
+		}
+	};
+
+	if (m_invulnerable || m_god_mode)
+	{
+		setPosition(m_original_pos);
+		OnDie();
 	}
 	else
 	{
@@ -531,11 +526,7 @@ void Player::loseTry()
 		{
 			m_power = 3;
 			m_ui->setPower(m_power);
-			// Losing one try makes the player respawn at the last respawn point
-			setPosition(m_original_pos);
-			m_camera->setPosition(m_original_pos);
-			std::cout << m_original_pos.x << m_original_pos.y << std::endl;
-			m_camera->setOffset(3);
+			OnDie();
 		}
 	}
 }
@@ -569,7 +560,6 @@ bool Player::isAttacking() const
 
 void Player::onFallOff() 
 {
-	std::cout << "Collided with void! Dying..." << std::endl;
 	loseTry();
 }
 

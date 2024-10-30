@@ -15,7 +15,7 @@ public:
 	virtual void update(int delta_time) final override {}
 
 	// Render function that does nothing (we have nothing to render)
-	//virtual void render() final override {}
+	virtual void render() final override {}
 
 	// Collide with entity function that does nothing
 	virtual void collideWithEntity(Collision collision) final override {}

@@ -1,4 +1,5 @@
 #include "Gem.h"
+#include "TimedEvent.h"
 
 Gem::Gem(glm::ivec2 const& pos,
     std::shared_ptr<TileMap> tilemap,
@@ -25,6 +26,7 @@ Gem::Gem(glm::ivec2 const& pos,
     m_affected_by_x_drag = false;
     m_can_collide = true;
     m_can_collide_with_tiles = true;
+    m_enabled = false;
 }
 
 void Gem::update(int delta_time) 
@@ -57,4 +59,12 @@ void Gem::setEnabled(bool enabled)
 {
     Entity::setEnabled(enabled);
     m_affected_by_gravity = enabled;
+
+    m_can_collide = false;
+
+    auto EnableCollisions = [this]()
+    {
+        m_can_collide = true;
+    };
+    TimedEvents::pushEvent(std::make_unique<TimedEvent>(1500, EnableCollisions));
 }

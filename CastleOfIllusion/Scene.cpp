@@ -90,8 +90,6 @@ void Scene::update(int delta_time)
 
 				if (*m_entities[i] & *m_entities[j])
 				{
-					//std::cout << "Detected collision between entities" << std::endl;
-
 					auto&& [i_collision, j_collision] = *m_entities[i] | *m_entities[j];
 					m_entities[i]->collideWithEntity(i_collision);
 					m_entities[j]->collideWithEntity(j_collision);
@@ -323,6 +321,8 @@ void Scene::readSceneFile(std::string const& path)
 			createRock(split_line);
 		else if (word == "box")
 			createBox(split_line);
+		else if (word == "skip")
+			continue;
 		else if (word != "") // Empty lines cause this
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -337,8 +337,6 @@ void Scene::createPlayer(std::istringstream& split_line)
 	split_line >> pos.x >> pos.y;
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
-
-	std::cout << "Creating player at " << pos.x << "," << pos.y << std::endl;
 
 	m_player.reset(
 		new Player(
@@ -379,8 +377,6 @@ void Scene::createChest(std::istringstream& split_line)
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
-	std::cout << "Creating chest at " << pos.x << "," << pos.y << std::endl;
-
 	m_entities.emplace_back(std::make_shared<Chest>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, content));
 }
 
@@ -396,8 +392,6 @@ std::shared_ptr<Coin> Scene::createCoin(std::istringstream& split_line)
 		is_big = false;
 	else
 		throw std::runtime_error("Scene::createCoin: Bad coin type");
-
-	std::cout << "Creating coin" << std::endl;
 
 	auto coin = std::make_shared<Coin>(glm::ivec2{0.0f, 0.0f}, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, is_big);
 	m_entities.push_back(coin);
@@ -417,8 +411,6 @@ std::shared_ptr<Cake> Scene::createCake(std::istringstream& split_line)
 		is_big = false;
 	else
 		throw std::runtime_error("Scene::createCake: Bad cake type");
-
-	std::cout << "Creating cake" << std::endl;
 
 	auto cake = std::make_shared<Cake>(glm::ivec2{0.0f,0.0f}, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program, is_big);
 	m_entities.push_back(cake);
@@ -445,13 +437,17 @@ void Scene::createCameraPoint(std::istringstream& split_line)
 	glm::ivec2 collision_size;
 	glm::ivec2 player_spawn_point;
 	int camera_offset;
+	int id;
 
-	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y >> collision_size.x >> collision_size.y >> player_spawn_point.x >> player_spawn_point.y >> camera_offset;
+	split_line >> upleft_corner_pos.x >> upleft_corner_pos.y >> collision_size.x >> collision_size.y >> player_spawn_point.x >> player_spawn_point.y >> camera_offset >> id;
 
 	upleft_corner_pos *= m_tilemap->getTileSize();
 	collision_size *= m_tilemap->getTileSize();
 
-	m_entities.emplace_back(std::make_shared<CameraPoint>(upleft_corner_pos, collision_size, m_camera, m_player, player_spawn_point, camera_offset, m_tex_program));
+	auto camera_point = std::make_shared<CameraPoint>(upleft_corner_pos, collision_size, m_camera, m_player, player_spawn_point, camera_offset, m_tex_program, id, m_boss);
+	m_entities.emplace_back(camera_point);
+
+	m_player->addReactivable(camera_point);
 }
 
 void Scene::createPlatform(std::istringstream& split_line) 
@@ -462,7 +458,10 @@ void Scene::createPlatform(std::istringstream& split_line)
 	upleft_corner_pos *= m_tilemap->getTileSize();
 	upleft_corner_pos.x += 1;
 
-	m_entities.emplace_back(std::make_shared<Platform>(upleft_corner_pos, m_tilemap->getTilesheet(), m_tilemap->getTileSize(), m_tex_program, m_tilemap));
+	auto platform = std::make_shared<Platform>(upleft_corner_pos, m_tilemap->getTilesheet(), m_tilemap->getTileSize(), m_tex_program, m_tilemap);
+	m_entities.emplace_back(platform);
+
+	m_player->addReactivable(platform);
 }
 
 void Scene::createBarrel(std::istringstream& split_line) 
@@ -473,7 +472,10 @@ void Scene::createBarrel(std::istringstream& split_line)
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
-	m_entities.emplace_back(std::make_shared<Barrel>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program));
+	auto barrel = std::make_shared<Barrel>(pos, m_tilemap, glm::ivec2(SCREEN_X, SCREEN_Y), m_tex_program);
+	m_entities.emplace_back(barrel);
+
+	m_player->addReactivable(barrel);
 }
 
 void Scene::createHorse(std::istringstream& split_line) 
@@ -514,8 +516,6 @@ void Scene::createMonkey(std::istringstream& split_line)
 
 	m_entities.emplace_back(monkey);
 	m_entities.emplace_back(monkey->getProjectile());
-
-	std::cout << "Creating monkey at " << monkey->getPosition().x << "," << monkey->getPosition().y << std::endl;
 }
 
 void Scene::createBoss(std::istringstream& split_line) 
@@ -529,8 +529,6 @@ void Scene::createBoss(std::istringstream& split_line)
 	other_pos *= m_tilemap->getTileSize();
 	other_pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
-	std::cout << "Creating boss at " << pos.x << "," << pos.y << std::endl;
-
 	auto boss =
 		std::make_shared<Boss>(
 			pos, 
@@ -543,6 +541,30 @@ void Scene::createBoss(std::istringstream& split_line)
 			m_camera
 			);
 
+	m_boss = boss;
+
+	auto tile_size = m_tilemap->getTileSize();
+
+	for (int i = 1; i < 2; ++i)
+	{
+		auto rock_x = pos.x + m_tilemap->getTileSize() * (2 + 3 * i);
+		std::string rock_str = std::to_string(rock_x / tile_size) + " " + std::to_string((pos.y - tile_size * 8) / tile_size);
+		std::istringstream ss(rock_str);
+		auto rock = createRock(ss);
+		m_boss->addObject(rock);
+	}
+
+	auto box_x = pos.x + m_tilemap->getTileSize() * (3);
+	std::string box_str = std::to_string(box_x / tile_size) + " " + std::to_string((pos.y - tile_size * 8) / tile_size);
+	std::istringstream ss(box_str);
+	auto box = createBox(ss);
+	m_boss->addObject(box);
+
+	std::string gem_str = std::to_string((pos.x + (other_pos.x - pos.x) / 2) / tile_size) + " " + std::to_string((pos.y - tile_size * 8) / tile_size);
+	std::istringstream ss_gem(gem_str);
+	auto gem = createGem(ss_gem);
+	m_boss->setGem(gem);
+
 	auto blocks = boss->getBlocks();
 
 	// We want it rendered last -> put in first
@@ -552,7 +574,7 @@ void Scene::createBoss(std::istringstream& split_line)
 		m_entities.push_back(block);
 }
 
-void Scene::createGem(std::istringstream& split_line) 
+std::shared_ptr<Gem> Scene::createGem(std::istringstream& split_line)
 {
 	glm::ivec2 pos;
 	split_line >> pos.x >> pos.y;
@@ -560,10 +582,13 @@ void Scene::createGem(std::istringstream& split_line)
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
-	m_entities.emplace_back(std::make_shared<Gem>(pos, m_tilemap, m_tex_program));
+	auto gem = std::make_shared<Gem>(pos, m_tilemap, m_tex_program);
+	m_entities.emplace_back(gem);
+
+	return gem;
 }
 
-void Scene::createRock(std::istringstream& split_line) 
+std::shared_ptr<Rock> Scene::createRock(std::istringstream& split_line)
 {
 	glm::ivec2 pos;
 	split_line >> pos.x >> pos.y;
@@ -571,10 +596,13 @@ void Scene::createRock(std::istringstream& split_line)
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
-	m_entities.emplace_back(std::make_shared<Rock>(pos, m_tilemap, m_tex_program));
+	auto rock = std::make_shared<Rock>(pos, m_tilemap, m_tex_program);
+	m_entities.emplace_back(rock);
+
+	return rock;
 }
 
-void Scene::createBox(std::istringstream& split_line) 
+std::shared_ptr<Box> Scene::createBox(std::istringstream& split_line)
 {
 	glm::ivec2 pos;
 	split_line >> pos.x >> pos.y;
@@ -582,5 +610,8 @@ void Scene::createBox(std::istringstream& split_line)
 	pos *= m_tilemap->getTileSize();
 	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
 
-	m_entities.emplace_back(std::make_shared<Box>(pos, m_tilemap, m_tex_program));
+	auto box = std::make_shared<Box>(pos, m_tilemap, m_tex_program);
+	m_entities.emplace_back(box);
+
+	return box;
 }

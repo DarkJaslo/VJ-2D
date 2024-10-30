@@ -41,6 +41,7 @@ public:
 	void scrollToPoint(glm::vec2 point, float duration);
 
 private:
+	friend class CameraPoint;
 
 	void followPlayer(int delta_time);
 

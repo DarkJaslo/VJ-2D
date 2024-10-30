@@ -65,7 +65,11 @@ public:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
     void takeHit();
 
+    void addReactivable(std::shared_ptr<Entity> reactivable) { m_reactivate_on_respawn.push_back(reactivable); }
+
 private:
+    friend class CameraPoint;
+
     // Loses one try. Loses the game if the number of tries was 0
     void loseTry();
 
@@ -141,6 +145,8 @@ private:
     bool m_jumped = false;
 
     std::shared_ptr<Camera> m_camera;
+
+    std::vector<std::shared_ptr<Entity>> m_reactivate_on_respawn;
 };
 
 #endif // _PLAYER_INCLUDE
