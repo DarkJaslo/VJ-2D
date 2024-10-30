@@ -1,11 +1,17 @@
 #ifndef _PLAYER_INCLUDE
 #define _PLAYER_INCLUDE
 
+#include <functional>
+
 #include "Sprite.h"
 #include "TileMap.h"
 #include "Entity.h"
 #include "ThrowableTile.h"
 #include "UI.h"
+
+enum class Screen;
+
+class Camera;
 
 enum class PlayerState
 {
@@ -36,7 +42,8 @@ public:
         glm::ivec2 const& tilemap_pos,
         glm::ivec2 const& sprite_size,
         glm::ivec2 const& collision_box_size,
-        std::shared_ptr<ShaderProgram> shader_program);
+        std::shared_ptr<ShaderProgram> shader_program,
+        std::shared_ptr<Camera> camera);
 
     // Updates the player
     virtual void update(int delta_time) final override;
@@ -53,6 +60,8 @@ public:
     // Returns the type of entity the player is
     virtual EntityType getType() const override { return EntityType::Player; }
 
+    void setChangeScreenCallback(std::function<void(Screen)> callback);
+
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
     void takeHit();
 
@@ -68,6 +77,10 @@ private:
 
     // Calculates the velocity needed for the player to jump to height
     float calculateJumpVelocity(float height, float gravity) const;
+    
+    void changeScreen(Screen scene_id);
+
+    std::function<void(Screen)> m_change_scene_callback;
 
     // Called when the player falls off the level
     void onFallOff();
@@ -114,16 +127,20 @@ private:
     // it can't take damage from enemies, but it can still die if it falls oustide the level
     bool m_invulnerable = false;
 
+    bool m_god_mode = false;
+
     // The time (ms) the player is invulnerable after being hit
     int m_invulnerability_time = 2000;
 
     // True iff the player has to play the animation for being hurt
     bool m_hurt = false;
-
+    
     // Time jumping
     int m_jump_counter = 0;
 
     bool m_jumped = false;
+
+    std::shared_ptr<Camera> m_camera;
 };
 
 #endif // _PLAYER_INCLUDE

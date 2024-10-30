@@ -1,0 +1,18 @@
+TILEMAP
+100 13 						-- Size of tile map in tiles (x,y)
+64 64 							-- Tile size & block size
+images/Scene.png 	-- Tilesheet
+16 16 								-- Number of tiles in tilesheet
+..............................................................aaac..................................badcdcdcdddcdcbc......badcdddcdcdcdcdceddcbc..........................................aaebdcdcdcdcdc
+ababababababababac............................................babc..................................cacbcbcbcbcbcbcc......cacbcbcbcbcbcbcbcbcbcc....................................aaababebdcdcdcdceddc
+dcdcdddcdcdcdcddbc............................aaabababac......babc..................................................................................................................badcdcdcdcdcdcecdcdc
+dcdcdcecdceddcdcbc............................badcdcedbc......babc........aaac................................................................................aaabababac............badcdceddcdcdcdcdcdc
+dcdcdcdcdcdcdddcbc............................badddcdcbc......cacc........cacc............................................................................aaabebdcdddcbc............badcecdcdcdcdcdcdcdc
+dceddcdcdcecdcdcbc......................cdcecfbadcecdcbc..........cdcf....................................................................................badcdcdcecdcbc............badcdcdcdceddcdcdced
+dcdcecdcdcdcdcdcbc............................badcdcdcbc..................................................................................................badcdcdcdcdcbc............baeddcdcdddcdcdcecdc
+dcdcdceddcdceddcbc............................baeddcddbc..................................................................................................badddceddcdcbc............badcdcdcdcdcdcdcdcdc
+dcdddcdcdcdddcdceaababababababababababababababababababac......aaababababababac......................aaababababababac......aaabababababababababac......aaabababababababababababababababababababababababab
+dcdcdcdcdcdcdcdcdcdcdcdceddcdcdcdcdcdcdddcdcdcdcdcdcdcbc......badcdcdddcdcedbc......................badcdddcdceddcbc......badcdcdceddcdcdcdcdcbc......badcdcdcdcdcdcdcdcdceddcdcdcdcdcdcdcdceddcdcdcdcdc
+........................................................................................................................................................................................................
+........................................................................................................................................................................................................
+........................................................................................................................................................................................................

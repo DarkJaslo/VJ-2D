@@ -11,12 +11,13 @@
 #include "ThrowableTile.h"
 #include "TimedEvent.h"
 #include "Enemy.h"
+#include "Camera.h"
 
 #define JUMP_HEIGHT 4*16*4
 #define MAX_X_VELOCITY 0.6f // Maximum velocity on the x axis
 #define MAX_FALL_VELOCITY 0.8f // Maximum velocity when falling
 #define ACCELERATION 0.001f // Acceleration on the x axis applied when pressing a key down
-#define DECELERATION 0.001f // Deceleration on the x axis applied when not pressing a key down
+#define DECELERATION 0.002f // Deceleration on the x axis applied when not pressing a key down
 
 #define SIZE_IN_TEXTURE_X 0.0625
 #define SIZE_IN_TEXTURE_Y 0.09090909
@@ -36,7 +37,7 @@ enum PlayerAnims
 
 Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shared_ptr<UI> ui,
 			   glm::ivec2 const& tilemap_pos, glm::ivec2 const& sprite_size, 
-			   glm::ivec2 const& collision_box_size, std::shared_ptr<ShaderProgram> shader_program)
+			   glm::ivec2 const& collision_box_size, std::shared_ptr<ShaderProgram> shader_program, std::shared_ptr<Camera> camera)
 { 
 	std::cout << "Creating player at position " << pos.x << "," << pos.y << std::endl;
 
@@ -55,6 +56,7 @@ Player::Player(glm::vec2 const& pos, std::shared_ptr<TileMap> tilemap, std::shar
 	m_acc = glm::vec2(0.f,0.f);
 	m_throwable_obj = nullptr;
 	m_power = m_max_power;
+	m_camera = camera;
 
 	m_ui->setPower(m_max_power);
 	m_ui->setTries(m_tries);
@@ -85,6 +87,7 @@ void Player::update(int delta_time)
 	}
 	if (Game::getKey(GLFW_KEY_G))
 	{
+		m_god_mode = true;
 		m_invulnerable = true;
 	}
 
@@ -427,6 +430,11 @@ void Player::collideWithEntity(Collision collision)
 		gainPoints(coin->getPoints());
 		return;
 	}
+	case EntityType::Gem: 
+	{
+		changeScreen(Screen::Credits);
+		return;
+	}
 	case EntityType::ThrowableTile: 
 	{
 		auto throwable = static_cast<ThrowableTile*>(collision.entity);
@@ -494,7 +502,8 @@ void Player::takeHit()
 
 		auto stopInvulnerability = [this]()
 			{
-				m_invulnerable = false;
+				if (!m_god_mode)
+					m_invulnerable = false;
 				m_sprite->stopFlickering();
 			};
 		TimedEvents::pushEvent(std::make_unique<TimedEvent>(m_invulnerability_time, stopInvulnerability));
@@ -505,18 +514,29 @@ void Player::takeHit()
 
 void Player::loseTry()
 {
-	--m_tries;
-	m_ui->setTries(m_tries);
-	if (m_tries <= 0)
+	if (m_invulnerable)
 	{
-		// Lose game
+		setPosition(m_original_pos);
+		m_camera->setPosition(m_original_pos);
+		m_camera->setOffset(2);
 	}
 	else
 	{
-		m_power = 3;
-		m_ui->setPower(m_power);
-		// Losing one try makes the player respawn at the start of the level (at least for now)
-		setPosition(m_original_pos);
+		--m_tries;
+		m_ui->setTries(m_tries);
+		if (m_tries <= 0)
+		{
+			changeScreen(Screen::StrartScreen);
+		}
+		else
+		{
+			m_power = 3;
+			m_ui->setPower(m_power);
+			// Losing one try makes the player respawn at the last respawn point
+			setPosition(m_original_pos);
+			m_camera->setPosition(m_original_pos);
+			m_camera->setOffset(2);
+		}
 	}
 }
 
@@ -551,6 +571,16 @@ void Player::onFallOff()
 {
 	std::cout << "Collided with void! Dying..." << std::endl;
 	loseTry();
+}
+
+void Player::setChangeScreenCallback(std::function<void(Screen)> callback) {
+	m_change_scene_callback = callback;
+}
+
+void Player::changeScreen(Screen scene_id) {
+	if (m_change_scene_callback) {
+		m_change_scene_callback(scene_id);
+	}
 }
 
 void Player::configureAnimations()
