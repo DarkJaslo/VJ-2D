@@ -121,6 +121,7 @@ private:
 	Screen m_current_screen;
 	Screen m_next_screen;
 
+
 	glm::ivec2 const m_player_sprite_size {PLAYER_SPRITE_SIZE_X, PLAYER_SPRITE_SIZE_Y};
 	glm::ivec2 const m_player_collision_size{PLAYER_COLLISION_SIZE_X, PLAYER_COLLISION_SIZE_Y-4};
 };

@@ -85,8 +85,8 @@ void Player::update(int delta_time)
 	}
 	if (Game::getKey(GLFW_KEY_G))
 	{
-		m_god_mode = true;
-		m_invulnerable = true;
+		Game::keyReleased(GLFW_KEY_G);
+		m_god_mode = !m_god_mode;
 	}
 
 	// The hurt state has priority over all the others
@@ -451,7 +451,7 @@ void Player::collideWithEntity(Collision collision)
 void Player::takeHit() 
 {
 	// Check vulnerability
-	if (!m_invulnerable)
+	if (!m_invulnerable && !m_god_mode)
 	{
 		--m_power;
 
@@ -477,8 +477,7 @@ void Player::takeHit()
 
 		auto stopInvulnerability = [this]()
 			{
-				if (!m_god_mode)
-					m_invulnerable = false;
+				m_invulnerable = false;
 				m_sprite->stopFlickering();
 			};
 		TimedEvents::pushEvent(std::make_unique<TimedEvent>(m_invulnerability_time, stopInvulnerability));
@@ -510,7 +509,7 @@ void Player::loseTry()
 		}
 	};
 
-	if (m_invulnerable)
+	if (m_invulnerable || m_god_mode)
 	{
 		setPosition(m_original_pos);
 		OnDie();
@@ -527,7 +526,6 @@ void Player::loseTry()
 		{
 			m_power = 3;
 			m_ui->setPower(m_power);
-			// Losing one try makes the player respawn at the last respawn point
 			OnDie();
 		}
 	}

@@ -147,7 +147,7 @@ void UI::update(int delta_time)
 		{
 			Game::keyReleased(GLFW_KEY_S);
 			Game::keyReleased(GLFW_KEY_DOWN);
-			if (m_selected_button < m_startscreen_buttons.size()-1)
+			if (m_selected_button < m_startscreen_buttons.size() - 1)
 				m_selected_button++;
 		}
 		if (Game::getKey(GLFW_KEY_ENTER))
@@ -165,7 +165,7 @@ void UI::update(int delta_time)
 				changeScreen(Screen::Options);
 				break;
 			}
-			
+
 		}
 		break;
 	}
@@ -211,8 +211,12 @@ void UI::update(int delta_time)
 		break;
 	}
 	case Screen::Options:
-		break;
 	case Screen::Credits:
+		if (Game::getKey(GLFW_KEY_ENTER))
+		{
+			Game::keyReleased(GLFW_KEY_ENTER);
+			changeScreen(Screen::StrartScreen);
+		}
 		break;
 	}
 }
