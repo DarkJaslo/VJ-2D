@@ -39,7 +39,7 @@ public:
 	// Sets the time displayed in the UI
 	void setTime(int time);
 
-	void setChangeSceneCallback(std::function<void(Screen)> callback);
+	void setChangeScreenCallback(std::function<void(Screen)> callback);
 
 	void changeScene(Screen scene_id);
 

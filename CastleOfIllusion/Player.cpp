@@ -479,7 +479,7 @@ void Player::loseTry()
 	m_ui->setTries(m_tries);
 	if (m_tries <= 0)
 	{
-		changeScene(Screen::StrartScreen);
+		changeScreen(Screen::StrartScreen);
 	}
 	else
 	{
@@ -533,11 +533,11 @@ void Player::onFallOff()
 	loseTry();
 }
 
-void Player::setChangeSceneCallback(std::function<void(Screen)> callback) {
+void Player::setChangeScreenCallback(std::function<void(Screen)> callback) {
 	m_change_scene_callback = callback;
 }
 
-void Player::changeScene(Screen scene_id) {
+void Player::changeScreen(Screen scene_id) {
 	if (m_change_scene_callback) {
 		m_change_scene_callback(scene_id);
 	}

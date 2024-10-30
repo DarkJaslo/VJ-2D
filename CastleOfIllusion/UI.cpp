@@ -152,6 +152,7 @@ void UI::update(int delta_time)
 		}
 		if (Game::getKey(GLFW_KEY_ENTER))
 		{
+			Game::keyReleased(GLFW_KEY_ENTER);
 			switch (m_selected_button)
 			{
 			case 0:
@@ -235,7 +236,7 @@ void UI::setTime(int time)
 	m_time_left = time;
 }
 
-void UI::setChangeSceneCallback(std::function<void(Screen)> callback) {
+void UI::setChangeScreenCallback(std::function<void(Screen)> callback) {
 	m_change_scene_callback = callback;
 }
 

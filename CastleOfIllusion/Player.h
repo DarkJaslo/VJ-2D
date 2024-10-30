@@ -57,9 +57,9 @@ public:
     // Returns the type of entity the player is
     virtual EntityType getType() const override { return EntityType::Player; }
 
-    void setChangeSceneCallback(std::function<void(Screen)> callback);
+    void setChangeScreenCallback(std::function<void(Screen)> callback);
 
-    void changeScene(Screen scene_id);
+    void changeScreen(Screen scene_id);
     	
 private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left

@@ -31,7 +31,7 @@ void Scene::init()
 
 	m_ui.reset(new UI());
 	m_ui->init(m_tex_program, Screen::StrartScreen);
-	m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+	m_ui->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 
 	m_camera.reset(new Camera());
 	m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
@@ -204,7 +204,7 @@ void Scene::changeScreen(Screen new_screen)
 	{
 		m_ui.reset(new UI());
 		m_ui->init(m_tex_program, new_screen);
-		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+		m_ui->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 
 		m_camera.reset(new Camera());
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
@@ -215,7 +215,7 @@ void Scene::changeScreen(Screen new_screen)
 	{
 		m_ui.reset(new UI());
 		m_ui->init(m_tex_program, new_screen);
-		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+		m_ui->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 
 		m_camera.reset(new Camera());
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
@@ -229,7 +229,7 @@ void Scene::changeScreen(Screen new_screen)
 	{
 		m_ui.reset(new UI());
 		m_ui->init(m_tex_program, new_screen);
-		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+		m_ui->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 
 		m_camera.reset(new Camera());
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
@@ -243,7 +243,7 @@ void Scene::changeScreen(Screen new_screen)
 	{
 		m_ui.reset(new UI());
 		m_ui->init(m_tex_program, new_screen);
-		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+		m_ui->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 
 		m_camera.reset(new Camera());
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
@@ -254,7 +254,7 @@ void Scene::changeScreen(Screen new_screen)
 	{
 		m_ui.reset(new UI());
 		m_ui->init(m_tex_program, new_screen);
-		m_ui->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+		m_ui->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 
 		m_camera.reset(new Camera());
 		m_camera->init(static_cast<float>(SCREEN_WIDTH), static_cast<float>(SCREEN_HEIGHT), m_ui);
@@ -328,7 +328,7 @@ void Scene::createPlayer(std::istringstream& split_line)
 	m_camera->setPlayer(m_player);
 
 	// Callbacks to change the scene
-	m_player->setChangeSceneCallback([this](Screen scene_id) { setScreen(scene_id); });
+	m_player->setChangeScreenCallback([this](Screen scene_id) { setScreen(scene_id); });
 }
 
 void Scene::createChest(std::istringstream& split_line) 
