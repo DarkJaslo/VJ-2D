@@ -53,10 +53,10 @@ public:
     // Returns the type of entity the player is
     virtual EntityType getType() const override { return EntityType::Player; }
 
-private:
     // Takes a hit from a damage source, losing 1 power and losing the "try" if no power is left
     void takeHit();
-    
+
+private:
     // Loses one try. Loses the game if the number of tries was 0
     void loseTry();
 

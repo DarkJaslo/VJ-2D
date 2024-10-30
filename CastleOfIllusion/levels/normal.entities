@@ -1,9 +1,13 @@
-player 10 48
+player 10 8
+
+rock 13 5
+box 11 5
+gem 15 5
 
 chest 22 8 coin small
 platform 28 8
 barrel 20 8
-boss 20 48 12 48
+boss 78 48 86 48
 chest 14 48 coin small
 chest 15 48 coin small
 platform 44 7
@@ -13,3 +17,26 @@ chest 53 8 coin small
 chest 84 8 coin big
 chest 85 8 cake small
 barrel 89 8
+monkey 88 14
+chest 94 16 coin big
+horse 57 14
+platform 52 14
+platform 25 17
+platform 17 17
+platform 9 17
+chest 13 32 cake small
+barrel 12 32
+monkey 26 32
+monkey 34 31
+monkey 42 30
+horse 30 31
+horse 39 30
+chest 51 32 coin small
+chest 53 32 cake small
+monkey 76 26
+platform 81 32
+chest 86 32 cake big
+void 0 10 100 1
+void 0 25 8 1
+void 14 25 86 1
+void 0 55 100 1

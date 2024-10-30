@@ -68,7 +68,7 @@ void Enemy::collideWithEntity(Collision collision)
 	case EntityType::ThrowableTile:
 	{
 		auto throwable = static_cast<ThrowableTile*>(collision.entity);
-		if (throwable->isBeingThrown())
+		if (throwable->isBeingThrown() || abs(throwable->getVelocity().x) > 0)
 			onDeath();
 		else
 			computeCollisionAgainstSolid(throwable);
