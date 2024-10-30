@@ -69,6 +69,8 @@ public:
     // Sets whether the entity is enabled or not
     virtual void setEnabled (bool enabled) { m_enabled = enabled; }
 
+    virtual void setSpawnPosition(glm::ivec2 position) { /*m_original_pos = position;*/ }
+
 protected:
     // Updates the position according to the collision box of the solid
     void computeCollisionAgainstSolid(Entity* solid);

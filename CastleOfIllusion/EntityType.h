@@ -16,7 +16,8 @@ enum class EntityType
 	Platform,
 	ThrowableTile,
 	Void,
-	Gem
+	Gem,
+	CameraPoint
 };
 
 inline std::string toString(EntityType type) 
@@ -39,6 +40,10 @@ inline std::string toString(EntityType type)
 		return "ThrowableTile";
 	case EntityType::Void:
 		return "Void";
+	case EntityType::Gem:
+		return "Gem";
+	case EntityType::CameraPoint:
+		return "CameraPoint";
 	default:
 		return "Unknown";
 	}

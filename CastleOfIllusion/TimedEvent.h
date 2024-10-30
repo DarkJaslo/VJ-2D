@@ -92,6 +92,12 @@ public:
 		}
 	}
 
+	// Clears all events, stopping them immediately
+	static void clearEvents()
+	{
+		instance().m_events.clear();
+	}
+
 private:
 	static TimedEvents& instance() 
 	{

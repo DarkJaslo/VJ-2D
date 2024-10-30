@@ -41,13 +41,13 @@ public:
 
 	void setChangeScreenCallback(std::function<void(Screen)> callback);
 
-	void changeScene(Screen scene_id);
-
 	glm::ivec2 getSize() const { return m_base_sprite->getQuadSize(); }
 
 private:
 
-	std::function<void(Screen)> m_change_scene_callback;
+	void changeScreen(Screen screen_id);
+
+	std::function<void(Screen)> m_change_screen_callback;
 
 	// The coordinates of the midpoint in the base the UI
 	glm::vec2 m_pos;

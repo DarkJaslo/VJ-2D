@@ -156,13 +156,13 @@ void UI::update(int delta_time)
 			switch (m_selected_button)
 			{
 			case 0:
-				changeScene(Screen::Tutorial);
+				changeScreen(Screen::Tutorial);
 				break;
 			case 1:
-				changeScene(Screen::Level);
+				changeScreen(Screen::Level);
 				break;
 			case 2:
-				changeScene(Screen::Options);
+				changeScreen(Screen::Options);
 				break;
 			}
 			
@@ -176,10 +176,16 @@ void UI::update(int delta_time)
 		// It doesn't work well with delta_time, it somehow builds up an error
 		m_time_left = m_start_level_time - static_cast<int>((glfwGetTime()) - m_start_application_time);
 
+
 		m_base_sprite->setPosition(m_pos);
 		m_tries_text->writeNumber(m_tries, 2, m_pos + glm::vec2(-8.f * 4.f, -7.f * 4.f));
 		m_score_text->writeNumber(m_score, 6, m_pos + glm::vec2(28.f * 4.f, -7.f * 4.f));
 		m_time_text->writeNumber(m_time_left, 3, m_pos + glm::vec2(94.f * 4.f, -7.f * 4.f));
+
+		if (m_time_left <= 0)
+		{
+			changeScreen(Screen::StrartScreen);
+		}
 
 		// Debug
 		/*if (Game::getKey(GLFW_KEY_0) && m_power > 0)
@@ -237,11 +243,11 @@ void UI::setTime(int time)
 }
 
 void UI::setChangeScreenCallback(std::function<void(Screen)> callback) {
-	m_change_scene_callback = callback;
+	m_change_screen_callback = callback;
 }
 
-void UI::changeScene(Screen scene_id) {
-	if (m_change_scene_callback) {
-		m_change_scene_callback(scene_id);
+void UI::changeScreen(Screen screen_id) {
+	if (m_change_screen_callback) {
+		m_change_screen_callback(screen_id);
 	}
 }
