@@ -17,6 +17,9 @@
 #include "Barrel.h"
 #include "Enemy.h"
 #include "Boss.h"
+#include "Gem.h"
+#include "Rock.h"
+#include "Box.h"
 
 // Tilemap top left screen position
 #define SCREEN_X 0
@@ -163,6 +166,12 @@ void Scene::readSceneFile(std::string const& path)
 			createMonkey(split_line);
 		else if (word == "boss")
 			createBoss(split_line);
+		else if (word == "gem")
+			createGem(split_line);
+		else if (word == "rock")
+			createRock(split_line);
+		else if (word == "box")
+			createBox(split_line);
 		else if (word != "") // Empty lines cause this
 		{
 			std::cerr << "Scene::readSceneFile: wrong word: " << word << std::endl;
@@ -372,4 +381,37 @@ void Scene::createBoss(std::istringstream& split_line)
 
 	for (auto const& block : blocks)
 		m_entities.push_back(block);
+}
+
+void Scene::createGem(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
+
+	m_entities.emplace_back(std::make_shared<Gem>(pos, m_tilemap, m_tex_program));
+}
+
+void Scene::createRock(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
+
+	m_entities.emplace_back(std::make_shared<Rock>(pos, m_tilemap, m_tex_program));
+}
+
+void Scene::createBox(std::istringstream& split_line) 
+{
+	glm::ivec2 pos;
+	split_line >> pos.x >> pos.y;
+
+	pos *= m_tilemap->getTileSize();
+	pos += glm::ivec2(m_tilemap->getTileSize() / 2, 0.0f);
+
+	m_entities.emplace_back(std::make_shared<Box>(pos, m_tilemap, m_tex_program));
 }

@@ -71,6 +71,15 @@ private:
 	// Creates a boss and adds it to the scene
 	void createBoss(std::istringstream& split_line);
 
+	// Creates a gem and adds it to the scene
+	void createGem(std::istringstream& split_line);
+
+	// Creates a rock and adds it to the scene
+	void createRock(std::istringstream& split_line);
+
+	// Creates a box and adds it to the scene
+	void createBox(std::istringstream& split_line);
+
 	// The tilemap
 	std::shared_ptr<TileMap> m_tilemap;
 	

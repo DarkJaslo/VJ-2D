@@ -1,5 +1,9 @@
 player 10 8
 
+rock 13 5
+box 11 5
+gem 15 5
+
 chest 22 8 coin small
 platform 28 8
 barrel 20 8
